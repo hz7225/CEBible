@@ -98,27 +98,27 @@ public class DisplayActivity extends FragmentActivity {
         }
     }
 	
+	//Action bar menu
+	MenuItem item;
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.display_activity, menu);
+		item = menu.findItem(R.id.action_change);  //change item on the action bar
 		return true;
 	}
 	
 	@Override
     public boolean onOptionsItemSelected(MenuItem it) {
         // Handle presses on the action bar items
-		Log.d(TAG, "Action bar item clicked");
-		ActionBar ab = getActionBar(); 
         switch (it.getItemId()) 
         {		
         case R.id.action_change:
-        	Log.d(TAG, "Action bar change button clicked"); 
-        	ab.setTitle("KJV");
+            item.setTitle("KJV");
         	return true;
-        case R.id.action_search:
-        	Log.d(TAG, "Action bar search button clicked");  
-        	ab.setTitle("CUVS");
+        case R.id.action_search: 
+        	item.setTitle("CUVS");
         	return true;	
         default:
             return super.onOptionsItemSelected(it);	        	
