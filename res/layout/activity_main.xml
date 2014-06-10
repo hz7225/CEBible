@@ -1,0 +1,93 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+    
+    <LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="30dp"
+    android:paddingTop="10dip"
+    android:orientation="horizontal"
+    android:padding="0dip" >
+    
+    	<TextView
+        	android:textStyle="bold"
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+        	android:paddingRight="10dip"
+        	android:layout_weight="0.8"
+        	android:paddingLeft="5dip"
+        	android:text="Old Testament" />
+    	<TextView
+        	android:textStyle="bold"
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+        	android:paddingRight="10dip"
+        	android:layout_weight="0.8"
+        	android:text="New Testament" />
+    	<TextView
+        	android:textStyle="bold"
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+        	android:paddingRight="10dip"
+        	android:layout_weight="1"
+        	android:text="Chapter" />
+    	<TextView
+        	android:textStyle="bold"
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+        	android:paddingRight="10dip"
+        	android:layout_weight="1"
+        	android:text="Verse" />
+    
+    </LinearLayout>
+    
+    <LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    
+    <ListView
+        android:id="@+id/listViewOT"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.8"
+        android:paddingLeft="10dip"
+    	android:paddingRight="10dip"
+        android:background="#fff" >
+    </ListView>
+
+    <ListView
+        android:id="@+id/listViewNT"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.7"
+        android:paddingLeft="10dip"
+    	android:paddingRight="10dip"
+        android:background="#fff" >
+    </ListView>
+    
+    <ListView
+        android:id="@+id/listViewChapter"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:paddingLeft="10dip"
+    	android:paddingRight="10dip"
+        android:background="#fff" >
+    </ListView>
+    
+    <ListView
+        android:id="@+id/listViewVerse"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:paddingLeft="10dip"
+    	android:paddingRight="10dip"
+        android:background="#fff" >
+    </ListView>
+    
+    </LinearLayout>
+
+</LinearLayout>
