@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class CEBible_MainActivity extends Activity implements OnItemClickListener {
 	String TAG = "CEBible";
@@ -30,11 +31,16 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 	int prefsBook;
     int prefsChapter;
     int prefsVerse;
+    String prefsLanguage;
+    String prefsVersion;
     
 	MyDataAdapter adapterOT;
 	MyDataAdapter adapterNT;
 	MyDataAdapter adapterChapter;
 	MyDataAdapter adapterVerse;
+	
+	List<String> OTList = new ArrayList<String>();
+	List<String> NTList = new ArrayList<String>();
 	
 	List<String> chapterList = new ArrayList<String>();
 	List<String> verseList = new ArrayList<String>();
@@ -49,31 +55,36 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 
     	//Create  Android SQLite database file from downloaded file
     	DataBaseHelper myDbHelper = new DataBaseHelper(this);
+    	myDbHelper.setDB("cuvslite.bbl.db");
     	try {
     		myDbHelper.createDataBase();
     	} catch (IOException ioe) {
     		throw new Error("Unable to create database");
     	} 
+    	myDbHelper.setDB("EB_kjv_bbl.db");
+    	try {
+    		myDbHelper.createDataBase();
+    	} catch (IOException ioe) {
+    		throw new Error("Unable to create database");
+    	} 
+    	
+    	// Get saved preferences
+    	prefs  = getSharedPreferences("BiblePreferences", MODE_PRIVATE);		    
+    	prefsBook = prefs.getInt("BOOK", 1);
+    	prefsChapter = prefs.getInt("CHAPTER", 1);
+    	prefsVerse = prefs.getInt("VERSE", 1);
+    	prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
+    	prefsVersion = prefs.getString("VERSION", getString(R.string.cuvs));
 
     	// Get book names resources from XML
-    	String[] ot = getResources().getStringArray(R.array.old_testament);
-    	String[] nt = getResources().getStringArray(R.array.new_testament);
-    	List<String> OTList = new ArrayList<String>();
-    	List<String> NTList = new ArrayList<String>();	   
-    	for (int i=0; i<ot.length; i++) {
-    		String book = ot[i].substring(0, ot[i].indexOf(","));
-    		OTList.add(book);
-    	}
-    	for (int i=0; i<nt.length; i++) {
-    		String book = nt[i].substring(0, nt[i].indexOf(","));
-    		NTList.add(book);
-    	}
+    	populateListOfBooknames();
     	
     	// Get Listviews and set onClick listeners
     	listViewOT = (ListView) findViewById(R.id.listViewOT);
     	listViewNT = (ListView) findViewById(R.id.listViewNT);		
     	listViewChapter = (ListView) findViewById(R.id.listViewChapter);
-    	listViewVerse = (ListView) findViewById(R.id.listViewVerse);		
+    	listViewVerse = (ListView) findViewById(R.id.listViewVerse);
+    	
     	//Set listeners	
     	listViewOT.setOnItemClickListener(this);
     	listViewNT.setOnItemClickListener(this);
@@ -85,12 +96,6 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     	adapterNT = new MyDataAdapter(this, NTList);	
     	adapterChapter = new MyDataAdapter(this, chapterList);
     	adapterVerse = new MyDataAdapter(this, verseList);
-
-    	// Get saved preferences
-    	prefs  = getSharedPreferences("BiblePreferences", MODE_PRIVATE);		    
-    	prefsBook = prefs.getInt("BOOK", 1);
-    	prefsChapter = prefs.getInt("CHAPTER", 1);
-    	prefsVerse = prefs.getInt("VERSE", 1);
 
     	//Highlight selected list items from saved preferences
 	    if (prefsBook < 40) {  //OT book
@@ -110,13 +115,69 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		listViewNT.setAdapter(adapterNT);				
 		listViewChapter.setAdapter(adapterChapter);
 		listViewVerse.setAdapter(adapterVerse);	
+		
+		displayTitles();
+    }
+    
+	protected void onResume() {
+		super.onResume();
+		
+		prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
+		if (item != null) {
+			// Change text on the action bar
+			item.setTitle(prefsLanguage);
+			// Change the lists on the display
+			populateListOfBooknames();
+			adapterNT.notifyDataSetChanged();
+			adapterOT.notifyDataSetChanged();
+		}
+	}
+	
+	private void displayTitles() {
+		TextView tv1 = (TextView)findViewById(R.id.ot);
+		TextView tv2 = (TextView)findViewById(R.id.nt);
+		TextView tv3 = (TextView)findViewById(R.id.chapter);
+		TextView tv4 = (TextView)findViewById(R.id.verse);
+		if (prefsLanguage.equals(getString(R.string.en))) {
+			tv1.setText(R.string.ot);
+			tv2.setText(R.string.nt);
+			tv3.setText(R.string.chapter);
+			tv4.setText(R.string.verse);
+		} else {
+			tv1.setText(R.string.ot_ch);
+			tv2.setText(R.string.nt_ch);
+			tv3.setText(R.string.chapter_ch);
+			tv4.setText(R.string.verse_ch);
+		}
+	}
+    
+    private void populateListOfBooknames() {
+    	String[] ot;
+    	String[] nt;
+    	if (prefsLanguage.equals(getString(R.string.ch))) {
+    		ot = getResources().getStringArray(R.array.old_testament_ch);
+        	nt = getResources().getStringArray(R.array.new_testament_ch);
+    	} else {
+    		ot = getResources().getStringArray(R.array.old_testament);
+    		nt = getResources().getStringArray(R.array.new_testament);
+    	}	
+    	OTList.clear();
+    	NTList.clear();
+    	for (int i=0; i<ot.length; i++) {
+    		String book = ot[i].substring(0, ot[i].indexOf(","));
+    		OTList.add(book);
+    	}
+    	for (int i=0; i<nt.length; i++) {
+    		String book = nt[i].substring(0, nt[i].indexOf(","));
+    		NTList.add(book);
+    	}
     }
     
     private void populateListOfChapterAndVerse() {	
 		// Find the number of chapters from Bible database
 		int c;
 		int v;
-		//DataBaseHelper BibleDB = new DataBaseHelper(this);
+
 		Log.d(TAG, "prefsBook = " + String.valueOf(prefsBook) + " prefsChapter = " + String.valueOf(prefsChapter) + " prefsVerse = " + String.valueOf(prefsVerse));
 		try {
 			c = BibleDB.getNumOfChapters(prefsBook);
@@ -203,14 +264,51 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		intent.putExtra("CHAPTER", chapter);
 		intent.putExtra("VERSE", verse);
 		startActivity(intent);
-	}	
+	}
+    
+    //Action bar menu
+  	MenuItem item;
     
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.ce_bible, menu);
+		item = menu.findItem(R.id.action_language);  //change item on the action bar
+		item.setTitle(prefsLanguage);
 		return true;
 	}
     
+    @Override
+    public boolean onOptionsItemSelected(MenuItem it) {
+        // Handle presses on the action bar items
+        switch (it.getItemId()) 
+        {		
+        case R.id.action_language:
+        	Log.d(TAG, "Language clicked");	
+        	if (prefsLanguage.equals(getString(R.string.ch))) {
+        		prefsLanguage = getString(R.string.en);
+        	} else {
+        		prefsLanguage = getString(R.string.ch);
+        	}
+        	// Save the change in the Preferences
+        	Editor editor = prefs.edit();
+        	editor.putString("LANGUAGE", prefsLanguage);
+        	editor.commit();
+        	// Change text on the action bar
+        	item.setTitle(prefsLanguage);
+        	// Change the lists on the display
+        	populateListOfBooknames();
+        	adapterNT.notifyDataSetChanged();
+        	adapterOT.notifyDataSetChanged();
+        	//Update Titles
+        	displayTitles();
+        	return true;
+        case R.id.action_settings: 
+        	return true;	
+        default:
+            return super.onOptionsItemSelected(it);	        	
+        }
+	}   
+
 }
 

@@ -12,34 +12,35 @@
     android:padding="0dip" >
     
     	<TextView
+    	    android:id="@+id/ot"
         	android:textStyle="bold"
         	android:layout_width="match_parent"
         	android:layout_height="wrap_content"
+        	android:paddingTop="5dip"
         	android:paddingRight="10dip"
         	android:layout_weight="0.8"
-        	android:paddingLeft="5dip"
-        	android:text="Old Testament" />
+        	android:paddingLeft="5dip"/>
     	<TextView
+    	    android:id="@+id/nt"
         	android:textStyle="bold"
         	android:layout_width="match_parent"
         	android:layout_height="wrap_content"
         	android:paddingRight="10dip"
-        	android:layout_weight="0.8"
-        	android:text="New Testament" />
+        	android:layout_weight="0.8"/>
     	<TextView
+    	    android:id="@+id/chapter"
         	android:textStyle="bold"
         	android:layout_width="match_parent"
         	android:layout_height="wrap_content"
         	android:paddingRight="10dip"
-        	android:layout_weight="1"
-        	android:text="Chapter" />
+        	android:layout_weight="1"/>
     	<TextView
+    	    android:id="@+id/verse"
         	android:textStyle="bold"
         	android:layout_width="match_parent"
         	android:layout_height="wrap_content"
         	android:paddingRight="10dip"
-        	android:layout_weight="1"
-        	android:text="Verse" />
+        	android:layout_weight="1"/>
     
     </LinearLayout>
     

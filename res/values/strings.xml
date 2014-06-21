@@ -2,7 +2,21 @@
 <resources>
     <string name="app_name">CEBible</string>
     <string name="action_settings">Settings</string>
-    <string name="action_search">Search</string>    
+    <string name="action_search">Search</string> 
+    <string name="ce_bible">中英圣经</string>  
+    <string name="ch">中文</string> 
+    <string name="en">Eng</string>
+    <string name="cuvs">和合本</string>
+    <string name="kjv">KJV</string>
+    <string name="ot">Old Testament</string>
+    <string name="nt">New Testament</string>
+    <string name="chapter">Chapter</string>
+    <string name="verse">Verse</string>
+    <string name="ot_ch">"  新约"</string>
+    <string name="nt_ch">"  旧约"</string>
+    <string name="chapter_ch">"       章"</string>
+    <string name="verse_ch">"     节"</string>
+    
     <string-array name="old_testament">
         <item>Genesis,50</item>
         <item>Exodus,40</item>
@@ -72,5 +86,75 @@
         <item>3 John,1</item>    
         <item>Jude,1</item>
         <item>Revelation,22</item>  
+    </string-array>
+    <string-array name="old_testament_ch">
+        <item>创世纪,50</item>
+        <item>出埃及记,40</item>
+        <item>利未记,27</item>
+        <item>民数记,36</item>
+        <item>申命记,34</item>
+        <item>约书亚记,24</item>
+        <item>士师记,21</item>
+        <item>路得记,4</item>
+        <item>撒母耳记上,31</item>
+        <item>撒母耳记下,24</item>
+        <item>列王记上,22</item>    
+        <item>列王记下,25</item>
+        <item>历代志上,29</item>
+        <item>历代志下,36</item>
+        <item>以斯拉记,10</item>
+        <item>尼希米记,13</item>
+        <item>以斯帖记,10</item>
+        <item>约伯记,42</item>
+        <item>诗篇,150</item>   
+        <item>箴言,31</item>
+        <item>传道 书,12</item>
+        <item>雅歌,8</item>
+        <item>以赛亚书,66</item>
+        <item>耶利米书,52</item>
+        <item>耶利米哀歌,5</item> 
+        <item>以西结书,48</item>
+        <item>但以理书,12</item>
+        <item>何西阿书,14</item>    
+        <item>约珥书,3</item>
+        <item>阿摩司书,9</item>
+        <item>俄巴底亚书,1</item>
+        <item>约拿书,4</item>
+        <item>弥迦书,7</item>
+        <item>那鸿书,3</item>
+        <item>哈巴谷书,3</item>
+        <item>西番雅书,3</item> 
+        <item>哈该书,2</item>
+        <item>撒迦利亚,14</item>
+        <item>玛拉基书,4</item>        
+    </string-array>
+	<string-array name="new_testament_ch">
+        <item>马太福音,28</item>
+        <item>马克福音,16</item>
+        <item>路加福音,24</item>
+        <item>约翰福音,21</item>
+        <item>使徒行传,28</item>
+        <item>罗马书,16</item>
+        <item>歌林多前书,16</item>
+        <item>歌林多后书,13</item>
+        <item>加拉太书,6</item>
+        <item>以弗所书,6</item>
+        <item>腓利比书,4</item>    
+        <item>歌罗西书,4</item>
+        <item>帖撒罗尼迦前书,5</item>
+        <item>帖撒罗尼迦后书,3</item>
+        <item>提摩太前书,6</item>
+        <item>提摩太后书,4</item>
+        <item>提多书,3</item>
+        <item>腓利门书,1</item>
+        <item>希伯来书,13</item>  
+        <item>雅各书,5</item>
+        <item>彼得前书,5</item>
+        <item>彼得后书,3</item>
+        <item>约翰一书,5</item>
+        <item>约翰二书,1</item>
+        <item>约翰三书,1</item>    
+        <item>犹大书,1</item>
+        <item>启示录,22</item>  
     </string-array>
 </resources>

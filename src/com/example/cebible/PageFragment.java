@@ -23,14 +23,11 @@ public class PageFragment extends Fragment {
     public static final String ARG_PAGE = "page";
 	
 	private int mPageNumber;
-	static private DataBaseHelper mBibleDB;
 	static private int mBook;
 	//static private int mChapter;
 	
-	//public static PageFragment create(int pageNumber, DataBaseHelper BibleDB, int book, int chapter) {
-	public static PageFragment create(int pageNumber, DataBaseHelper BibleDB, int book) {
-		Log.d(TAG, "pageNumber = " + String.valueOf(pageNumber) + " book=" +String.valueOf(book));
-		mBibleDB = BibleDB;
+	public static PageFragment create(int pageNumber, int book) {
+		Log.d(TAG, "PageFragment::create(), pageNumber = " + String.valueOf(pageNumber) + " book=" +String.valueOf(book));
         mBook = book;
         //mChapter = chapter;
         
@@ -50,11 +47,13 @@ public class PageFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		//Log.d(TAG, "mPageNumber = " + String.valueOf(mPageNumber) + " mChapter = " + String.valueOf(mChapter));
-		Log.d(TAG, "mPageNumber = " + String.valueOf(mPageNumber));
+		Log.d(TAG, "onCreateView(): mPageNumber = " + String.valueOf(mPageNumber));
+		
+		DataBaseHelper BibleDB = new DataBaseHelper(getActivity().getApplicationContext() );
 		
         //Get the whole chapter of a book from database
 		int chapter = mPageNumber + 1;
-        List<String> sl = mBibleDB.getChapter(mBook, chapter);
+        List<String> sl = BibleDB.getChapter(mBook, chapter);
         
         //Build the String and display it in TextView
         StringBuilder str = new StringBuilder();

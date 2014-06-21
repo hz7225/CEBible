@@ -23,11 +23,17 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     //The Android's default system path of your application database.
     private static String DB_PATH = "/data/data/com.example.cebible/databases/";
  
-    private static String DB_NAME = "cuvslite.bbl.db";
+    //private static String DB_NAME = "cuvslite.bbl.db";
+    //private static String DB_NAME = "EB_kjv_bbl.db";
  
-    private SQLiteDatabase myDataBase; 
- 
+    public static String DB_NAME = "cuvslite.bbl.db";
+
+    private SQLiteDatabase myDataBase;  
     private final Context myContext;
+    
+    public void setDB(String dbname) {
+    	DB_NAME = dbname;
+    }
  
     /**
      * Constructor
