@@ -52,6 +52,8 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     protected void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.activity_main);
+    	
+    	Log.d(TAG, "DisplayActivity::onCreate()");
 
     	//Create  Android SQLite database file from downloaded file
     	DataBaseHelper myDbHelper = new DataBaseHelper(this);
@@ -121,11 +123,12 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     
 	protected void onResume() {
 		super.onResume();
-		
+		Log.d(TAG, "DisplayActivity::onResume()");
 		prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
 		if (item != null) {
 			// Change text on the action bar
 			item.setTitle(prefsLanguage);
+			displayTitles();
 			// Change the lists on the display
 			populateListOfBooknames();
 			adapterNT.notifyDataSetChanged();

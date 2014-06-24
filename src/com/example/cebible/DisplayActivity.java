@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NavUtils;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -47,6 +48,9 @@ public class DisplayActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_pager);
         
+        // To allow Up navigation with the app icon in the action bar
+    	getActionBar().setDisplayHomeAsUpEnabled(true);
+        
         // Get saved preferences
     	prefs  = getSharedPreferences("BiblePreferences", MODE_PRIVATE);		    
     	prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
@@ -72,6 +76,7 @@ public class DisplayActivity extends FragmentActivity {
         // Set action bar title with book name and chapter number
 		ActionBar actionBar = getActionBar();
 		actionBar.setTitle(getBookName() +" "+String.valueOf(mChapter));
+		
 		
 		// Update action bar after scrolling to a new chapter
 		mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -139,6 +144,10 @@ public class DisplayActivity extends FragmentActivity {
         public int getCount() {
         	return num_chapters;
         }
+        
+        public int getItemPosition(Object object) {
+    	    return POSITION_NONE;
+    	}
     }
 	
 	//Action bar menu
@@ -165,6 +174,9 @@ public class DisplayActivity extends FragmentActivity {
         // Handle presses on the action bar items
         switch (it.getItemId()) 
         {		
+        case android.R.id.home:
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
         case R.id.action_change:
         	if (prefsLanguage.equals(getString(R.string.ch))) {
         		prefsLanguage = getString(R.string.en);
@@ -180,6 +192,9 @@ public class DisplayActivity extends FragmentActivity {
         	// Update action bar title with book name and chapter number
     		ActionBar actionBar = getActionBar();
     		actionBar.setTitle(getBookName() +" "+String.valueOf(mChapter));
+    		
+    		// Update the ViewPager's content on the screen immediately
+    		mPagerAdapter.notifyDataSetChanged();
         	
         	// Save the change in the Preferences
         	Editor editor = prefs.edit();

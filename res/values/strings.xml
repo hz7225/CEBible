@@ -11,11 +11,11 @@
     <string name="ot">Old Testament</string>
     <string name="nt">New Testament</string>
     <string name="chapter">Chapter</string>
-    <string name="verse">Verse</string>
+    <string name="verse">" Verse"</string>
     <string name="ot_ch">"  新约"</string>
-    <string name="nt_ch">"  旧约"</string>
-    <string name="chapter_ch">"       章"</string>
-    <string name="verse_ch">"     节"</string>
+    <string name="nt_ch">"   旧约"</string>
+    <string name="chapter_ch">"     章"</string>
+    <string name="verse_ch">"   节"</string>
     
     <string-array name="old_testament">
         <item>Genesis,50</item>

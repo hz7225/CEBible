@@ -63,7 +63,7 @@
         android:id="@+id/listViewNT"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="0.7"
+        android:layout_weight="0.75"
         android:paddingLeft="10dip"
     	android:paddingRight="10dip"
         android:background="#fff" >
