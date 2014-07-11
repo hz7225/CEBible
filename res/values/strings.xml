@@ -6,6 +6,8 @@
     <string name="ce_bible">中英圣经</string>  
     <string name="ch">中文</string> 
     <string name="en">Eng</string>
+    <string name="ch_en">中文-Eng</string>
+    <string name="cuvs_kjv">和合本-KJV</string>
     <string name="cuvs">和合本</string>
     <string name="kjv">KJV</string>
     <string name="ot">Old Testament</string>

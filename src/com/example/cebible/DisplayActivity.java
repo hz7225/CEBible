@@ -3,7 +3,7 @@ package com.example.cebible;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.cebible.PageFragment;
+import com.example.cebible.DisplayPageFragment;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -33,6 +33,7 @@ public class DisplayActivity extends FragmentActivity {
 	private PagerAdapter mPagerAdapter;
 	private int mBook;
 	private int mChapter;
+	private int mVerse;
 	
 	SharedPreferences prefs;
     String prefsLanguage;
@@ -63,9 +64,10 @@ public class DisplayActivity extends FragmentActivity {
         
         mBook = book;
         mChapter = chapter;
+        mVerse = verse;
         
         //Get number of chapters of a book
-        BibleDB = new DataBaseHelper(this);
+        BibleDB = new DataBaseHelper(this, "cuvslite.bbl.db");
         num_chapters = BibleDB.getNumOfChapters(book);        
 
         mPager = (ViewPager) findViewById(R.id.pager);       
@@ -92,19 +94,22 @@ public class DisplayActivity extends FragmentActivity {
 		super.onResume();
 		
 		prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
-		//MenuItem item = ab_menu.findItem(R.id.action_change);
-		//if (item != null) {				
-			if (prefsLanguage.equals(getString(R.string.en))) {
-				Log.d(TAG, "DiaplayActivity::onResume(), prefsLanguage = 'EN'");
-        		//item.setTitle("KJV");
-                BibleDB.setDB("EB_kjv_bbl.db");
-        	} else {
-				Log.d(TAG, "DiaplayActivity::onResume(), prefsLanguage = 'CH'");
-        		//item.setTitle("CUVS");
-            	BibleDB.setDB("cuvslite.bbl.db");            	
-        	}
-		//}
-		
+		Editor editor = prefs.edit();
+   
+		/*
+		if (prefsLanguage.equals(getString(R.string.en))) {
+			Log.d(TAG, "DiaplayActivity::onResume(), prefsLanguage = 'EN'");
+			editor.putString("VERSION", getString(R.string.kjv));
+			//item.setTitle("KJV");
+			//BibleDB.setDB("EB_kjv_bbl.db");
+		} else {
+			Log.d(TAG, "DiaplayActivity::onResume(), prefsLanguage = 'CH'");
+			editor.putString("VERSION", getString(R.string.cuvs));
+			//item.setTitle("CUVS");
+			//BibleDB.setDB("cuvslite.bbl.db");            	
+		}
+		editor.commit();
+		*/
 	}
 	
 	private String getBookName() {
@@ -137,7 +142,7 @@ public class DisplayActivity extends FragmentActivity {
         @Override
         public Fragment getItem(int position) {
         	Log.d(TAG, "PageFragment.create, position="+String.valueOf(position));
-            return PageFragment.create(position, mBook);
+            return DisplayPageFragment.create(position, mBook, mVerse, prefsVersion);
         }
 
         @Override
@@ -158,12 +163,16 @@ public class DisplayActivity extends FragmentActivity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.display_activity, menu);
 		item = menu.findItem(R.id.action_change);  //change item on the action bar
+		Editor editor = prefs.edit();
 		if (prefsLanguage.equals(getString(R.string.ch))) {
 			item.setTitle(getString(R.string.cuvs));
+			editor.putString("VERSION", getString(R.string.cuvs));
 		}
 		else {
 			item.setTitle(getString(R.string.kjv));
+			editor.putString("VERSION", getString(R.string.kjv));
 		}
+		editor.commit();
 		//Save the menu
 		ab_menu = menu;
 		return true;
@@ -171,6 +180,7 @@ public class DisplayActivity extends FragmentActivity {
 	
 	@Override
     public boolean onOptionsItemSelected(MenuItem it) {
+		Editor editor = prefs.edit();
         // Handle presses on the action bar items
         switch (it.getItemId()) 
         {		
@@ -178,16 +188,27 @@ public class DisplayActivity extends FragmentActivity {
             NavUtils.navigateUpFromSameTask(this);
             return true;
         case R.id.action_change:
-        	if (prefsLanguage.equals(getString(R.string.ch))) {
+        	if (prefsVersion.equals(getString(R.string.cuvs))) {
         		prefsLanguage = getString(R.string.en);
+        		prefsVersion = getString(R.string.kjv);
+        		editor.putString("LANGUAGE", prefsLanguage);
+        		editor.putString("VERSION", prefsVersion);
         		item.setTitle(getString(R.string.kjv));
-                BibleDB.setDB("EB_kjv_bbl.db");
-        	} else {
+                //BibleDB.setDB("EB_kjv_bbl.db");
+        	} else if (prefsVersion.equals(getString(R.string.kjv))) {
         		prefsLanguage = getString(R.string.ch);
+        		prefsVersion = getString(R.string.cuvs_kjv);
+        		editor.putString("LANGUAGE", prefsLanguage);
+        		editor.putString("VERSION", prefsVersion);
+        		item.setTitle(getString(R.string.cuvs_kjv));
+        	} else if (prefsVersion.equals(getString(R.string.cuvs_kjv))) {	
+        		prefsLanguage = getString(R.string.ch);
+        		prefsVersion = getString(R.string.cuvs);
+        		editor.putString("LANGUAGE", prefsLanguage);
+        		editor.putString("VERSION", prefsVersion);
         		item.setTitle(getString(R.string.cuvs));
-            	BibleDB.setDB("cuvslite.bbl.db");
-            	
         	}
+        	editor.commit();
         	
         	// Update action bar title with book name and chapter number
     		ActionBar actionBar = getActionBar();
@@ -197,9 +218,9 @@ public class DisplayActivity extends FragmentActivity {
     		mPagerAdapter.notifyDataSetChanged();
         	
         	// Save the change in the Preferences
-        	Editor editor = prefs.edit();
-        	editor.putString("LANGUAGE", prefsLanguage);
-        	editor.commit();
+        	//Editor editor = prefs.edit();
+        	//editor.putString("LANGUAGE", prefsLanguage);
+        	//editor.commit();
             
         	return true;
         case R.id.action_search: 

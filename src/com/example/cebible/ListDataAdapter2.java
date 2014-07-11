@@ -1,19 +1,18 @@
 package com.example.cebible;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import com.example.cebible.ListDataAdapter.ViewHolder;
+
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
-public class MyDataAdapter extends BaseAdapter {
-	String TAG = "MyDataAdapter";
+public class ListDataAdapter2 extends BaseAdapter  {
+String TAG = "MyDataAdapter2";
 	
 	//private String[] listData;
 	private List<String> listData;
@@ -21,7 +20,7 @@ public class MyDataAdapter extends BaseAdapter {
 	//public int position; //selected position
 	public int selected_item;
 	
-	public MyDataAdapter(Context context, List<String> listData) {
+	public ListDataAdapter2(Context context, List<String> listData) {
 	//public MyDataAdapter(Context context, String[] listData) {
 		this.listData = listData;
 		layoutInflater = LayoutInflater.from(context);
@@ -52,9 +51,9 @@ public class MyDataAdapter extends BaseAdapter {
 		ViewHolder holder;
 		if (v == null) {
 			//Log.d(TAG, "create new view at position = " + String.valueOf(position));
-			v = layoutInflater.inflate(R.layout.list_item, null);
+			v = layoutInflater.inflate(R.layout.list_item_bigsize, null);
 			holder = new ViewHolder();
-			holder.textView = (TextView) v.findViewById(R.id.book);			
+			holder.textView = (TextView) v.findViewById(R.id.text_bigsize);			
 			v.setTag(holder);
 		} else {
 			//Log.d(TAG, "use recycled view at position = " + String.valueOf(position));
@@ -73,6 +72,7 @@ public class MyDataAdapter extends BaseAdapter {
 			v.setBackgroundColor(0xFFFFFFFF);
 		}
 		
+		
 		return v;
 	}
 	
@@ -80,4 +80,3 @@ public class MyDataAdapter extends BaseAdapter {
 		TextView textView;
 	}
 }
-

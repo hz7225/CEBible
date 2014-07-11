@@ -26,7 +26,8 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     //private static String DB_NAME = "cuvslite.bbl.db";
     //private static String DB_NAME = "EB_kjv_bbl.db";
  
-    public static String DB_NAME = "cuvslite.bbl.db";
+    //public static String DB_NAME = "cuvslite.bbl.db";
+    public String DB_NAME;
 
     private SQLiteDatabase myDataBase;  
     private final Context myContext;
@@ -40,9 +41,11 @@ public class DataBaseHelper extends SQLiteOpenHelper{
      * Takes and keeps a reference of the passed context in order to access to the application assets and resources.
      * @param context
      */
-    public DataBaseHelper(Context context) {
+    public DataBaseHelper(Context context, String db_name) {
  
-    	super(context, DB_NAME, null, 1);
+    	//super(context, DB_NAME, null, 1);
+    	super(context, db_name, null, 1);
+    	DB_NAME = db_name;
         this.myContext = context;
     }	
  
@@ -132,11 +135,10 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     }
  
     public void openDataBase() throws SQLException{
- 
     	//Open the database
         String myPath = DB_PATH + DB_NAME;
     	myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
- 
+    	Log.d(TAG, "openDataBase() path = " + myPath);
     }
  
     @Override
