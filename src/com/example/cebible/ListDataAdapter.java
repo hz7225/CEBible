@@ -20,9 +20,11 @@ public class ListDataAdapter extends BaseAdapter {
 	private LayoutInflater layoutInflater;
 	//public int position; //selected position
 	public int selected_item;
+	Context mContext;
 	
 	public ListDataAdapter(Context context, List<String> listData) {
 	//public MyDataAdapter(Context context, String[] listData) {
+		mContext = context;
 		this.listData = listData;
 		layoutInflater = LayoutInflater.from(context);
 		selected_item = -1; // -1 means unselected
@@ -54,7 +56,14 @@ public class ListDataAdapter extends BaseAdapter {
 			//Log.d(TAG, "create new view at position = " + String.valueOf(position));
 			v = layoutInflater.inflate(R.layout.list_item, null);
 			holder = new ViewHolder();
-			holder.textView = (TextView) v.findViewById(R.id.text);			
+			holder.textView = (TextView) v.findViewById(R.id.text);	
+			//Set different font sizes for the DisplayActivity and MainActivity
+			if (mContext instanceof com.example.cebible.DisplayActivity) {
+				holder.textView.setTextSize(18);
+			}
+			if (mContext instanceof com.example.cebible.CEBible_MainActivity) {
+				holder.textView.setTextSize(15);
+			}
 			v.setTag(holder);
 		} else {
 			//Log.d(TAG, "use recycled view at position = " + String.valueOf(position));

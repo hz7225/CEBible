@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ActionBar;
+import android.app.ActionBar.LayoutParams;
 import android.app.Fragment;
 import android.app.ListFragment;
 import android.content.Context;
@@ -19,6 +20,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -43,8 +45,8 @@ public class DisplayPageFragment extends Fragment implements OnItemLongClickList
 	
 	ListView listView1;
 	ListView listView2;
-	ListDataAdapter2 adapter1;
-	ListDataAdapter2 adapter2;
+	ListDataAdapter adapter1;
+	ListDataAdapter adapter2;
 	
 	boolean isLeftListEnabled = true;
 	boolean isRightListEnabled = true;
@@ -121,35 +123,43 @@ public class DisplayPageFragment extends Fragment implements OnItemLongClickList
         //Use 2 ListViews in Linear layout
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.listviews, container, false);
         
-        
+        //ListView1 for Chinese CUVS
         listView1 = (ListView) rootView.findViewById(R.id.listView1);
         listView1.setOnItemLongClickListener((OnItemLongClickListener) this); //Set listener
         List<String> sl1 = getScriptureFromDB(mBook, mPageNumber+1, "cuvslite.bbl.db");
-    	adapter1 = new ListDataAdapter2(this.getActivity(), sl1); 
+    	adapter1 = new ListDataAdapter(this.getActivity(), sl1); 
     	//Set ListView adapters
 	    listView1.setAdapter(adapter1);
 	    //Set starting position
     	listView1.setSelection(mVerse);
         
-    	
+    	//ListView2 for English KJV
     	listView2 = (ListView) rootView.findViewById(R.id.listView2);    	
     	listView2.setOnItemLongClickListener((OnItemLongClickListener) this);
     	List<String> sl2 = getScriptureFromDB(mBook, mPageNumber+1, "EB_kjv_bbl.db");
-    	adapter2 = new ListDataAdapter2(this.getActivity(), sl2);
+    	adapter2 = new ListDataAdapter(this.getActivity(), sl2);
+    	//Set ListView adapters
     	listView2.setAdapter(adapter2);
+    	//Set starting position
     	listView2.setSelection(mVerse);
     	
+    	/*
+    	//Test: Change the ListViews layout_weight parameter
+    	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+    		    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+    	params.weight = 1.0f;
+    	listView2.setLayoutParams(params);
+    	*/
     	
-    	
+    	//For CUVS or KJV, only display one ListView, make the other one invisible
+    	//Otherwise, display both ListViews 
     	if (mVersion.equals(getString(R.string.cuvs))) {
     		listView2.setVisibility(View.GONE); //To display only one ListView
     		rootView.findViewById(R.id.horizontal_white_space).setVisibility(View.GONE); //Remove the horizontal spacer too
     	} else if (mVersion.equals(getString(R.string.kjv))) {
     		listView1.setVisibility(View.GONE); //To display only one ListView
         	rootView.findViewById(R.id.horizontal_white_space).setVisibility(View.GONE); //Remove the horizontal spacer too
-    	}
-    	         			    	
-		
+    	}		
     	
 		//To synchronize the positions of the two ListViews
 		listView1.setOverScrollMode(ListView.OVER_SCROLL_NEVER);
