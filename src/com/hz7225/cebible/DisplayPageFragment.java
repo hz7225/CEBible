@@ -1,4 +1,4 @@
-package com.example.cebible;
+package com.hz7225.cebible;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class DisplayPageFragment extends Fragment implements OnItemLongClickList
 	boolean isRightListEnabled = true;
 	
 	public static DisplayPageFragment create(int pageNumber, int book, int verse, String version) {
-		Log.d(TAG, "PageFragment::create(), pageNumber = " + String.valueOf(pageNumber) + " book=" +String.valueOf(book));
+		//Log.d(TAG, "PageFragment::create(), pageNumber = " + String.valueOf(pageNumber) + " book=" +String.valueOf(book));
         mBook = book;
         //mChapter = chapter;
         mVerse = verse;
@@ -73,7 +73,7 @@ public class DisplayPageFragment extends Fragment implements OnItemLongClickList
 	}
 	
 	private List<String> getScriptureFromDB(int book, int chapter, String db) {
-		Log.d(TAG, "getScriptureFromDB: " + db + "ddddddddbbbbbbb");
+		//Log.d(TAG, "getScriptureFromDB: " + db + "ddddddddbbbbbbb");
 		//DataBaseHelper BibleDB = new DataBaseHelper(getActivity().getApplicationContext() );
 		DataBaseHelper BibleDB = new DataBaseHelper(getActivity().getApplicationContext(), db);
 		//BibleDB.setDB(db);
@@ -88,7 +88,7 @@ public class DisplayPageFragment extends Fragment implements OnItemLongClickList
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		//Log.d(TAG, "mPageNumber = " + String.valueOf(mPageNumber) + " mChapter = " + String.valueOf(mChapter));
-		Log.d(TAG, "onCreateView(): mPageNumber = " + String.valueOf(mPageNumber) + " mVersion = " + mVersion);
+		//Log.d(TAG, "onCreateView(): mPageNumber = " + String.valueOf(mPageNumber) + " mVersion = " + mVersion);
 		
         /*//Use TextView
         //Build the String and display it in TextView
@@ -132,6 +132,8 @@ public class DisplayPageFragment extends Fragment implements OnItemLongClickList
 	    listView1.setAdapter(adapter1);
 	    //Set starting position
     	listView1.setSelection(mVerse);
+    	//Set selector, this is a test
+    	listView1.setSelector(R.drawable.list_selector);
         
     	//ListView2 for English KJV
     	listView2 = (ListView) rootView.findViewById(R.id.listView2);    	

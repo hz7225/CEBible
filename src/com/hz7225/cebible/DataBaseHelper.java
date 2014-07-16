@@ -1,4 +1,4 @@
-package com.example.cebible;
+package com.hz7225.cebible;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	String TAG = "DatabaseHElper";
 	 
     //The Android's default system path of your application database.
-    private static String DB_PATH = "/data/data/com.example.cebible/databases/";
+    private static String DB_PATH = "/data/data/com.hz7225.cebible/databases/";
  
     //private static String DB_NAME = "cuvslite.bbl.db";
     //private static String DB_NAME = "EB_kjv_bbl.db";
@@ -138,7 +138,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     	//Open the database
         String myPath = DB_PATH + DB_NAME;
     	myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
-    	Log.d(TAG, "openDataBase() path = " + myPath);
+    	//Log.d(TAG, "openDataBase() path = " + myPath);
     }
  
     @Override
@@ -196,7 +196,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		String selectQuery = "SELECT Scripture FROM Bible WHERE Book=" + String.valueOf(book) + 
 													" AND Chapter=" + String.valueOf(chapter) +
 													" AND Verse=" + String.valueOf(verse);
-		Log.d(TAG, selectQuery); 
+		//Log.d(TAG, selectQuery); 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
 		cursor.moveToFirst();
@@ -210,7 +210,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		// SQL Select Query
 		String selectQuery = "SELECT Scripture FROM Bible WHERE Book=" + String.valueOf(book) + 
 															" AND Chapter=" + String.valueOf(chapter);
-		Log.d(TAG, "getChapter: " + selectQuery); 
+		//Log.d(TAG, "getChapter: " + selectQuery); 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
 		//cursor.moveToFirst();

@@ -1,9 +1,11 @@
-package com.example.cebible;
+package com.hz7225.cebible;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,12 +23,15 @@ public class ListDataAdapter extends BaseAdapter {
 	//public int position; //selected position
 	public int selected_item;
 	Context mContext;
+	Drawable orig_color;
 	
 	public ListDataAdapter(Context context, List<String> listData) {
 	//public MyDataAdapter(Context context, String[] listData) {
 		mContext = context;
 		this.listData = listData;
 		layoutInflater = LayoutInflater.from(context);
+		View v = layoutInflater.inflate(R.layout.list_item, null);
+		orig_color = v.getBackground();
 		selected_item = -1; // -1 means unselected
 	}
 
@@ -58,10 +63,10 @@ public class ListDataAdapter extends BaseAdapter {
 			holder = new ViewHolder();
 			holder.textView = (TextView) v.findViewById(R.id.text);	
 			//Set different font sizes for the DisplayActivity and MainActivity
-			if (mContext instanceof com.example.cebible.DisplayActivity) {
+			if (mContext instanceof com.hz7225.cebible.DisplayActivity) {
 				holder.textView.setTextSize(18);
 			}
-			if (mContext instanceof com.example.cebible.CEBible_MainActivity) {
+			if (mContext instanceof com.hz7225.cebible.CEBible_MainActivity) {
 				holder.textView.setTextSize(15);
 			}
 			v.setTag(holder);
@@ -77,9 +82,12 @@ public class ListDataAdapter extends BaseAdapter {
 		
 		// Set color for selected item
 		if (position == this.selected_item ) {
-			v.setBackgroundColor(0xFF00FF00);
+			//v.setBackgroundColor(0x5500FF00);
+			v.setBackgroundColor(0xff398eb5);
+			holder.textView.setTextColor(Color.WHITE);
 		} else {
-			v.setBackgroundColor(0xFFFFFFFF);
+			v.setBackground(orig_color);
+			holder.textView.setTextColor(Color.BLACK);
 		}
 		
 		

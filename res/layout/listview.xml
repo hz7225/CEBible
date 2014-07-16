@@ -8,8 +8,7 @@
     	android:layout_height="match_parent"
     	android:layout_weight="0.8"
     	android:paddingLeft="10dip"
-   		android:paddingRight="10dip"
-    	android:background="#fff" >
+   		android:paddingRight="10dip" >
 	</ListView>
 	
 

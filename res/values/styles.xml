@@ -16,5 +16,10 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
+    
+    <style name="My.Holo.Light.FullScreen" parent="AppBaseTheme">
+    	<item name="android:windowFullscreen">true</item>
+    	<item name="android:windowContentOverlay">@null</item>
+	</style>
 
 </resources>

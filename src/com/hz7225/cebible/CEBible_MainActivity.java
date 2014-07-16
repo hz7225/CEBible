@@ -1,4 +1,4 @@
-package com.example.cebible;
+package com.hz7225.cebible;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     protected void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.activity_main);    	
-    	Log.d(TAG, "onCreate()");
+    	//Log.d(TAG, "onCreate()");
 
     	//Create  Android SQLite database file from downloaded file
     	DataBaseHelper myDbHelper = new DataBaseHelper(this, "cuvslite.bbl.db");
@@ -124,7 +124,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     
 	protected void onResume() {
 		super.onResume();
-		Log.d(TAG, "onResume()");
+		//Log.d(TAG, "onResume()");
 		prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
 		displayTitles();
 		
@@ -193,7 +193,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		int c;
 		int v;
 
-		Log.d(TAG, "prefsBook = " + String.valueOf(prefsBook) + " prefsChapter = " + String.valueOf(prefsChapter) + " prefsVerse = " + String.valueOf(prefsVerse));
+		//Log.d(TAG, "prefsBook = " + String.valueOf(prefsBook) + " prefsChapter = " + String.valueOf(prefsChapter) + " prefsVerse = " + String.valueOf(prefsVerse));
 		try {
 			c = BibleDB.getNumOfChapters(prefsBook);
 			v = BibleDB.getNumOfVerses(prefsBook, prefsChapter);
@@ -214,7 +214,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     protected void onPause() {
 		super.onPause();
 		
-		Log.d(TAG, "onPause()");
+		//Log.d(TAG, "onPause()");
 		Editor editor = prefs.edit();
 		editor.putInt("BOOK", prefsBook);
 		editor.putInt("CHAPTER", prefsChapter);
@@ -233,8 +233,8 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 			prefsVerse = 1;  //Reset verse preferences to 1
 			adapterChapter.selected_item = prefsChapter-1;
 			adapterVerse.selected_item = prefsVerse-1;
-			Log.d(TAG, "position="+String.valueOf(position) + ", id=" + String.valueOf(id) + 
-					   " prefsBook = " + String.valueOf(prefsBook));
+			//Log.d(TAG, "position="+String.valueOf(position) + ", id=" + String.valueOf(id) + 
+			//		   " prefsBook = " + String.valueOf(prefsBook));
 		}
 		if (parent == (ListView) findViewById(R.id.listViewNT)) {
 			adapterOT.selected_item = -1;  //Unselect OT book
@@ -244,23 +244,23 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 			prefsVerse = 1;  //Reset verse preferences to 1
 			adapterChapter.selected_item = prefsChapter-1;
 			adapterVerse.selected_item = prefsVerse-1;
-			Log.d(TAG, "position="+String.valueOf(position) + ", id=" + String.valueOf(id) + 
-					   " prefsBook = " + String.valueOf(prefsBook));
+			//Log.d(TAG, "position="+String.valueOf(position) + ", id=" + String.valueOf(id) + 
+			//		   " prefsBook = " + String.valueOf(prefsBook));
 		}		
 				
 		if (parent == (ListView) findViewById(R.id.listViewChapter)) {
 			adapterChapter.selected_item = position;
 			prefsChapter = position + 1; 
 			prefsVerse = 1; //Reset verse preference to 1
-			Log.d(TAG, "position="+String.valueOf(position) + ", id=" + String.valueOf(id) + 
-					   " prefsChapter = " + String.valueOf(prefsChapter));
+			//Log.d(TAG, "position="+String.valueOf(position) + ", id=" + String.valueOf(id) + 
+			//		   " prefsChapter = " + String.valueOf(prefsChapter));
 		}
 		
 		if (parent == (ListView) findViewById(R.id.listViewVerse)) {
 			adapterVerse.selected_item = position;
 			prefsVerse = position;
-			Log.d(TAG, "position="+String.valueOf(position) + ", id=" + String.valueOf(id) + 
-					   " prefsVerse = " + String.valueOf(prefsVerse));
+			//Log.d(TAG, "position="+String.valueOf(position) + ", id=" + String.valueOf(id) + 
+			//		   " prefsVerse = " + String.valueOf(prefsVerse));
 			
 			//Start DisplayActivity
 			launchDisplayActivity(prefsBook, prefsChapter, prefsVerse, prefsLanguage);
@@ -303,7 +303,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
         switch (it.getItemId()) 
         {		
         case R.id.action_language:
-        	Log.d(TAG, "Language clicked");	
+        	//Log.d(TAG, "Language clicked");	
         	if (prefsLanguage.equals(getString(R.string.ch))) {
         		prefsLanguage = getString(R.string.en);
         	} else if (prefsLanguage.equals(getString(R.string.en))){

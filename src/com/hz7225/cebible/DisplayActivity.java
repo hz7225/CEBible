@@ -1,9 +1,9 @@
-package com.example.cebible;
+package com.hz7225.cebible;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.cebible.DisplayPageFragment;
+import com.hz7225.cebible.DisplayPageFragment;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -98,12 +98,12 @@ public class DisplayActivity extends FragmentActivity {
    
 		/*
 		if (prefsLanguage.equals(getString(R.string.en))) {
-			Log.d(TAG, "DiaplayActivity::onResume(), prefsLanguage = 'EN'");
+			//Log.d(TAG, "DiaplayActivity::onResume(), prefsLanguage = 'EN'");
 			editor.putString("VERSION", getString(R.string.kjv));
 			//item.setTitle("KJV");
 			//BibleDB.setDB("EB_kjv_bbl.db");
 		} else {
-			Log.d(TAG, "DiaplayActivity::onResume(), prefsLanguage = 'CH'");
+			//Log.d(TAG, "DiaplayActivity::onResume(), prefsLanguage = 'CH'");
 			editor.putString("VERSION", getString(R.string.cuvs));
 			//item.setTitle("CUVS");
 			//BibleDB.setDB("cuvslite.bbl.db");            	
@@ -123,7 +123,7 @@ public class DisplayActivity extends FragmentActivity {
 			ot = getResources().getStringArray(R.array.old_testament);
 			nt = getResources().getStringArray(R.array.new_testament);
 		}
-		Log.d(TAG, " ************** mBook=" + String.valueOf(mBook) + " mChapter="+String.valueOf(mChapter));
+		//Log.d(TAG, " ************** mBook=" + String.valueOf(mBook) + " mChapter="+String.valueOf(mChapter));
 		String book;
 		if (mBook<40) {
 			book = ot[mBook-1].substring(0, ot[mBook-1].indexOf(","));
@@ -141,7 +141,7 @@ public class DisplayActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-        	Log.d(TAG, "PageFragment.create, position="+String.valueOf(position));
+        	//Log.d(TAG, "PageFragment.create, position="+String.valueOf(position));
             return DisplayPageFragment.create(position, mBook, mVerse, prefsVersion);
         }
 
