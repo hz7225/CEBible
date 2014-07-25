@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">CEBible</string>
-    <string name="action_about">Chinese-English Bible\n v1.1</string>
+    <string name="action_about">Chinese-English Bible\n v1.2</string>
     <string name="action_search">Search</string> 
     <string name="ce_bible">中英圣经</string>  
     <string name="ch">中文</string> 

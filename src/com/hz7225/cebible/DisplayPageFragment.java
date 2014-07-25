@@ -18,7 +18,8 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
+//import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -27,7 +28,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
 
 //public class PageFragment extends ListFragment {  //for simple list fragment
-public class DisplayPageFragment extends Fragment implements OnItemLongClickListener {
+//public class DisplayPageFragment extends Fragment implements OnItemLongClickListener {
+public class DisplayPageFragment extends Fragment implements OnItemClickListener {
 	
 	static String TAG = "PageFragment";
 	
@@ -125,19 +127,21 @@ public class DisplayPageFragment extends Fragment implements OnItemLongClickList
         
         //ListView1 for Chinese CUVS
         listView1 = (ListView) rootView.findViewById(R.id.listView1);
-        listView1.setOnItemLongClickListener((OnItemLongClickListener) this); //Set listener
+        //listView1.setOnItemLongClickListener((OnItemLongClickListener) this); //Set listener	
+        listView1.setOnItemClickListener((OnItemClickListener) this); //Set listener	
         List<String> sl1 = getScriptureFromDB(mBook, mPageNumber+1, "cuvslite.bbl.db");
     	adapter1 = new ListDataAdapter(this.getActivity(), sl1); 
     	//Set ListView adapters
 	    listView1.setAdapter(adapter1);
 	    //Set starting position
     	listView1.setSelection(mVerse);
-    	//Set selector, this is a test
-    	listView1.setSelector(R.drawable.list_selector);
-        
+    	//Set selector with color different from the default, this is a test
+    	//listView1.setSelector(R.drawable.list_selector);
+    	
     	//ListView2 for English KJV
     	listView2 = (ListView) rootView.findViewById(R.id.listView2);    	
-    	listView2.setOnItemLongClickListener((OnItemLongClickListener) this);
+    	//listView2.setOnItemLongClickListener((OnItemLongClickListener) this);
+    	listView2.setOnItemClickListener((OnItemClickListener) this);
     	List<String> sl2 = getScriptureFromDB(mBook, mPageNumber+1, "EB_kjv_bbl.db");
     	adapter2 = new ListDataAdapter(this.getActivity(), sl2);
     	//Set ListView adapters
@@ -217,8 +221,39 @@ public class DisplayPageFragment extends Fragment implements OnItemLongClickList
         return mPageNumber;
     }
 	
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {	
+		Log.d(TAG, "onItemClick()");
+		if (parent == (ListView) getActivity().findViewById(R.id.listView1)) {
+			//Log.d(TAG, "aaaaaaaaaaaaaaaaadapter1 clicked");
+			adapter1.selected_item = position;
+			adapter2.selected_item = -1;
+		}	
+		if (parent == (ListView) getActivity().findViewById(R.id.listView2)) {
+			//Log.d(TAG, "aaaaaaaaaaaaaaaaadapter1 clicked"); 
+			adapter2.selected_item = position;
+			adapter1.selected_item = -1;
+		}
+		adapter1.notifyDataSetChanged();
+		adapter2.notifyDataSetChanged();
+	}
+/*	
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {	
 		//Toast.makeText(getActivity(), "Clicked", Toast.LENGTH_SHORT).show();
-		return true;  //return true consumes the event so it won't be picked up by the normal onItemClick
+		
+		if (parent == (ListView) getActivity().findViewById(R.id.listView1)) {
+			Log.d(TAG, "aaaaaaaaaaaaaaaaadapter1111`1 clicked");
+			adapter1.selected_item = position;
+			adapter2.selected_item = -1;
+		}	
+		if (parent == (ListView) getActivity().findViewById(R.id.listView2)) {
+			Log.d(TAG, "aaaaaaaaaaaaaaaaadapter22222 clicked"); 
+			adapter2.selected_item = position;
+			adapter1.selected_item = -1;
+		}
+		adapter1.notifyDataSetChanged();
+		adapter2.notifyDataSetChanged();
+		
+		return false;  //return true consumes the event so it won't be picked up by the normal onItemClick
 	}
+*/	
 }

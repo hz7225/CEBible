@@ -6,6 +6,8 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.text.Selection;
+import android.text.Spannable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,6 +66,7 @@ public class ListDataAdapter extends BaseAdapter {
 			holder.textView = (TextView) v.findViewById(R.id.text);	
 			//Set different font sizes for the DisplayActivity and MainActivity
 			if (mContext instanceof com.hz7225.cebible.DisplayActivity) {
+				holder.textView.setTextIsSelectable(true);
 				holder.textView.setTextSize(18);
 			}
 			if (mContext instanceof com.hz7225.cebible.CEBible_MainActivity) {
@@ -82,12 +85,25 @@ public class ListDataAdapter extends BaseAdapter {
 		
 		// Set color for selected item
 		if (position == this.selected_item ) {
-			//v.setBackgroundColor(0x5500FF00);
-			v.setBackgroundColor(0xff398eb5);
-			holder.textView.setTextColor(Color.WHITE);
+			if (mContext instanceof com.hz7225.cebible.DisplayActivity) {
+				//Log.d(TAG, "set TextIsSelectable to true");
+				//holder.textView.setTextIsSelectable(true);
+				Selection.selectAll((Spannable) holder.textView.getText()); //doesn't work
+				//holder.textView.setTextSize(25);
+			} else {
+				//v.setBackgroundColor(0x5500FF00);
+				v.setBackgroundColor(0xff398eb5);
+				holder.textView.setTextColor(Color.WHITE);
+			}
 		} else {
-			v.setBackground(orig_color);
-			holder.textView.setTextColor(Color.BLACK);
+			if (mContext instanceof com.hz7225.cebible.DisplayActivity) {
+				//Log.d(TAG, "set TextIsSelectable to false");
+				//holder.textView.setTextIsSelectable(false);
+				//holder.textView.setTextSize(18);
+			} else {
+				v.setBackground(orig_color);
+				holder.textView.setTextColor(Color.BLACK);
+			}	
 		}
 		
 		

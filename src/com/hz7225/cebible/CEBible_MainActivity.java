@@ -125,6 +125,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 	protected void onResume() {
 		super.onResume();
 		//Log.d(TAG, "onResume()");
+			
 		prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
 		displayTitles();
 		

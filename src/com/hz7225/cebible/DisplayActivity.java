@@ -86,6 +86,8 @@ public class DisplayActivity extends FragmentActivity {
 			public void onPageSelected(int position) {
 				ActionBar actionBar = getActionBar();
 				actionBar.setTitle(getBookName() +" "+String.valueOf(position+1));
+				//Save the position
+				mChapter = position + 1;
 			}
 		});
 	}
