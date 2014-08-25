@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <item
+        android:id="@+id/item_play"
+        android:icon="@android:drawable/ic_media_play"
+        android:showAsAction="always"
+        android:title="Read to me"
+        android:titleCondensed="Read">
+    </item>
+    
+    <item
+        android:id="@+id/item_pause"
+        android:icon="@android:drawable/ic_media_pause"
+        android:showAsAction="always"
+        android:title="Stop reading"
+		android:visible="false"
+        android:titleCondensed="Stop">
+    </item>
+    
+    <item
+        android:id="@+id/item_share"
+        android:icon="@android:drawable/ic_menu_share"
+        android:showAsAction="always"
+        android:title="Share"
+        android:titleCondensed="Share">
+    </item>
+    
+    <item
+        android:id="@+id/item_note"
+        android:icon="@drawable/ic_menu_compose"
+        android:showAsAction="always"
+        android:title="Note"
+        android:visible="false"
+        android:titleCondensed="Note">
+    </item>
+    
+    <item
+        android:id="@+id/item_search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:showAsAction="always"
+        android:title="Search"
+        android:visible="false"
+        android:titleCondensed="Search">
+    </item>
+
+
+</menu>

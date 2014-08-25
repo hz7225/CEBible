@@ -307,12 +307,15 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
         	//Log.d(TAG, "Language clicked");	
         	if (prefsLanguage.equals(getString(R.string.ch))) {
         		prefsLanguage = getString(R.string.en);
+        		prefsVersion = getString(R.string.kjv);
         	} else if (prefsLanguage.equals(getString(R.string.en))){
         		prefsLanguage = getString(R.string.ch);
+        		prefsVersion = getString(R.string.cuvs);
         	}
         	// Save the change in the Preferences
         	Editor editor = prefs.edit();
         	editor.putString("LANGUAGE", prefsLanguage);
+        	editor.putString("VERSION", prefsVersion);
         	editor.commit();
         	// Change text on the action bar
         	item.setTitle(prefsLanguage);

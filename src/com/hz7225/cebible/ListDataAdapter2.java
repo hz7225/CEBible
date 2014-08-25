@@ -18,8 +18,8 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class ListDataAdapter extends BaseAdapter {
-	String TAG = "MyDataAdapter";
+public class ListDataAdapter2 extends BaseAdapter {
+	String TAG = "MyDataAdapter2";
 	
 	private List<String> listData;
 	private LayoutInflater layoutInflater;
@@ -27,7 +27,7 @@ public class ListDataAdapter extends BaseAdapter {
 	Context mContext;
 	Drawable orig_color;
 	
-	public ListDataAdapter(Context context, List<String> listData) {
+	public ListDataAdapter2(Context context, List<String> listData) {
 		mContext = context;
 		this.listData = listData;
 		layoutInflater = LayoutInflater.from(context);
@@ -59,53 +59,25 @@ public class ListDataAdapter extends BaseAdapter {
 		if (v == null) {
 			//Log.d(TAG, "create new view at position = " + String.valueOf(position));
 			holder = new ViewHolder();
-			if (mContext instanceof com.hz7225.cebible.DisplayActivity) {
-				v = layoutInflater.inflate(R.layout.list_item, null);
-				holder.textView = (TextView) v.findViewById(R.id.text);
-				holder.textView.setTextIsSelectable(true);
-				holder.textView.setTextSize(18);
-			}
-			if (mContext instanceof com.hz7225.cebible.CEBible_MainActivity) {
-				v = layoutInflater.inflate(R.layout.list_item, null);
-				holder.textView = (TextView) v.findViewById(R.id.text);
-				holder.textView.setTextSize(15);
-			}
+			v = layoutInflater.inflate(R.layout.list_item2, null);
+			holder.tvScripture = (TextView) v.findViewById(R.id.scripture);
+			holder.tvScripture.setTextIsSelectable(true);
+			holder.tvScriptureNum = (TextView) v.findViewById(R.id.scripture_number);
 			v.setTag(holder);
 		} else {
 			//Log.d(TAG, "use recycled view at position = " + String.valueOf(position));
 			holder = (ViewHolder) v.getTag();
 		}
 		
-		holder.textView.setText(listData.get(position));
-		
-		//Log.d(TAG, "position = " + String.valueOf(position) + " selected_item = " + String.valueOf(this.selected_item) + "  this=" + String.valueOf(this));
-		
-		// Set color for selected item
-		if (position == this.selected_item ) {
-			if (mContext instanceof com.hz7225.cebible.DisplayActivity) {
-				//Log.d(TAG, "set TextIsSelectable to true");
-			} else {
-				v.setBackgroundColor(0xff398eb5);
-				holder.textView.setTextColor(Color.WHITE);
-			}
-		} else {
-			if (mContext instanceof com.hz7225.cebible.DisplayActivity) {
-				//Log.d(TAG, "set TextIsSelectable to false");
-			} else {
-				v.setBackground(orig_color);
-				holder.textView.setTextColor(Color.BLACK);
-			}	
-		}
-		
-		
+		holder.tvScriptureNum.setText(String.valueOf(position+1));
+		holder.tvScripture.setText(listData.get(position));
+			
 		return v;
 	}
 	
 	static class ViewHolder {
-		
-			TextView textView;
-	
+			TextView tvScriptureNum;
+			TextView tvScripture;	
 	}
 	
 }
-

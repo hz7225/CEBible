@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">CEBible</string>
-    <string name="action_about">Chinese-English Bible\n v1.2</string>
+    <string name="action_about">CEBible\n v1.3</string>
     <string name="action_search">Search</string> 
     <string name="ce_bible">中英圣经</string>  
     <string name="ch">中文</string> 
@@ -40,7 +40,7 @@
         <item>Job,42</item>
         <item>Psalms,150</item>   
         <item>Proverbs,31</item>
-        <item>Ecclesiates,12</item>
+        <item>Ecclesiastes,12</item>
         <item>Song of Songs,8</item>
         <item>Isaiah,66</item>
         <item>Jeremiah,52</item>
@@ -57,11 +57,11 @@
         <item>Habakkuk,3</item>
         <item>Zephaniah,3</item> 
         <item>Haggai,2</item>
-        <item>Zecharish,14</item>
+        <item>Zechariah,14</item>
         <item>Malachi,4</item>        
     </string-array>
 	<string-array name="new_testament">
-        <item>Mathew,28</item>
+        <item>Matthew,28</item>
         <item>Mark,16</item>
         <item>Luke,24</item>
         <item>John,21</item>
@@ -127,18 +127,18 @@
         <item>哈巴谷书,3</item>
         <item>西番雅书,3</item> 
         <item>哈该书,2</item>
-        <item>撒迦利亚,14</item>
+        <item>撒迦利亚书,14</item>
         <item>玛拉基书,4</item>        
     </string-array>
 	<string-array name="new_testament_ch">
         <item>马太福音,28</item>
-        <item>马克福音,16</item>
+        <item>马可福音,16</item>
         <item>路加福音,24</item>
         <item>约翰福音,21</item>
         <item>使徒行传,28</item>
         <item>罗马书,16</item>
-        <item>歌林多前书,16</item>
-        <item>歌林多后书,13</item>
+        <item>哥林多前书,16</item>
+        <item>哥林多后书,13</item>
         <item>加拉太书,6</item>
         <item>以弗所书,6</item>
         <item>腓利比书,4</item>    

@@ -2,19 +2,28 @@ package com.hz7225.cebible;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.app.ActionBar;
 import android.app.ActionBar.LayoutParams;
 import android.app.Fragment;
 import android.app.ListFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.text.Selection;
+import android.text.Spannable;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ActionMode.Callback;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
@@ -29,7 +38,8 @@ import android.widget.Toast;
 
 //public class PageFragment extends ListFragment {  //for simple list fragment
 //public class DisplayPageFragment extends Fragment implements OnItemLongClickListener {
-public class DisplayPageFragment extends Fragment implements OnItemClickListener {
+//public class DisplayPageFragment extends Fragment implements OnItemClickListener {
+public class DisplayPageFragment extends Fragment {
 	
 	static String TAG = "PageFragment";
 	
@@ -47,11 +57,18 @@ public class DisplayPageFragment extends Fragment implements OnItemClickListener
 	
 	ListView listView1;
 	ListView listView2;
-	ListDataAdapter adapter1;
-	ListDataAdapter adapter2;
+	ListDataAdapter2 adapter1;
+	ListDataAdapter2 adapter2;
+	
+	String title; //BookName + Chapter # + Verse #
 	
 	boolean isLeftListEnabled = true;
 	boolean isRightListEnabled = true;
+	
+	TextView mTextView;
+	
+	TextToSpeech ttobj;
+	int selected_listview = 0; //used by TTS to play the text in correct language
 	
 	public static DisplayPageFragment create(int pageNumber, int book, int verse, String version) {
 		//Log.d(TAG, "PageFragment::create(), pageNumber = " + String.valueOf(pageNumber) + " book=" +String.valueOf(book));
@@ -72,6 +89,7 @@ public class DisplayPageFragment extends Fragment implements OnItemClickListener
 		super.onCreate(savedInstanceState);
 		mPageNumber = getArguments().getInt(ARG_PAGE);
 		mVersion = getArguments().getString(ARG_VERSION);
+		//Log.d(TAG, "mPageNumber = " + String.valueOf(mPageNumber));
 	}
 	
 	private List<String> getScriptureFromDB(int book, int chapter, String db) {
@@ -82,17 +100,34 @@ public class DisplayPageFragment extends Fragment implements OnItemClickListener
         //Get the whole chapter of a book from database
         List<String> sl = BibleDB.getChapter(mBook, chapter);
         for (int i=0; i<sl.size(); i++) {
-        	sl.set(i, "[" + String.valueOf(i+1) + "]" + sl.get(i));
+        	//sl.set(i, "[" + String.valueOf(i+1) + "]" + sl.get(i));
+        	sl.set(i, sl.get(i));
         }
         return sl;
 	}
 
+	public void onDestroyView() {
+		super.onDestroyView();
+		//Log.d(TAG, "onDestroyView()");
+		ttobj.shutdown();
+	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		ttobj=new TextToSpeech(getActivity(), 
+				new TextToSpeech.OnInitListener() {
+			@Override
+			public void onInit(int status) {
+				if(status != TextToSpeech.ERROR){
+					ttobj.setLanguage(Locale.CHINESE);
+				}				
+			}
+		});
+		
+		
 		//Log.d(TAG, "mPageNumber = " + String.valueOf(mPageNumber) + " mChapter = " + String.valueOf(mChapter));
 		//Log.d(TAG, "onCreateView(): mPageNumber = " + String.valueOf(mPageNumber) + " mVersion = " + mVersion);
-		
-        /*//Use TextView
+        
+		/*//Use TextView
         //Build the String and display it in TextView
         StringBuilder str = new StringBuilder();
 		for (int i =0; i<sl.size(); i++) {
@@ -122,15 +157,16 @@ public class DisplayPageFragment extends Fragment implements OnItemClickListener
 		return rootView;
 		*/
 		
+		
         //Use 2 ListViews in Linear layout
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.listviews, container, false);
         
         //ListView1 for Chinese CUVS
         listView1 = (ListView) rootView.findViewById(R.id.listView1);
         //listView1.setOnItemLongClickListener((OnItemLongClickListener) this); //Set listener	
-        listView1.setOnItemClickListener((OnItemClickListener) this); //Set listener	
+        //listView1.setOnItemClickListener((OnItemClickListener) this); //Set listener	
         List<String> sl1 = getScriptureFromDB(mBook, mPageNumber+1, "cuvslite.bbl.db");
-    	adapter1 = new ListDataAdapter(this.getActivity(), sl1); 
+    	adapter1 = new ListDataAdapter2(this.getActivity(), sl1); 
     	//Set ListView adapters
 	    listView1.setAdapter(adapter1);
 	    //Set starting position
@@ -141,13 +177,55 @@ public class DisplayPageFragment extends Fragment implements OnItemClickListener
     	//ListView2 for English KJV
     	listView2 = (ListView) rootView.findViewById(R.id.listView2);    	
     	//listView2.setOnItemLongClickListener((OnItemLongClickListener) this);
-    	listView2.setOnItemClickListener((OnItemClickListener) this);
+    	//listView2.setOnItemClickListener((OnItemClickListener) this);
     	List<String> sl2 = getScriptureFromDB(mBook, mPageNumber+1, "EB_kjv_bbl.db");
-    	adapter2 = new ListDataAdapter(this.getActivity(), sl2);
+    	adapter2 = new ListDataAdapter2(this.getActivity(), sl2);
     	//Set ListView adapters
     	listView2.setAdapter(adapter2);
     	//Set starting position
     	listView2.setSelection(mVerse);
+    	
+    	//Set listener
+    	listView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			public void onItemClick(AdapterView<?> av, View v, int position, long id) {
+				//Log.d(TAG, "LV1: onItemClick");
+				title= "";
+			}
+		});
+		
+    	//Set long click listener
+		listView1.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			public boolean onItemLongClick(AdapterView<?> av, View v, int position, long id) {
+				//Log.d("HZ", "LV1: onItemLongClick selected_listview = 1");
+				//Log.d(TAG, "LV1: onItemLongClick");
+				//TextView tv = (TextView)v.findViewById(R.id.text);
+				TextView tv = (TextView)v.findViewById(R.id.scripture);
+				//Log.d(TAG, tv.getText().toString());
+				title = getChineseBookName() + String.valueOf(DisplayActivity.mChapter) + ":" + String.valueOf(position+1);
+				mTextView = tv;
+				mTextView.setTextIsSelectable(true);
+				selected_listview = 1;
+				setCustomSelectionCAB();
+		    	return false; //pass event to onItemClickListener
+		    	//return true;  //consume event
+			}
+		});
+		listView2.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+			public boolean onItemLongClick(AdapterView<?> av, View v, int position, long id) {
+				//Log.d(TAG, "LV2: onItemLongClick");
+				//Log.d("HZ", "LV1: onItemLongClick selected_listview = 2");
+				//TextView tv = (TextView)v.findViewById(R.id.text);
+				TextView tv = (TextView)v.findViewById(R.id.scripture);
+				//Log.d(TAG, tv.getText().toString());
+				title = getEnglishBookName() + String.valueOf(DisplayActivity.mChapter) + ":" + String.valueOf(position+1);
+				mTextView = tv;
+				mTextView.setTextIsSelectable(true);
+				selected_listview = 2;
+				setCustomSelectionCAB();
+		    	return false; //pass event to onItemClickListener
+		    	//return true;  //consume event
+			}
+		});
     	
     	/*
     	//Test: Change the ListViews layout_weight parameter
@@ -221,8 +299,45 @@ public class DisplayPageFragment extends Fragment implements OnItemClickListener
         return mPageNumber;
     }
 	
+	private String getChineseBookName() {
+		// Get book name from XML resource
+		String[] ot;
+		String[] nt;
+		
+		ot = getResources().getStringArray(R.array.old_testament_ch);
+		nt = getResources().getStringArray(R.array.new_testament_ch);
+
+		String book;
+		if (mBook<40) {
+			book = ot[mBook-1].substring(0, ot[mBook-1].indexOf(","));
+		} else {
+			book = nt[mBook-1-39].substring(0, nt[mBook-1-39].indexOf(","));
+		}
+		
+		return book;
+	}
+	
+	private String getEnglishBookName() {
+		// Get book name from XML resource
+		String[] ot;
+		String[] nt;
+		
+		ot = getResources().getStringArray(R.array.old_testament);
+		nt = getResources().getStringArray(R.array.new_testament);
+
+		String book;
+		if (mBook<40) {
+			book = ot[mBook-1].substring(0, ot[mBook-1].indexOf(","));
+		} else {
+			book = nt[mBook-1-39].substring(0, nt[mBook-1-39].indexOf(","));
+		}
+		
+		return book;
+	}
+	
+/*	
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {	
-		Log.d(TAG, "onItemClick()");
+		//Log.d(TAG, "onItemClick()");
 		if (parent == (ListView) getActivity().findViewById(R.id.listView1)) {
 			//Log.d(TAG, "aaaaaaaaaaaaaaaaadapter1 clicked");
 			adapter1.selected_item = position;
@@ -236,17 +351,18 @@ public class DisplayPageFragment extends Fragment implements OnItemClickListener
 		adapter1.notifyDataSetChanged();
 		adapter2.notifyDataSetChanged();
 	}
+*/
 /*	
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {	
 		//Toast.makeText(getActivity(), "Clicked", Toast.LENGTH_SHORT).show();
 		
 		if (parent == (ListView) getActivity().findViewById(R.id.listView1)) {
-			Log.d(TAG, "aaaaaaaaaaaaaaaaadapter1111`1 clicked");
+			//Log.d(TAG, "aaaaaaaaaaaaaaaaadapter1111`1 clicked");
 			adapter1.selected_item = position;
 			adapter2.selected_item = -1;
 		}	
 		if (parent == (ListView) getActivity().findViewById(R.id.listView2)) {
-			Log.d(TAG, "aaaaaaaaaaaaaaaaadapter22222 clicked"); 
+			//Log.d(TAG, "aaaaaaaaaaaaaaaaadapter22222 clicked"); 
 			adapter2.selected_item = position;
 			adapter1.selected_item = -1;
 		}
@@ -256,4 +372,104 @@ public class DisplayPageFragment extends Fragment implements OnItemClickListener
 		return false;  //return true consumes the event so it won't be picked up by the normal onItemClick
 	}
 */	
+	
+	private void setCustomSelectionCAB() {
+    	Selection.selectAll((Spannable) mTextView.getText());
+		mTextView.setCustomSelectionActionModeCallback(new Callback() {
+
+			@Override
+			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+				// TODO Auto-generated method stub
+				//Log.d(TAG, "setCustomSelectionCAB: onCreateActionMode");
+				mode.getMenuInflater().inflate(R.menu.contextual_menu, menu);
+				mode.setTitle("");
+				return true;
+			}
+
+			@Override
+			public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+				// TODO Auto-generated method stub
+				//Log.d(TAG, "setCustomSelectionCAB: onPrepareActionMode");
+				// Remove the "select all" option
+				menu.removeItem(android.R.id.selectAll);
+				return true;
+			}
+
+			@Override
+			public boolean onActionItemClicked(ActionMode mode,
+					MenuItem item) {
+				// TODO Auto-generated method stub
+				//Log.d(TAG, "setCustomSelectionCAB: onActionItemClicked");
+				switch (item.getItemId()) {
+				case R.id.item_play:
+					
+					//Intent intent = new Intent(getActivity(), TTS_Speaking.class);
+					//startActivity(intent);
+					//TTS_Speaking tts = new TTS_Speaking(getActivity());
+					//tts.speakChineseWords("Hello");
+					//Log.d(TAG, "Play selected text in " + mVersion);
+					//Log.d("HZ", "Play selected text in " + String.valueOf(selected_listview));
+					if (selected_listview == 1) {
+						ttobj.setLanguage(Locale.CHINESE);
+						ttobj.speak(selectedText(), TextToSpeech.QUEUE_FLUSH, null);
+					} 					
+					else if (selected_listview == 2) {
+						ttobj.setLanguage(Locale.US);
+						ttobj.speak(selectedText(), TextToSpeech.QUEUE_FLUSH, null);
+					}
+						
+					//mode.finish();  //Action is executed, close the CAB
+					//item.setVisible(false);  //Play
+					mode.getMenu().getItem(0).setVisible(false); //Copy
+					mode.getMenu().getItem(2).setVisible(true);  //Pause
+					mode.getMenu().getItem(3).setVisible(false);  //Share
+					return true;
+				case R.id.item_pause:
+					ttobj.stop();
+					//mode.finish();
+					return true;
+				case R.id.item_share:
+					//selectedText();
+					//Log.d(TAG, "mode size = " + String.valueOf(mode.getMenu().size()));
+					Intent i=new Intent(android.content.Intent.ACTION_SEND);
+					i.setType("text/plain");
+					//i.putExtra(android.content.Intent.EXTRA_SUBJECT, DisplayActivity.mChapterNameAndNumber);
+					//i.putExtra(android.content.Intent.EXTRA_TEXT, DisplayActivity.mChapterNameAndNumber+selectedText());
+					i.putExtra(android.content.Intent.EXTRA_SUBJECT, title);
+					i.putExtra(android.content.Intent.EXTRA_TEXT, selectedText() + " (" + title + ")");
+					startActivity(Intent.createChooser(i,"Share via"));
+					mode.finish();  //Action is executed, close the CAB
+					return true;
+				default:	
+					return false;
+				}
+			}
+
+			@Override
+			public void onDestroyActionMode(ActionMode mode) {
+				// TODO Auto-generated method stub
+				ttobj.stop();
+				//Log.d(TAG, "setCustomSelectionCAB: onDestroyActionMode");
+			}
+			
+			private String selectedText() {
+				int min = 0;
+				int max = mTextView.getText().length();
+				if (mTextView.isFocused()) {
+					final int selStart = mTextView.getSelectionStart();
+					final int selEnd = mTextView.getSelectionEnd();
+
+					min = Math.max(0, Math.min(selStart, selEnd));
+					max = Math.max(0, Math.max(selStart, selEnd));
+				}
+				// Perform your definition lookup with the selected text
+				final CharSequence text = mTextView.getText().subSequence(min, max);
+				//Log.d(TAG, "selectedText: " + text);
+				return text.toString();
+			}
+
+		});
+	}
+	
+	
 }

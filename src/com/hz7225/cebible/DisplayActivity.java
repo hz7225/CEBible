@@ -32,8 +32,9 @@ public class DisplayActivity extends FragmentActivity {
 	private ViewPager mPager;
 	private PagerAdapter mPagerAdapter;
 	private int mBook;
-	private int mChapter;
+	public static int mChapter;
 	private int mVerse;
+	public String mChapterNameAndNumber;
 	
 	SharedPreferences prefs;
     String prefsLanguage;
@@ -76,18 +77,19 @@ public class DisplayActivity extends FragmentActivity {
         mPager.setCurrentItem(mChapter-1);  
         
         // Set action bar title with book name and chapter number
+        mChapterNameAndNumber = getBookName() +" "+String.valueOf(mChapter);
 		ActionBar actionBar = getActionBar();
-		actionBar.setTitle(getBookName() +" "+String.valueOf(mChapter));
+		actionBar.setTitle(mChapterNameAndNumber);
 		
 		
 		// Update action bar after scrolling to a new chapter
 		mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
+				mChapter = position + 1; //Save the position
+				mChapterNameAndNumber = getBookName() +" "+String.valueOf(mChapter);
 				ActionBar actionBar = getActionBar();
-				actionBar.setTitle(getBookName() +" "+String.valueOf(position+1));
-				//Save the position
-				mChapter = position + 1;
+				actionBar.setTitle(mChapterNameAndNumber);				
 			}
 		});
 	}
@@ -95,8 +97,9 @@ public class DisplayActivity extends FragmentActivity {
 	protected void onResume() {
 		super.onResume();
 		
-		prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
-		Editor editor = prefs.edit();
+		//prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
+		
+		//Editor editor = prefs.edit();
    
 		/*
 		if (prefsLanguage.equals(getString(R.string.en))) {
@@ -143,7 +146,7 @@ public class DisplayActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-        	//Log.d(TAG, "PageFragment.create, position="+String.valueOf(position));
+        	//Log.d(TAG, "PageFragment.create, position="+String.valueOf(position) + " prefsVersion=" + prefsVersion);
             return DisplayPageFragment.create(position, mBook, mVerse, prefsVersion);
         }
 
