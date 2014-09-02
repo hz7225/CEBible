@@ -20,7 +20,7 @@ import android.view.MenuItem;
 public class DisplayActivity extends FragmentActivity {
 	String TAG = "DisplayActivity";
 		
-	int num_chapters;
+	int num_chapters = 1189;  //total number of chapters in the Holy Bible
 	private ViewPager mPager;
 	private PagerAdapter mPagerAdapter;
 	private int mBook;
@@ -56,13 +56,15 @@ public class DisplayActivity extends FragmentActivity {
         mVerse = intent.getIntExtra("VERSE", 1);
         
         //Get number of chapters of a book
-        BibleDB = new DataBaseHelper(this, "cuvslite.bbl.db");
-        num_chapters = BibleDB.getNumOfChapters(mBook);        
+        //BibleDB = new DataBaseHelper(this, "cuvslite.bbl.db");
+        //num_chapters = BibleDB.getNumOfChapters(mBook);        
 
         mPager = (ViewPager) findViewById(R.id.pager);       
         mPagerAdapter = new PagerAdapter(getFragmentManager());
         mPager.setAdapter(mPagerAdapter);
-        mPager.setCurrentItem(mChapter-1);  
+        //mPager.setCurrentItem(mChapter-1); 
+        ChapterPosition cp = new ChapterPosition(this, mBook, mChapter);
+        mPager.setCurrentItem(cp.getPosition());
         
         // Set action bar title with book name and chapter number
         mChapterNameAndNumber = getBookName() +" "+String.valueOf(mChapter);
@@ -73,10 +75,13 @@ public class DisplayActivity extends FragmentActivity {
 		mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
-				mChapter = position + 1; //Save the position
+				//Log.d(TAG, "position = " + String.valueOf(position));
+				ChapterPosition cp = new ChapterPosition(DisplayActivity.this, position);
+				mBook = cp.getBook();
+				mChapter = cp.getChapter();
 				mChapterNameAndNumber = getBookName() +" "+String.valueOf(mChapter);
 				ActionBar actionBar = getActionBar();
-				actionBar.setTitle(mChapterNameAndNumber);				
+				actionBar.setTitle(mChapterNameAndNumber);	
 			}
 		});
 	}

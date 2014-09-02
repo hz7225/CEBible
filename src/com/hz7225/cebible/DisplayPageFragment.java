@@ -34,10 +34,10 @@ public class DisplayPageFragment extends Fragment {
 	
 	private int mPageNumber;
 	static private int mBook;
+	static private int mChapter;
 	static private int mVerse;
 	static private String mVersion;
-	static private int mChapter;
-	
+		
 	ListView listView1;
 	ListView listView2;
 	ListDataAdapter2 adapter1;
@@ -73,6 +73,11 @@ public class DisplayPageFragment extends Fragment {
 		mPageNumber = getArguments().getInt(ARG_PAGE);
 		mVersion = getArguments().getString(ARG_VERSION);
 		//Log.d(TAG, "mPageNumber = " + String.valueOf(mPageNumber));
+		
+		// initialize mBook and mChapter from ViewPager position number
+		ChapterPosition cp = new ChapterPosition(getActivity(), mPageNumber);
+		mBook = cp.getBook();
+		mChapter = cp.getChapter();
 	}
 	
 	private List<String> getScriptureFromDB(int book, int chapter, String db) {
@@ -102,9 +107,7 @@ public class DisplayPageFragment extends Fragment {
 					ttobj.setLanguage(Locale.CHINESE);
 				}				
 			}
-		});
-		
-		//getBookAndChapterFromPosition(mPageNumber);
+		});		
 		
 		//Log.d(TAG, "mPageNumber = " + String.valueOf(mPageNumber) + " mChapter = " + String.valueOf(mChapter));
 		//Log.d(TAG, "onCreateView(): mPageNumber = " + String.valueOf(mPageNumber) + " mVersion = " + mVersion);		
@@ -114,14 +117,16 @@ public class DisplayPageFragment extends Fragment {
         
         //ListView1 for Chinese CUVS
         listView1 = (ListView) rootView.findViewById(R.id.listView1);
-        List<String> sl1 = getScriptureFromDB(mBook, mPageNumber+1, "cuvslite.bbl.db");
+        //List<String> sl1 = getScriptureFromDB(mBook, mPageNumber+1, "cuvslite.bbl.db");
+        List<String> sl1 = getScriptureFromDB(mBook, mChapter, "cuvslite.bbl.db");
     	adapter1 = new ListDataAdapter2(this.getActivity(), sl1);     	
 	    listView1.setAdapter(adapter1);  //Set ListView adapters	    
     	listView1.setSelection(mVerse);  //Set starting position
     	
     	//ListView2 for English KJV
     	listView2 = (ListView) rootView.findViewById(R.id.listView2);    	
-    	List<String> sl2 = getScriptureFromDB(mBook, mPageNumber+1, "EB_kjv_bbl.db");
+    	//List<String> sl2 = getScriptureFromDB(mBook, mPageNumber+1, "EB_kjv_bbl.db");
+    	List<String> sl2 = getScriptureFromDB(mBook, mChapter, "EB_kjv_bbl.db");
     	adapter2 = new ListDataAdapter2(this.getActivity(), sl2);    	
     	listView2.setAdapter(adapter2);  //Set ListView adapters    	
     	listView2.setSelection(mVerse);  //Set starting position
@@ -265,15 +270,6 @@ public class DisplayPageFragment extends Fragment {
 		
 		return book;
 	}
-	
-	/*
-	private void getBookAndChapterFromPosition(int position) {
-		Log.d(TAG, "getBookAndChapterFromPosition");
-		ChapterPosition cp = new ChapterPosition(getActivity(), position);
-		Log.d(TAG, "getBook " + String.valueOf(cp.getBook()) + " at position " + String.valueOf(position));
-		Log.d(TAG, "getChapter " + String.valueOf(cp.getChapter()) + " at position " + String.valueOf(position));
-	}
-	*/
 	
 	private void setCustomSelectionCAB() {
     	Selection.selectAll((Spannable) mTextView.getText());
