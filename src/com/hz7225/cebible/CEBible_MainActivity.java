@@ -44,26 +44,21 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 	
 	List<String> chapterList = new ArrayList<String>();
 	List<String> verseList = new ArrayList<String>();
-	
-	DataBaseHelper BibleDB = new DataBaseHelper(this, "cuvslite.bbl.db");
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.activity_main);    	
-    	//Log.d(TAG, "onCreate()");
 
     	//Create  Android SQLite database file from downloaded file
+    	//TODO: check if DB files already exist in /data/data/com.hz7225.cebible/databases
     	DataBaseHelper myDbHelper = new DataBaseHelper(this, "cuvslite.bbl.db");
-    	//myDbHelper.setDB("cuvslite.bbl.db");
     	try {
     		myDbHelper.createDataBase();
     	} catch (IOException ioe) {
     		throw new Error("Unable to create database");
     	} 
     	DataBaseHelper myDbHelper2 = new DataBaseHelper(this, "EB_kjv_bbl.db");
-    	//myDbHelper.setDB("EB_kjv_bbl.db");
     	try {
     		myDbHelper2.createDataBase();
     	} catch (IOException ioe) {
@@ -138,15 +133,24 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		editor.commit();
 		
 		if (item != null) {
-			// Change text on the action bar
-			//if (prefsLanguage != getString(R.string.ch_en)) {
-				item.setTitle(prefsLanguage);
-			//}				
+			item.setTitle(prefsLanguage);	
 			// Change the lists on the display
 			populateListOfBooknames();
 			adapterNT.notifyDataSetChanged();
 			adapterOT.notifyDataSetChanged();
 		}
+	}
+	
+    protected void onPause() {
+		super.onPause();
+		
+		//Log.d(TAG, "onPause()");
+		Editor editor = prefs.edit();
+		editor.putInt("BOOK", prefsBook);
+		editor.putInt("CHAPTER", prefsChapter);
+		editor.putInt("VERSE", prefsVerse);
+		editor.putString("LANGUAGE", prefsLanguage);
+		editor.commit();
 	}
 	
 	private void displayTitles() {
@@ -195,6 +199,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		int v;
 
 		//Log.d(TAG, "prefsBook = " + String.valueOf(prefsBook) + " prefsChapter = " + String.valueOf(prefsChapter) + " prefsVerse = " + String.valueOf(prefsVerse));
+		DataBaseHelper BibleDB = new DataBaseHelper(this, "cuvslite.bbl.db");
 		try {
 			c = BibleDB.getNumOfChapters(prefsBook);
 			v = BibleDB.getNumOfVerses(prefsBook, prefsChapter);
@@ -210,18 +215,6 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		for (int i = 1; i <= v; i++) {
 			verseList.add(String.valueOf(i));
 		}
-	}
-    
-    protected void onPause() {
-		super.onPause();
-		
-		//Log.d(TAG, "onPause()");
-		Editor editor = prefs.edit();
-		editor.putInt("BOOK", prefsBook);
-		editor.putInt("CHAPTER", prefsChapter);
-		editor.putInt("VERSE", prefsVerse);
-		editor.putString("LANGUAGE", prefsLanguage);
-		editor.commit();
 	}
     
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {			
@@ -292,9 +285,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		// Inflate the menu; this adds s to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.ce_bible, menu);
 		item = menu.findItem(R.id.action_language);  //change item on the action bar
-		//if (prefsLanguage != getString(R.string.ch_en)) {
-			item.setTitle(prefsLanguage);
-		//}		
+		item.setTitle(prefsLanguage);
 		return true;
 	}
     

@@ -1,17 +1,9 @@
 package com.hz7225.cebible;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import android.app.ActionBar;
-import android.app.ActionBar.LayoutParams;
 import android.app.Fragment;
-import android.app.ListFragment;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.text.Selection;
@@ -27,18 +19,9 @@ import android.view.ActionMode.Callback;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
-//import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Toast;
 
-//public class PageFragment extends ListFragment {  //for simple list fragment
-//public class DisplayPageFragment extends Fragment implements OnItemLongClickListener {
-//public class DisplayPageFragment extends Fragment implements OnItemClickListener {
 public class DisplayPageFragment extends Fragment {
 	
 	static String TAG = "PageFragment";
@@ -53,7 +36,7 @@ public class DisplayPageFragment extends Fragment {
 	static private int mBook;
 	static private int mVerse;
 	static private String mVersion;
-	//static private int mChapter;
+	static private int mChapter;
 	
 	ListView listView1;
 	ListView listView2;
@@ -94,13 +77,11 @@ public class DisplayPageFragment extends Fragment {
 	
 	private List<String> getScriptureFromDB(int book, int chapter, String db) {
 		//Log.d(TAG, "getScriptureFromDB: " + db + "ddddddddbbbbbbb");
-		//DataBaseHelper BibleDB = new DataBaseHelper(getActivity().getApplicationContext() );
 		DataBaseHelper BibleDB = new DataBaseHelper(getActivity().getApplicationContext(), db);
-		//BibleDB.setDB(db);
+
         //Get the whole chapter of a book from database
-        List<String> sl = BibleDB.getChapter(mBook, chapter);
+        List<String> sl = BibleDB.getChapter(book, chapter);
         for (int i=0; i<sl.size(); i++) {
-        	//sl.set(i, "[" + String.valueOf(i+1) + "]" + sl.get(i));
         	sl.set(i, sl.get(i));
         }
         return sl;
@@ -123,67 +104,27 @@ public class DisplayPageFragment extends Fragment {
 			}
 		});
 		
+		//getBookAndChapterFromPosition(mPageNumber);
 		
 		//Log.d(TAG, "mPageNumber = " + String.valueOf(mPageNumber) + " mChapter = " + String.valueOf(mChapter));
-		//Log.d(TAG, "onCreateView(): mPageNumber = " + String.valueOf(mPageNumber) + " mVersion = " + mVersion);
-        
-		/*//Use TextView
-        //Build the String and display it in TextView
-        StringBuilder str = new StringBuilder();
-		for (int i =0; i<sl.size(); i++) {
-			//Log.d(TAG, "["+String.valueOf(i+1)+"]" + sl.get(i));
-			str.append("["+String.valueOf(i+1)+"]" + sl.get(i) + "\n");
-		}		
-		
-		// Inflate the layout containing a title and body text.
-		ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.activity_display, container, false);
-		((TextView) rootView.findViewById(R.id.display_text)).setText(str);
-		//((TextView) rootView.findViewById(R.id.display_text)).setText("Page " + String.valueOf(mPageNumber));
-		
-		return rootView;
-		*/
-        
-        /*
-        //Use 1 simple ListView
-        for (int i=0; i<sl.size(); i++) {
-        	sl.set(i, "[" + String.valueOf(i+1) + "]" + sl.get(i));
-        }
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-				R.layout.textview, sl);
-		setListAdapter(adapter);
-		
-		ListView rootView = (ListView) inflater.inflate(R.layout.listview, container, false);
-		
-		return rootView;
-		*/
-		
+		//Log.d(TAG, "onCreateView(): mPageNumber = " + String.valueOf(mPageNumber) + " mVersion = " + mVersion);		
 		
         //Use 2 ListViews in Linear layout
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.listviews, container, false);
         
         //ListView1 for Chinese CUVS
         listView1 = (ListView) rootView.findViewById(R.id.listView1);
-        //listView1.setOnItemLongClickListener((OnItemLongClickListener) this); //Set listener	
-        //listView1.setOnItemClickListener((OnItemClickListener) this); //Set listener	
         List<String> sl1 = getScriptureFromDB(mBook, mPageNumber+1, "cuvslite.bbl.db");
-    	adapter1 = new ListDataAdapter2(this.getActivity(), sl1); 
-    	//Set ListView adapters
-	    listView1.setAdapter(adapter1);
-	    //Set starting position
-    	listView1.setSelection(mVerse);
-    	//Set selector with color different from the default, this is a test
-    	//listView1.setSelector(R.drawable.list_selector);
+    	adapter1 = new ListDataAdapter2(this.getActivity(), sl1);     	
+	    listView1.setAdapter(adapter1);  //Set ListView adapters	    
+    	listView1.setSelection(mVerse);  //Set starting position
     	
     	//ListView2 for English KJV
     	listView2 = (ListView) rootView.findViewById(R.id.listView2);    	
-    	//listView2.setOnItemLongClickListener((OnItemLongClickListener) this);
-    	//listView2.setOnItemClickListener((OnItemClickListener) this);
     	List<String> sl2 = getScriptureFromDB(mBook, mPageNumber+1, "EB_kjv_bbl.db");
-    	adapter2 = new ListDataAdapter2(this.getActivity(), sl2);
-    	//Set ListView adapters
-    	listView2.setAdapter(adapter2);
-    	//Set starting position
-    	listView2.setSelection(mVerse);
+    	adapter2 = new ListDataAdapter2(this.getActivity(), sl2);    	
+    	listView2.setAdapter(adapter2);  //Set ListView adapters    	
+    	listView2.setSelection(mVerse);  //Set starting position
     	
     	//Set listener
     	listView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -198,7 +139,6 @@ public class DisplayPageFragment extends Fragment {
 			public boolean onItemLongClick(AdapterView<?> av, View v, int position, long id) {
 				//Log.d("HZ", "LV1: onItemLongClick selected_listview = 1");
 				//Log.d(TAG, "LV1: onItemLongClick");
-				//TextView tv = (TextView)v.findViewById(R.id.text);
 				TextView tv = (TextView)v.findViewById(R.id.scripture);
 				//Log.d(TAG, tv.getText().toString());
 				title = getChineseBookName() + String.valueOf(DisplayActivity.mChapter) + ":" + String.valueOf(position+1);
@@ -214,7 +154,6 @@ public class DisplayPageFragment extends Fragment {
 			public boolean onItemLongClick(AdapterView<?> av, View v, int position, long id) {
 				//Log.d(TAG, "LV2: onItemLongClick");
 				//Log.d("HZ", "LV1: onItemLongClick selected_listview = 2");
-				//TextView tv = (TextView)v.findViewById(R.id.text);
 				TextView tv = (TextView)v.findViewById(R.id.scripture);
 				//Log.d(TAG, tv.getText().toString());
 				title = getEnglishBookName() + String.valueOf(DisplayActivity.mChapter) + ":" + String.valueOf(position+1);
@@ -226,14 +165,6 @@ public class DisplayPageFragment extends Fragment {
 		    	//return true;  //consume event
 			}
 		});
-    	
-    	/*
-    	//Test: Change the ListViews layout_weight parameter
-    	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-    		    LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-    	params.weight = 1.0f;
-    	listView2.setLayoutParams(params);
-    	*/
     	
     	//For CUVS or KJV, only display one ListView, make the other one invisible
     	//Otherwise, display both ListViews 
@@ -335,43 +266,14 @@ public class DisplayPageFragment extends Fragment {
 		return book;
 	}
 	
-/*	
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {	
-		//Log.d(TAG, "onItemClick()");
-		if (parent == (ListView) getActivity().findViewById(R.id.listView1)) {
-			//Log.d(TAG, "aaaaaaaaaaaaaaaaadapter1 clicked");
-			adapter1.selected_item = position;
-			adapter2.selected_item = -1;
-		}	
-		if (parent == (ListView) getActivity().findViewById(R.id.listView2)) {
-			//Log.d(TAG, "aaaaaaaaaaaaaaaaadapter1 clicked"); 
-			adapter2.selected_item = position;
-			adapter1.selected_item = -1;
-		}
-		adapter1.notifyDataSetChanged();
-		adapter2.notifyDataSetChanged();
+	/*
+	private void getBookAndChapterFromPosition(int position) {
+		Log.d(TAG, "getBookAndChapterFromPosition");
+		ChapterPosition cp = new ChapterPosition(getActivity(), position);
+		Log.d(TAG, "getBook " + String.valueOf(cp.getBook()) + " at position " + String.valueOf(position));
+		Log.d(TAG, "getChapter " + String.valueOf(cp.getChapter()) + " at position " + String.valueOf(position));
 	}
-*/
-/*	
-	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {	
-		//Toast.makeText(getActivity(), "Clicked", Toast.LENGTH_SHORT).show();
-		
-		if (parent == (ListView) getActivity().findViewById(R.id.listView1)) {
-			//Log.d(TAG, "aaaaaaaaaaaaaaaaadapter1111`1 clicked");
-			adapter1.selected_item = position;
-			adapter2.selected_item = -1;
-		}	
-		if (parent == (ListView) getActivity().findViewById(R.id.listView2)) {
-			//Log.d(TAG, "aaaaaaaaaaaaaaaaadapter22222 clicked"); 
-			adapter2.selected_item = position;
-			adapter1.selected_item = -1;
-		}
-		adapter1.notifyDataSetChanged();
-		adapter2.notifyDataSetChanged();
-		
-		return false;  //return true consumes the event so it won't be picked up by the normal onItemClick
-	}
-*/	
+	*/
 	
 	private void setCustomSelectionCAB() {
     	Selection.selectAll((Spannable) mTextView.getText());
@@ -398,15 +300,9 @@ public class DisplayPageFragment extends Fragment {
 			@Override
 			public boolean onActionItemClicked(ActionMode mode,
 					MenuItem item) {
-				// TODO Auto-generated method stub
 				//Log.d(TAG, "setCustomSelectionCAB: onActionItemClicked");
 				switch (item.getItemId()) {
 				case R.id.item_play:
-					
-					//Intent intent = new Intent(getActivity(), TTS_Speaking.class);
-					//startActivity(intent);
-					//TTS_Speaking tts = new TTS_Speaking(getActivity());
-					//tts.speakChineseWords("Hello");
 					//Log.d(TAG, "Play selected text in " + mVersion);
 					//Log.d("HZ", "Play selected text in " + String.valueOf(selected_listview));
 					if (selected_listview == 1) {
@@ -418,23 +314,17 @@ public class DisplayPageFragment extends Fragment {
 						ttobj.speak(selectedText(), TextToSpeech.QUEUE_FLUSH, null);
 					}
 						
-					//mode.finish();  //Action is executed, close the CAB
-					//item.setVisible(false);  //Play
 					mode.getMenu().getItem(0).setVisible(false); //Copy
 					mode.getMenu().getItem(2).setVisible(true);  //Pause
 					mode.getMenu().getItem(3).setVisible(false);  //Share
 					return true;
 				case R.id.item_pause:
 					ttobj.stop();
-					//mode.finish();
 					return true;
 				case R.id.item_share:
-					//selectedText();
 					//Log.d(TAG, "mode size = " + String.valueOf(mode.getMenu().size()));
 					Intent i=new Intent(android.content.Intent.ACTION_SEND);
 					i.setType("text/plain");
-					//i.putExtra(android.content.Intent.EXTRA_SUBJECT, DisplayActivity.mChapterNameAndNumber);
-					//i.putExtra(android.content.Intent.EXTRA_TEXT, DisplayActivity.mChapterNameAndNumber+selectedText());
 					i.putExtra(android.content.Intent.EXTRA_SUBJECT, title);
 					i.putExtra(android.content.Intent.EXTRA_TEXT, selectedText() + " (" + title + ")");
 					startActivity(Intent.createChooser(i,"Share via"));
@@ -447,7 +337,6 @@ public class DisplayPageFragment extends Fragment {
 
 			@Override
 			public void onDestroyActionMode(ActionMode mode) {
-				// TODO Auto-generated method stub
 				ttobj.stop();
 				//Log.d(TAG, "setCustomSelectionCAB: onDestroyActionMode");
 			}
@@ -467,7 +356,6 @@ public class DisplayPageFragment extends Fragment {
 				//Log.d(TAG, "selectedText: " + text);
 				return text.toString();
 			}
-
 		});
 	}
 	

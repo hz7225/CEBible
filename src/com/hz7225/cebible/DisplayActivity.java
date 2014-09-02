@@ -1,12 +1,8 @@
 package com.hz7225.cebible;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.hz7225.cebible.DisplayPageFragment;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -16,18 +12,14 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.support.v13.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 public class DisplayActivity extends FragmentActivity {
 	String TAG = "DisplayActivity";
-	
-	
+		
 	int num_chapters;
 	private ViewPager mPager;
 	private PagerAdapter mPagerAdapter;
@@ -59,17 +51,13 @@ public class DisplayActivity extends FragmentActivity {
     	prefsVersion = prefs.getString("VERSION", getString(R.string.cuvs));
         
         Intent intent = getIntent();
-        int book = intent.getIntExtra("BOOK", 1);
-        int chapter = intent.getIntExtra("CHAPTER", 1);
-        int verse = intent.getIntExtra("VERSE", 1);
-        
-        mBook = book;
-        mChapter = chapter;
-        mVerse = verse;
+        mBook = intent.getIntExtra("BOOK", 1);
+        mChapter = intent.getIntExtra("CHAPTER", 1);
+        mVerse = intent.getIntExtra("VERSE", 1);
         
         //Get number of chapters of a book
         BibleDB = new DataBaseHelper(this, "cuvslite.bbl.db");
-        num_chapters = BibleDB.getNumOfChapters(book);        
+        num_chapters = BibleDB.getNumOfChapters(mBook);        
 
         mPager = (ViewPager) findViewById(R.id.pager);       
         mPagerAdapter = new PagerAdapter(getFragmentManager());
@@ -79,8 +67,7 @@ public class DisplayActivity extends FragmentActivity {
         // Set action bar title with book name and chapter number
         mChapterNameAndNumber = getBookName() +" "+String.valueOf(mChapter);
 		ActionBar actionBar = getActionBar();
-		actionBar.setTitle(mChapterNameAndNumber);
-		
+		actionBar.setTitle(mChapterNameAndNumber);		
 		
 		// Update action bar after scrolling to a new chapter
 		mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -96,25 +83,6 @@ public class DisplayActivity extends FragmentActivity {
 	
 	protected void onResume() {
 		super.onResume();
-		
-		//prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
-		
-		//Editor editor = prefs.edit();
-   
-		/*
-		if (prefsLanguage.equals(getString(R.string.en))) {
-			//Log.d(TAG, "DiaplayActivity::onResume(), prefsLanguage = 'EN'");
-			editor.putString("VERSION", getString(R.string.kjv));
-			//item.setTitle("KJV");
-			//BibleDB.setDB("EB_kjv_bbl.db");
-		} else {
-			//Log.d(TAG, "DiaplayActivity::onResume(), prefsLanguage = 'CH'");
-			editor.putString("VERSION", getString(R.string.cuvs));
-			//item.setTitle("CUVS");
-			//BibleDB.setDB("cuvslite.bbl.db");            	
-		}
-		editor.commit();
-		*/
 	}
 	
 	private String getBookName() {
@@ -222,11 +190,6 @@ public class DisplayActivity extends FragmentActivity {
     		// Update the ViewPager's content on the screen immediately
     		mPagerAdapter.notifyDataSetChanged();
         	
-        	// Save the change in the Preferences
-        	//Editor editor = prefs.edit();
-        	//editor.putString("LANGUAGE", prefsLanguage);
-        	//editor.commit();
-            
         	return true;
         case R.id.action_search: 
         	
@@ -235,6 +198,5 @@ public class DisplayActivity extends FragmentActivity {
             return super.onOptionsItemSelected(it);	        	
         }
 	}   
-
 }
 
