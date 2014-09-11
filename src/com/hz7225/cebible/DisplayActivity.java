@@ -1,5 +1,7 @@
 package com.hz7225.cebible;
 
+import java.util.Locale;
+
 import com.hz7225.cebible.DisplayPageFragment;
 
 import android.app.ActionBar;
@@ -8,11 +10,15 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +27,7 @@ public class DisplayActivity extends FragmentActivity {
 	String TAG = "DisplayActivity";
 		
 	int num_chapters = 1189;  //total number of chapters in the Holy Bible
+	
 	private ViewPager mPager;
 	private PagerAdapter mPagerAdapter;
 	private int mBook;
@@ -30,39 +37,55 @@ public class DisplayActivity extends FragmentActivity {
 	
 	SharedPreferences prefs;
     String prefsLanguage;
-    String prefsVersion;
+    String prefsEN_Trans;
+    String prefsCH_Trans;
+    
+    public static boolean eng_ch_compare = false;
     
     DataBaseHelper BibleDB;
     //Action bar menu
   	Menu ab_menu;
           
+  	Locale myLocale;
+  	
+  	static public TextToSpeech ttsobj;
 	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_pager);
         
+        ttsobj=new TextToSpeech(this, 
+				new TextToSpeech.OnInitListener() {
+			@Override
+			public void onInit(int status) {
+				if(status != TextToSpeech.ERROR){
+					ttsobj.setLanguage(Locale.CHINESE);
+				}				
+			}
+		});
+
         // To allow Up navigation with the app icon in the action bar
     	getActionBar().setDisplayHomeAsUpEnabled(true);
         
         // Get saved preferences
     	prefs  = getSharedPreferences("BiblePreferences", MODE_PRIVATE);		    
     	prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
-    	prefsVersion = prefs.getString("VERSION", getString(R.string.cuvs));
+    	prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.kjv));
+    	prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvt));
+    	
+    	//Log.d(TAG, "Preferences: Lang=" + prefsLanguage + " EN_trans=" + prefsEN_Trans + " CH_Trans=" + prefsCH_Trans);
         
         Intent intent = getIntent();
         mBook = intent.getIntExtra("BOOK", 1);
         mChapter = intent.getIntExtra("CHAPTER", 1);
         mVerse = intent.getIntExtra("VERSE", 1);
         
-        //Get number of chapters of a book
-        //BibleDB = new DataBaseHelper(this, "cuvslite.bbl.db");
-        //num_chapters = BibleDB.getNumOfChapters(mBook);        
+        //Log.d(TAG, "Intent: mBook=" + mBook + " mChapter=" + mChapter + " mVerse=" + mVerse);
 
         mPager = (ViewPager) findViewById(R.id.pager);       
         mPagerAdapter = new PagerAdapter(getFragmentManager());
         mPager.setAdapter(mPagerAdapter);
-        //mPager.setCurrentItem(mChapter-1); 
         ChapterPosition cp = new ChapterPosition(this, mBook, mChapter);
         mPager.setCurrentItem(cp.getPosition());
         
@@ -86,21 +109,21 @@ public class DisplayActivity extends FragmentActivity {
 		});
 	}
 	
-	protected void onResume() {
-		super.onResume();
+	public void onDestroy() {
+		super.onDestroy();
+		//Log.d(TAG, "DisplayActivity: onDestroy()");
+		
+		//Shut down the TTS engine
+		ttsobj.shutdown();
 	}
 	
 	private String getBookName() {
 		// Get book name from XML resource
 		String[] ot;
 		String[] nt;
-		if (prefsLanguage.equals(getString(R.string.ch))) {
-			ot = getResources().getStringArray(R.array.old_testament_ch);
-			nt = getResources().getStringArray(R.array.new_testament_ch);
-		} else {
-			ot = getResources().getStringArray(R.array.old_testament);
-			nt = getResources().getStringArray(R.array.new_testament);
-		}
+
+		ot = getResources().getStringArray(R.array.old_testament);
+		nt = getResources().getStringArray(R.array.new_testament);
 		//Log.d(TAG, " ************** mBook=" + String.valueOf(mBook) + " mChapter="+String.valueOf(mChapter));
 		String book;
 		if (mBook<40) {
@@ -112,7 +135,17 @@ public class DisplayActivity extends FragmentActivity {
 		return book;
 	}
 	
+	public void setLocale(String lang, String country) {
+		myLocale = new Locale(lang, country);
+		Resources res = getResources();
+		DisplayMetrics dm = res.getDisplayMetrics();
+		Configuration conf = res.getConfiguration();
+		conf.locale = myLocale;
+		res.updateConfiguration(conf, dm);
+	}
+	
 	private class PagerAdapter extends FragmentStatePagerAdapter {
+		
         public PagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -120,7 +153,7 @@ public class DisplayActivity extends FragmentActivity {
         @Override
         public Fragment getItem(int position) {
         	//Log.d(TAG, "PageFragment.create, position="+String.valueOf(position) + " prefsVersion=" + prefsVersion);
-            return DisplayPageFragment.create(position, mBook, mVerse, prefsVersion);
+        	return DisplayPageFragment.create(position, mBook, mVerse, prefsLanguage, prefsEN_Trans, prefsCH_Trans);
         }
 
         @Override
@@ -128,6 +161,7 @@ public class DisplayActivity extends FragmentActivity {
         	return num_chapters;
         }
         
+        //This method is implemented to refresh the ViewPager, not in a way for good performance
         public int getItemPosition(Object object) {
     	    return POSITION_NONE;
     	}
@@ -140,19 +174,21 @@ public class DisplayActivity extends FragmentActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.display_activity, menu);
+				
 		item = menu.findItem(R.id.action_change);  //change item on the action bar
-		Editor editor = prefs.edit();
-		if (prefsLanguage.equals(getString(R.string.ch))) {
-			item.setTitle(getString(R.string.cuvs));
-			editor.putString("VERSION", getString(R.string.cuvs));
+		if (prefsLanguage.equals(getString(R.string.en))) {
+			if (prefsEN_Trans.equals(getString(R.string.kjv))) {
+				item.setTitle(getString(R.string.kjv));
+			} 	else if (prefsEN_Trans.equals(getString(R.string.web))) {
+				item.setTitle(getString(R.string.web));
+			} 		
+		} else {	
+			item.setTitle(getString(R.string.cuv));
 		}
-		else {
-			item.setTitle(getString(R.string.kjv));
-			editor.putString("VERSION", getString(R.string.kjv));
-		}
-		editor.commit();
+		
 		//Save the menu
-		ab_menu = menu;
+		ab_menu = menu;		
+		
 		return true;
 	}
 	
@@ -166,26 +202,25 @@ public class DisplayActivity extends FragmentActivity {
             NavUtils.navigateUpFromSameTask(this);
             return true;
         case R.id.action_change:
-        	if (prefsVersion.equals(getString(R.string.cuvs))) {
+        	//Log.d(TAG, "onOptionsItemSelected: R.id.action_change");
+        	if (prefsLanguage.equals(getString(R.string.ch))) {
+        		//Change to display English only
+        		setLocale("en", "");
         		prefsLanguage = getString(R.string.en);
-        		prefsVersion = getString(R.string.kjv);
-        		editor.putString("LANGUAGE", prefsLanguage);
-        		editor.putString("VERSION", prefsVersion);
-        		item.setTitle(getString(R.string.kjv));
-                //BibleDB.setDB("EB_kjv_bbl.db");
-        	} else if (prefsVersion.equals(getString(R.string.kjv))) {
+        		item.setTitle(prefsEN_Trans);
+        	} else if (prefsLanguage.equals(getString(R.string.en))) {
+        		//Change to display Chinese-English side by side
+        		setLocale("zh", "CN");
+        		prefsLanguage = getString(R.string.ch_en);
+        		item.setTitle(getString(R.string.cuv) + "/" + prefsEN_Trans);
+        	} else if (prefsLanguage.equals(getString(R.string.ch_en))) {	
+        		//Change to display Chinese only
+        		setLocale("zh", "CN");
         		prefsLanguage = getString(R.string.ch);
-        		prefsVersion = getString(R.string.cuvs_kjv);
-        		editor.putString("LANGUAGE", prefsLanguage);
-        		editor.putString("VERSION", prefsVersion);
-        		item.setTitle(getString(R.string.cuvs_kjv));
-        	} else if (prefsVersion.equals(getString(R.string.cuvs_kjv))) {	
-        		prefsLanguage = getString(R.string.ch);
-        		prefsVersion = getString(R.string.cuvs);
-        		editor.putString("LANGUAGE", prefsLanguage);
-        		editor.putString("VERSION", prefsVersion);
-        		item.setTitle(getString(R.string.cuvs));
-        	}
+        		item.setTitle(getString(R.string.cuv));
+        	} 
+        	
+        	editor.putString("LANGUAGE", prefsLanguage);
         	editor.commit();
         	
         	// Update action bar title with book name and chapter number
@@ -193,7 +228,7 @@ public class DisplayActivity extends FragmentActivity {
     		actionBar.setTitle(getBookName() +" "+String.valueOf(mChapter));
     		
     		// Update the ViewPager's content on the screen immediately
-    		mPagerAdapter.notifyDataSetChanged();
+    		mPagerAdapter.notifyDataSetChanged();  
         	
         	return true;
         case R.id.action_search: 

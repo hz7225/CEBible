@@ -5,43 +5,43 @@
         android:id="@+id/item_play"
         android:icon="@android:drawable/ic_media_play"
         android:showAsAction="always"
-        android:title="Read to me"
-        android:titleCondensed="Read">
+        android:title="@string/read"
+        android:titleCondensed="@string/read">
     </item>
     
     <item
         android:id="@+id/item_pause"
         android:icon="@android:drawable/ic_media_pause"
         android:showAsAction="always"
-        android:title="Stop reading"
+        android:title="@string/stop"
 		android:visible="false"
-        android:titleCondensed="Stop">
+        android:titleCondensed="@string/stop">
     </item>
     
     <item
         android:id="@+id/item_share"
         android:icon="@android:drawable/ic_menu_share"
         android:showAsAction="always"
-        android:title="Share"
-        android:titleCondensed="Share">
+        android:title="@string/share"
+        android:titleCondensed="@string/share">
     </item>
     
     <item
         android:id="@+id/item_note"
         android:icon="@drawable/ic_menu_compose"
         android:showAsAction="always"
-        android:title="Note"
+        android:title="@string/note"
         android:visible="false"
-        android:titleCondensed="Note">
+        android:titleCondensed="@string/note">
     </item>
     
     <item
         android:id="@+id/item_search"
         android:icon="@android:drawable/ic_menu_search"
         android:showAsAction="always"
-        android:title="Search"
+        android:title="@string/search"
         android:visible="false"
-        android:titleCondensed="Search">
+        android:titleCondensed="@string/search">
     </item>
 
 

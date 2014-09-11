@@ -2,6 +2,7 @@ package com.hz7225.cebible;
 
 import java.util.List;
 import java.util.Locale;
+
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,7 +37,11 @@ public class DisplayPageFragment extends Fragment {
 	static private int mBook;
 	static private int mChapter;
 	static private int mVerse;
-	static private String mVersion;
+	static private String mLanguage;
+	static private String mEn_trans;
+	static private String mCh_trans;
+	private String english_db;
+	private String chinese_db;
 		
 	ListView listView1;
 	ListView listView2;
@@ -50,19 +55,19 @@ public class DisplayPageFragment extends Fragment {
 	
 	TextView mTextView;
 	
-	TextToSpeech ttobj;
+	TextToSpeech ttsobj;
 	int selected_listview = 0; //used by TTS to play the text in correct language
 	
-	public static DisplayPageFragment create(int pageNumber, int book, int verse, String version) {
-		//Log.d(TAG, "PageFragment::create(), pageNumber = " + String.valueOf(pageNumber) + " book=" +String.valueOf(book));
+	public static DisplayPageFragment create(int pageNumber, int book, int verse, String lang, String en_trans, String ch_trans) {
         mBook = book;
-        //mChapter = chapter;
         mVerse = verse;
-              
+        mLanguage = lang;
+        mEn_trans = en_trans;
+        mCh_trans = ch_trans;
+                     
 		DisplayPageFragment fragment = new DisplayPageFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, pageNumber);  
-        args.putString(ARG_VERSION, version);
         fragment.setArguments(args);
         return fragment;
     }
@@ -70,66 +75,56 @@ public class DisplayPageFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+	}
+	
+	public void onDestroyView() {
+		super.onDestroyView();
+	}
+	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mPageNumber = getArguments().getInt(ARG_PAGE);
-		mVersion = getArguments().getString(ARG_VERSION);
+
 		//Log.d(TAG, "mPageNumber = " + String.valueOf(mPageNumber));
 		
 		// initialize mBook and mChapter from ViewPager position number
 		ChapterPosition cp = new ChapterPosition(getActivity(), mPageNumber);
 		mBook = cp.getBook();
 		mChapter = cp.getChapter();
-	}
-	
-	private List<String> getScriptureFromDB(int book, int chapter, String db) {
-		//Log.d(TAG, "getScriptureFromDB: " + db + "ddddddddbbbbbbb");
-		DataBaseHelper BibleDB = new DataBaseHelper(getActivity().getApplicationContext(), db);
-
-        //Get the whole chapter of a book from database
-        List<String> sl = BibleDB.getChapter(book, chapter);
-        for (int i=0; i<sl.size(); i++) {
-        	sl.set(i, sl.get(i));
-        }
-        return sl;
-	}
-
-	public void onDestroyView() {
-		super.onDestroyView();
-		//Log.d(TAG, "onDestroyView()");
-		ttobj.shutdown();
-	}
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		ttobj=new TextToSpeech(getActivity(), 
-				new TextToSpeech.OnInitListener() {
-			@Override
-			public void onInit(int status) {
-				if(status != TextToSpeech.ERROR){
-					ttobj.setLanguage(Locale.CHINESE);
-				}				
-			}
-		});		
 		
-		//Log.d(TAG, "mPageNumber = " + String.valueOf(mPageNumber) + " mChapter = " + String.valueOf(mChapter));
+		Log.d(TAG, "mBook="+String.valueOf(mBook) + " mChapter"+String.valueOf(mChapter));
+		
+		if (mCh_trans.equals(getString(R.string.cuvs))) {
+        	chinese_db = "cuvslite.bbl.db";
+        } else if (mCh_trans.equals(getString(R.string.cuvt))) {
+        	chinese_db = "cuvtlite.bbl.db";
+        }
+		
+		if (mEn_trans.equals(getString(R.string.kjv))) {
+        	english_db = "EB_kjv_bbl.db";
+        } else if (mEn_trans.equals(getString(R.string.web))) {
+        	english_db = "EB_web_bbl.db";
+        }
+		
+		//Log.d(TAG, "onCreateView(): mPageNumber = " + String.valueOf(mPageNumber) + " mChapter = " + String.valueOf(mChapter));
 		//Log.d(TAG, "onCreateView(): mPageNumber = " + String.valueOf(mPageNumber) + " mVersion = " + mVersion);		
 		
-        //Use 2 ListViews in Linear layout
+        //Use 2 ListViews in Linear layout for displaying Chinese and English Bibles respectively
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.listviews, container, false);
         
-        //ListView1 for Chinese CUVS
+        //ListView1 for Chinese translation
         listView1 = (ListView) rootView.findViewById(R.id.listView1);
-        //List<String> sl1 = getScriptureFromDB(mBook, mPageNumber+1, "cuvslite.bbl.db");
-        List<String> sl1 = getScriptureFromDB(mBook, mChapter, "cuvslite.bbl.db");
+        List<String> sl1 = getScriptureFromDB(mBook, mChapter, chinese_db);
     	adapter1 = new ListDataAdapter2(this.getActivity(), sl1);     	
 	    listView1.setAdapter(adapter1);  //Set ListView adapters	    
-    	listView1.setSelection(mVerse);  //Set starting position
+    	listView1.setSelection(mVerse-1);  //Set starting position
     	
-    	//ListView2 for English KJV
+    	//ListView2 for English translation
     	listView2 = (ListView) rootView.findViewById(R.id.listView2);    	
-    	//List<String> sl2 = getScriptureFromDB(mBook, mPageNumber+1, "EB_kjv_bbl.db");
-    	List<String> sl2 = getScriptureFromDB(mBook, mChapter, "EB_kjv_bbl.db");
+    	List<String> sl2 = getScriptureFromDB(mBook, mChapter, english_db);
     	adapter2 = new ListDataAdapter2(this.getActivity(), sl2);    	
     	listView2.setAdapter(adapter2);  //Set ListView adapters    	
-    	listView2.setSelection(mVerse);  //Set starting position
+    	listView2.setSelection(mVerse-1);  //Set starting position
     	
     	//Set listener
     	listView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -141,7 +136,7 @@ public class DisplayPageFragment extends Fragment {
 		
     	//Set long click listener
 		listView1.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			public boolean onItemLongClick(AdapterView<?> av, View v, int position, long id) {
+			public boolean onItemLongClick(AdapterView<?> av, View v, int position, long id) {	
 				//Log.d("HZ", "LV1: onItemLongClick selected_listview = 1");
 				//Log.d(TAG, "LV1: onItemLongClick");
 				TextView tv = (TextView)v.findViewById(R.id.scripture);
@@ -171,17 +166,20 @@ public class DisplayPageFragment extends Fragment {
 			}
 		});
     	
-    	//For CUVS or KJV, only display one ListView, make the other one invisible
-    	//Otherwise, display both ListViews 
-    	if (mVersion.equals(getString(R.string.cuvs))) {
-    		listView2.setVisibility(View.GONE); //To display only one ListView
-    		rootView.findViewById(R.id.horizontal_white_space).setVisibility(View.GONE); //Remove the horizontal spacer too
-    	} else if (mVersion.equals(getString(R.string.kjv))) {
-    		listView1.setVisibility(View.GONE); //To display only one ListView
-        	rootView.findViewById(R.id.horizontal_white_space).setVisibility(View.GONE); //Remove the horizontal spacer too
-    	}		
-    	
+		//Display only one ListView, make the other one invisible
+		//when mLanguage is either Chinese or English. Otherwise,
+		//both ListViews will be displayed side-by-side
+		if (mLanguage.equals(getString(R.string.en))) {
+			listView1.setVisibility(View.GONE); //To display only one ListView
+			rootView.findViewById(R.id.horizontal_white_space).setVisibility(View.GONE); //Remove the horizontal spacer too
+		}
+		if (mLanguage.equals(getString(R.string.ch))) {
+			listView2.setVisibility(View.GONE); //To display only one ListView
+			rootView.findViewById(R.id.horizontal_white_space).setVisibility(View.GONE); //Remove the horizontal spacer too
+		}
+		
 		//To synchronize the positions of the two ListViews
+		//This method has some warning messages in logcat but scrolls smoothly
 		listView1.setOverScrollMode(ListView.OVER_SCROLL_NEVER);
 		listView2.setOverScrollMode(ListView.OVER_SCROLL_NEVER);
 		listView1.setOnScrollListener(new OnScrollListener() {
@@ -226,8 +224,7 @@ public class DisplayPageFragment extends Fragment {
 				}
 			}
 		}); 
-		
-        
+		        
 		return rootView;				
 	}
 
@@ -235,13 +232,25 @@ public class DisplayPageFragment extends Fragment {
         return mPageNumber;
     }
 	
+	private List<String> getScriptureFromDB(int book, int chapter, String db) {
+		//Log.d(TAG, "getScriptureFromDB: " + db + " mChapter = " + String.valueOf(chapter));
+		DataBaseHelper BibleDB = new DataBaseHelper(getActivity().getApplicationContext(), db);
+
+        //Get the whole chapter of a book from database
+        List<String> sl = BibleDB.getChapter(book, chapter);
+        for (int i=0; i<sl.size(); i++) {
+        	sl.set(i, sl.get(i));
+        }
+        return sl;
+	}
+	
 	private String getChineseBookName() {
 		// Get book name from XML resource
 		String[] ot;
 		String[] nt;
 		
-		ot = getResources().getStringArray(R.array.old_testament_ch);
-		nt = getResources().getStringArray(R.array.new_testament_ch);
+		ot = getResources().getStringArray(R.array.old_testament);
+		nt = getResources().getStringArray(R.array.new_testament);
 
 		String book;
 		if (mBook<40) {
@@ -278,7 +287,7 @@ public class DisplayPageFragment extends Fragment {
 			@Override
 			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 				// TODO Auto-generated method stub
-				//Log.d(TAG, "setCustomSelectionCAB: onCreateActionMode");
+				//Log.d(TAG, "setCustomSelectionCAB: onCreateActionMode");				
 				mode.getMenuInflater().inflate(R.menu.contextual_menu, menu);
 				mode.setTitle("");
 				return true;
@@ -290,6 +299,11 @@ public class DisplayPageFragment extends Fragment {
 				//Log.d(TAG, "setCustomSelectionCAB: onPrepareActionMode");
 				// Remove the "select all" option
 				menu.removeItem(android.R.id.selectAll);
+				
+				//Don't show the TTS Play icon for API level older than 17 (Jelly Bean MR1)
+				if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+					menu.getItem(1).setVisible(false);
+				}
 				return true;
 			}
 
@@ -300,14 +314,18 @@ public class DisplayPageFragment extends Fragment {
 				switch (item.getItemId()) {
 				case R.id.item_play:
 					//Log.d(TAG, "Play selected text in " + mVersion);
-					//Log.d("HZ", "Play selected text in " + String.valueOf(selected_listview));
 					if (selected_listview == 1) {
-						ttobj.setLanguage(Locale.CHINESE);
-						ttobj.speak(selectedText(), TextToSpeech.QUEUE_FLUSH, null);
+						DisplayActivity.ttsobj.setLanguage(Locale.CHINESE);						
+						DisplayActivity.ttsobj.speak(selectedText(), TextToSpeech.QUEUE_FLUSH, null);
 					} 					
 					else if (selected_listview == 2) {
-						ttobj.setLanguage(Locale.US);
-						ttobj.speak(selectedText(), TextToSpeech.QUEUE_FLUSH, null);
+						if (mEn_trans.equals(getString(R.string.kjv))) {
+							DisplayActivity.ttsobj.setLanguage(Locale.UK);
+						}
+						else {
+							DisplayActivity.ttsobj.setLanguage(Locale.US);
+						}
+						DisplayActivity.ttsobj.speak(selectedText(), TextToSpeech.QUEUE_FLUSH, null);
 					}
 						
 					mode.getMenu().getItem(0).setVisible(false); //Copy
@@ -315,7 +333,7 @@ public class DisplayPageFragment extends Fragment {
 					mode.getMenu().getItem(3).setVisible(false);  //Share
 					return true;
 				case R.id.item_pause:
-					ttobj.stop();
+					DisplayActivity.ttsobj.stop();
 					return true;
 				case R.id.item_share:
 					//Log.d(TAG, "mode size = " + String.valueOf(mode.getMenu().size()));
@@ -333,7 +351,7 @@ public class DisplayPageFragment extends Fragment {
 
 			@Override
 			public void onDestroyActionMode(ActionMode mode) {
-				ttobj.stop();
+				DisplayActivity.ttsobj.stop();
 				//Log.d(TAG, "setCustomSelectionCAB: onDestroyActionMode");
 			}
 			
@@ -353,7 +371,5 @@ public class DisplayPageFragment extends Fragment {
 				return text.toString();
 			}
 		});
-	}
-	
-	
+	}	
 }

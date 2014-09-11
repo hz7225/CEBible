@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <TextView
+        android:id="@+id/tv_ch_translations"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:textSize="20dp"
+        android:text="@string/select_chinese_translation" />
+    
+    <View
+        android:id="@+id/horizontal_line1"
+        android:layout_width="fill_parent"
+        android:layout_margin="10dp"
+        android:layout_height="1dp"
+        android:background="#50101010"/>
+    
+    <ListView android:id="@+id/lv_ch_translations"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:choiceMode="singleChoice"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"/>
+    
+    <View
+        android:id="@+id/horizontal_line2"
+        android:layout_width="fill_parent"
+        android:layout_margin="10dp"
+        android:layout_height="3dp"
+        android:background="#50101010"/>
+    
+    <TextView
+        android:id="@+id/tv_en_translations"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:textSize="20dp"
+        android:text="@string/select_english_translation" />
+    
+    <View
+        android:id="@+id/horizontal_line3"
+        android:layout_width="fill_parent"
+        android:layout_margin="10dp"
+        android:layout_height="1dp"
+        android:background="#50101010"/>
+    
+    <ListView android:id="@+id/lv_en_translations"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:choiceMode="singleChoice"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"/>
+    
+ 
+
+</LinearLayout>
