@@ -27,6 +27,8 @@
  	<string name="note">笔记</string>
  	<string name="search">搜索</string>
  	<string name="bookmark">书签</string>  
+ 	<string name="searchresult">搜索结果</string>
+ 	<string name="wholebook">全书</string>
     
     <string name="cuvs_kjv">和合本-KJV</string>
 

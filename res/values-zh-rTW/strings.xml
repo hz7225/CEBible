@@ -25,8 +25,10 @@
  	<string name="stop">停止</string>
  	<string name="share">分享</string>
  	<string name="note">筆記</string>
- 	<string name="search">搜索</string>
+ 	<string name="search">搜尋</string>
  	<string name="bookmark">書籤</string>
+ 	<string name="searchresult">搜尋結果</string>
+ 	<string name="wholebook">全書</string>
         
     <string name="cuvs_kjv">和合本-KJV</string>
    

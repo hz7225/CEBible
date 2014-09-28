@@ -220,5 +220,37 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		cursor.close();
 		return scriptureList;
 	}
+	
+	public List<ScriptureData> searchWholeBible(String searchStr) throws SQLException {
+		List<ScriptureData> scriptureList = new ArrayList<ScriptureData>();
+		// SQL Select Query
+		String selectQuery = "SELECT * FROM Bible WHERE Scripture LIKE " + "\'%" + searchStr + "%\'";
+		//Log.d(TAG, "searchBible: " + selectQuery); 
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		
+		while (cursor.moveToNext()) {			
+			//Log.d(TAG, cursor.getString(0) + " " + cursor.getString(1) + ":" + cursor.getString(2) + " " + cursor.getString(3));
+			scriptureList.add(new ScriptureData(myContext, cursor.getString(0), cursor.getString(1),cursor.getString(2), cursor.getString(3)));
+		}
+		
+		return scriptureList;
+	}
+	
+	public List<ScriptureData> searchOneBibleBook(String book, String searchStr) throws SQLException {
+		List<ScriptureData> scriptureList = new ArrayList<ScriptureData>();
+		// SQL Select Query
+		String selectQuery = "SELECT * FROM Bible WHERE Book = " + book + " AND Scripture LIKE " + "\'%" + searchStr + "%\'";
+		//Log.d(TAG, "searchBibleBook " + book + ": " + selectQuery); 
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+		
+		while (cursor.moveToNext()) {			
+			//Log.d(TAG, cursor.getString(0) + " " + cursor.getString(1) + ":" + cursor.getString(2) + " " + cursor.getString(3));
+			scriptureList.add(new ScriptureData(myContext, cursor.getString(0), cursor.getString(1),cursor.getString(2), cursor.getString(3)));
+		}
+		
+		return scriptureList;
+	}
  
 }

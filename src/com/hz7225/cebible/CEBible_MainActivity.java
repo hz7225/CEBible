@@ -33,7 +33,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 	ListView listViewVerse;
 	
 	SharedPreferences prefs;
-	int prefsBook;
+	int prefsBook; //1-66
     int prefsChapter;
     int prefsVerse;
     String prefsLanguage;

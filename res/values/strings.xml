@@ -26,6 +26,8 @@
  	<string name="note">Note</string>
  	<string name="search">Search</string>
  	<string name="bookmark">Bookmark</string>
+ 	<string name="searchresult">Search Result</string>
+ 	<string name="wholebook">Whole Book</string>
     
     <string name="cuvs_kjv">和合本-KJV</string>
    

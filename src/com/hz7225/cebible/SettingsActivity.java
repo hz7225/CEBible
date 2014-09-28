@@ -37,7 +37,6 @@ public class SettingsActivity extends Activity {
 	    };
 	
 	SharedPreferences prefs;
-    String prefsLanguage;
     String prefsEN_Trans;
     String prefsCH_Trans;
     

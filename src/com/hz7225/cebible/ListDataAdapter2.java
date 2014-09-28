@@ -61,7 +61,7 @@ public class ListDataAdapter2 extends BaseAdapter {
 			holder = new ViewHolder();
 			v = layoutInflater.inflate(R.layout.list_item2, null);
 			holder.tvScripture = (TextView) v.findViewById(R.id.scripture);
-			holder.tvScripture.setTextIsSelectable(true);
+			//holder.tvScripture.setTextIsSelectable(true);
 			holder.tvScriptureNum = (TextView) v.findViewById(R.id.scripture_number);
 			v.setTag(holder);
 		} else {

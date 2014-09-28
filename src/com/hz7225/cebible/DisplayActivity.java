@@ -7,6 +7,8 @@ import com.hz7225.cebible.DisplayPageFragment;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -22,6 +24,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SearchView;
 
 public class DisplayActivity extends FragmentActivity {
 	String TAG = "DisplayActivity";
@@ -135,13 +138,36 @@ public class DisplayActivity extends FragmentActivity {
 		return book;
 	}
 	
+	private void mySetLocale() {
+    	if (prefsLanguage.equals(getString(R.string.en))) {
+    		setLocale("en", "");
+    	} 
+    	else if (prefsLanguage.equals(getString(R.string.ch))) {
+    		if (prefsCH_Trans.equals(getString(R.string.cuvs))) {
+    			setLocale("zh", "CN");
+    		} else if (prefsCH_Trans.equals(getString(R.string.cuvt))) {
+    			setLocale("zh", "TW");
+    		}
+    	} else if (prefsLanguage.equals(getString(R.string.ch_en))) {
+    		if (prefsCH_Trans.equals(getString(R.string.cuvs))) {
+    			setLocale("zh", "CN");
+    		} else if (prefsCH_Trans.equals(getString(R.string.cuvt))) {
+    			setLocale("zh", "TW");
+    		}
+    	}
+    }
+	
 	public void setLocale(String lang, String country) {
+		Log.d(TAG, "setLcale, land = " + lang + " country = " + country);
 		myLocale = new Locale(lang, country);
 		Resources res = getResources();
 		DisplayMetrics dm = res.getDisplayMetrics();
 		Configuration conf = res.getConfiguration();
 		conf.locale = myLocale;
 		res.updateConfiguration(conf, dm);
+		
+		//Call this function so the Titles of the Menu Items are updated with the correct language
+		onConfigurationChanged(conf);
 	}
 	
 	private class PagerAdapter extends FragmentStatePagerAdapter {
@@ -187,7 +213,15 @@ public class DisplayActivity extends FragmentActivity {
 		}
 		
 		//Save the menu
-		ab_menu = menu;		
+		ab_menu = menu;	
+		
+		// Associate searchable configuration with the SearchView
+	    SearchManager searchManager =
+	           (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+	    SearchView searchView =
+	            (SearchView) menu.findItem(R.id.action_search).getActionView();
+	    searchView.setSearchableInfo(
+	            searchManager.getSearchableInfo(getComponentName()));
 		
 		return true;
 	}
@@ -205,20 +239,29 @@ public class DisplayActivity extends FragmentActivity {
         	//Log.d(TAG, "onOptionsItemSelected: R.id.action_change");
         	if (prefsLanguage.equals(getString(R.string.ch))) {
         		//Change to display English only
-        		setLocale("en", "");
+        		//setLocale("en", "");        		
         		prefsLanguage = getString(R.string.en);
+        		mySetLocale();
         		item.setTitle(prefsEN_Trans);
+        		//Enable the Search menu        		
+        		ab_menu.getItem(1).setVisible(true);
         	} else if (prefsLanguage.equals(getString(R.string.en))) {
         		//Change to display Chinese-English side by side
-        		setLocale("zh", "CN");
+        		//setLocale("zh", "CN");
         		prefsLanguage = getString(R.string.ch_en);
+        		mySetLocale();
         		item.setTitle(getString(R.string.cuv) + "/" + prefsEN_Trans);
+        		//Disable the Search menu        		
+        		ab_menu.getItem(1).setVisible(false);
         	} else if (prefsLanguage.equals(getString(R.string.ch_en))) {	
         		//Change to display Chinese only
-        		setLocale("zh", "CN");
+        		//setLocale("zh", "CN");
         		prefsLanguage = getString(R.string.ch);
+        		mySetLocale();
         		item.setTitle(getString(R.string.cuv));
-        	} 
+        		//Enable the Search menu        		
+        		ab_menu.getItem(1).setVisible(true);
+        	}    	
         	
         	editor.putString("LANGUAGE", prefsLanguage);
         	editor.commit();
@@ -232,11 +275,23 @@ public class DisplayActivity extends FragmentActivity {
         	
         	return true;
         case R.id.action_search: 
-        	
-        	return true;	
+        	return true;
+        /*
+        case R.id.action_read: //read the whole Bible	
+        	//Testing: to go to the next page
+        	//mPager.setCurrentItem(mPager.getCurrentItem()+1);        	
+        	return true;
+        */		
         default:
             return super.onOptionsItemSelected(it);	        	
         }
-	}   
+	}  
+	
+	public void onConfigurationChanged(Configuration newConfig) {
+	    super.onConfigurationChanged(newConfig);
+	    Log.d(TAG, "onConfigurationChanged");
+	    MenuItem it = ab_menu.findItem(R.id.action_search);
+	    it.setTitle(R.string.action_search);
+	}    
 }
 
