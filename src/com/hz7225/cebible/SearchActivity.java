@@ -51,7 +51,7 @@ public class SearchActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-       	Log.d(TAG, "onCreate");
+       	//Log.d(TAG, "onCreate");
        	setContentView(R.layout.search_result_layout);    
        	listview = (ListView) findViewById(R.id.listViewSearch);
        	sp = (Spinner) findViewById(R.id.spinner1);
@@ -69,22 +69,22 @@ public class SearchActivity extends Activity {
 
     @Override
     protected void onNewIntent(Intent intent) {
-    	Log.d(TAG, "onNewIntent");   	
+    	//Log.d(TAG, "onNewIntent");   	
         handleIntent(intent);
     }
 
     private void handleIntent(Intent intent) {
-    	Log.d(TAG, "intent = " + intent);    	
+    	//Log.d(TAG, "intent = " + intent);    	
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);        
             //use the query to search your data somehow
-            Log.d(TAG, "Intent.ACTION_SEARCH query extra = " + query);
+            //Log.d(TAG, "Intent.ACTION_SEARCH query extra = " + query);
             doSearch(query);
         }
         else if (intent.getComponent().getClassName().equalsIgnoreCase("com.hz7225.cebible.SearchActivity")) {
             String query = intent.getStringExtra("SEARCH_STR");        
             //use the query to search your data somehow
-            Log.d(TAG, "Intent SearchActivity query extra = " + query);
+            //Log.d(TAG, "Intent SearchActivity query extra = " + query);
             doSearch(query); 
         }        
     }
@@ -133,8 +133,7 @@ public class SearchActivity extends Activity {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 				// TODO Auto-generated method stub
-				Log.d(TAG, "Searched results long clicked position: " + String.valueOf(position));
-					
+				//Log.d(TAG, "Searched results long clicked position: " + String.valueOf(position));
 				return true;
 			}			    		
     	});
@@ -143,7 +142,7 @@ public class SearchActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				// TODO Auto-generated method stub
-				Log.d(TAG, "Searched Results short clicked position: " + String.valueOf(position));
+				//Log.d(TAG, "Searched Results short clicked position: " + String.valueOf(position));
 				launchDisplayActivity(Integer.parseInt(sublist.get(position).getBook()), 
 									Integer.parseInt(sublist.get(position).getChapter()), 
 									Integer.parseInt(sublist.get(position).getVerse()), 
@@ -158,7 +157,7 @@ public class SearchActivity extends Activity {
     	//for (int i=0; i < list.size(); i++) {
     	//}
     	for (ScriptureData scripture : list) {
-    		Log.d(TAG, "Found: " + scripture.getBookName() + " " + scripture.getChapter() + ":" + scripture.getVerse() + " " + scripture.getScripture());    		
+    		//Log.d(TAG, "Found: " + scripture.getBookName() + " " + scripture.getChapter() + ":" + scripture.getVerse() + " " + scripture.getScripture());    		
     		if (hm.containsKey(scripture.getBookName())) {
     			Integer new_val = (Integer)hm.get(scripture.getBookName()) + 1;
     			hm.put(scripture.getBookName(), (Integer)hm.get(scripture.getBookName()) + 1);
@@ -176,7 +175,7 @@ public class SearchActivity extends Activity {
         while(i.hasNext()) {  // Display elements
            Map.Entry me = (Map.Entry)i.next();           
            filter.add(me.getKey() + " (" + me.getValue() + ")");
-           Log.d(TAG, "filter: " + me.getKey() + " (" + me.getValue() + ")");
+           //Log.d(TAG, "filter: " + me.getKey() + " (" + me.getValue() + ")");
         }
         
         //Display the summary of search result in the Spinner which also used for setting display filter
@@ -193,7 +192,7 @@ public class SearchActivity extends Activity {
 				} else {	
 					key = (new ArrayList<String>(hm.keySet())).get(position - 1);
 				}	
-				Log.d(TAG, "Spinner position = " + String.valueOf(position) + " key = " + key);
+				//Log.d(TAG, "Spinner position = " + String.valueOf(position) + " key = " + key);
 				getSublist(list, key);
 				adapter.notifyDataSetChanged();
 			}

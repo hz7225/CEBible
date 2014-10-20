@@ -137,26 +137,25 @@ public class DisplayPageFragment extends Fragment {
 
     	
     	//Set listener
-    	listView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    	listView1.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> av, View v, int position, long id) {
-				Log.d(TAG, "LV1: onItemClick");
+				//Log.d(TAG, "LV1: onItemClick");
 				//delete action mode
 				//amode.finish();
 			}
 		});
-    	listView2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    	listView2.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> av, View v, int position, long id) {
-				Log.d(TAG, "LV1: onItemClick");
+				//Log.d(TAG, "LV1: onItemClick");
 				//delete action mode
 				//amode.finish();
 			}
 		});
-    	
 		
     	//Set long click listener
 		listView1.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> av, View v, int position, long id) {	
-				//Log.d("HZ", "LV1: onItemLongClick selected_listview = 1");
+				//Log.d(TAG, "LV1: onItemLongClick selected_listview = 1");
 				if (in_lv1_or_lv2 != 0) {
 				TextView tv = (TextView)v.findViewById(R.id.scripture);
 				title = getBookName() + String.valueOf(DisplayActivity.mChapter) + ":" + String.valueOf(position+1);
@@ -172,7 +171,7 @@ public class DisplayPageFragment extends Fragment {
 		});
 		listView2.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> av, View v, int position, long id) {
-				//Log.d("HZ", "LV1: onItemLongClick selected_listview = 2");
+				//Log.d(TAG, "LV1: onItemLongClick selected_listview = 2");
 				if (in_lv1_or_lv2 != 0) {
 				TextView tv = (TextView)v.findViewById(R.id.scripture);
 				title = getBookName() + String.valueOf(DisplayActivity.mChapter) + ":" + String.valueOf(position+1);
@@ -295,7 +294,7 @@ public class DisplayPageFragment extends Fragment {
 			@Override
 			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 				// TODO Auto-generated method stub
-				Log.d(TAG, "setCustomSelectionCAB: onCreateActionMode");				
+				//Log.d(TAG, "setCustomSelectionCAB: onCreateActionMode");				
 				mode.getMenuInflater().inflate(R.menu.contextual_menu, menu);
 				mode.setTitle("");
 				amode = mode;
@@ -378,7 +377,8 @@ public class DisplayPageFragment extends Fragment {
 			@Override
 			public void onDestroyActionMode(ActionMode mode) {
 				DisplayActivity.ttsobj.stop();
-				//Log.d(TAG, "setCustomSelectionCAB: onDestroyActionMode");
+				//Log.d(TAG, "setCustomSelectionCAB: onDestroyActionMode" + mTextView.getText());
+				//mTextView.setTextIsSelectable(false); //Investigate, app crashes
 			}
 			
 			private String selectedText() {

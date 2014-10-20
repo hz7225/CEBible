@@ -50,7 +50,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 	List<String> chapterList = new ArrayList<String>();
 	List<String> verseList = new ArrayList<String>();
 	
-	Locale myLocale;
+	SetLocale myLocale;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +59,35 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     	
     	//Log.d(TAG, "Device API level = " + String.valueOf(android.os.Build.VERSION.SDK_INT));
 
-    	//Create  Android SQLite database file from downloaded file
-    	DataBaseHelper myDbHelper = new DataBaseHelper(this, "cuvslite.bbl.db");
+    	//Create  Android SQLite database files from downloaded Bible databases
+    	DataBaseHelper myDbHelper = new DataBaseHelper(this, "EB_kjv_bbl.db");    	
+    	
+    	myDbHelper.setDB("EB_kjv_bbl.db");
+    	try {
+    		myDbHelper.createDataBase();
+    	} catch (IOException ioe) {
+    		throw new Error("Unable to create database");
+    	}     	
+    	myDbHelper.setDB("EB_web_bbl.db");
     	try {
     		myDbHelper.createDataBase();
     	} catch (IOException ioe) {
     		throw new Error("Unable to create database");
     	} 
+    	myDbHelper.setDB("cuvslite.bbl.db");
+    	try {
+    		myDbHelper.createDataBase();
+    	} catch (IOException ioe) {
+    		throw new Error("Unable to create database");
+    	} 
+    	myDbHelper.setDB("cuvtlite.bbl.db");
+    	try {
+    		myDbHelper.createDataBase();
+    	} catch (IOException ioe) {
+    		throw new Error("Unable to create database");
+    	} 
+    	
+    	/*
     	DataBaseHelper myDbHelper2 = new DataBaseHelper(this, "EB_kjv_bbl.db");
     	try {
     		myDbHelper2.createDataBase();
@@ -84,6 +106,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     	} catch (IOException ioe) {
     		throw new Error("Unable to create database");
     	} 
+    	*/
     	
     	// Get saved preferences
     	prefs  = getSharedPreferences("BiblePreferences", MODE_PRIVATE);		    
@@ -98,7 +121,11 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     	//Log.d(TAG, "Preferences: Lang=" + prefsLanguage + " EN_trans=" + prefsEN_Trans + " CH_Trans=" + prefsCH_Trans);
     	
     	//Set Locale according to saved preferences
-    	mySetLocale();
+    	//mySetLocale();
+    	myLocale = new SetLocale(getApplicationContext());
+    	myLocale.set();
+    	//getActionBar().setTitle(getString(R.string.app_name));
+    	
 
     	// Get book names resources from XML and initialize OTList and NTList
     	populateListOfBooknames();
@@ -172,7 +199,8 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     	}
     	
     	//Set Locale
-    	mySetLocale();
+    	//mySetLocale();
+    	myLocale.set();
     		
 		displayTitles();  // Set book, chapter, and verse titles
 		
@@ -198,7 +226,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		editor.putString("LANGUAGE", prefsLanguage);
 		editor.commit();
 	}  
-    
+/*    
     private void mySetLocale() {
     	if (prefsLanguage.equals(getString(R.string.en))) {
     		setLocale("en", "");
@@ -211,6 +239,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     		}
     	} 
     }
+*/
     
 	private void displayTitles() {		
 		//Log.d(TAG, "displayTitle()");
@@ -328,7 +357,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		intent.putExtra("LANGUAGE", language);
 		startActivity(intent);
 	}
-    
+/*    
 	public void setLocale(String lang, String country) {
 		myLocale = new Locale(lang, country);
 		Resources res = getResources();
@@ -340,7 +369,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		//finish();
 		//startActivity(refresh);
 	}
-	 
+*/	 
     //Action bar menu
   	MenuItem item;
     
@@ -362,21 +391,28 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
         	//Log.d(TAG, "Language clicked");	
         	if (prefsLanguage.equals(getString(R.string.ch))) {
         		prefsLanguage = getString(R.string.en);
-        		setLocale("en", "");
+        		//setLocale("en", "");
         	} else if (prefsLanguage.equals(getString(R.string.en))){
         		prefsLanguage = getString(R.string.ch);
         		if (prefsCH_Trans.equals(getString(R.string.cuvs))) {
-        			setLocale("zh", "CN");
+        			//setLocale("zh", "CN");
         		} else if (prefsCH_Trans.equals(getString(R.string.cuvt))) {
-        			setLocale("zh", "TW");
+        			//setLocale("zh", "TW");
         		}
         	}
+        	
         	// Save the change in the Preferences
         	Editor editor = prefs.edit();
         	editor.putString("LANGUAGE", prefsLanguage);
         	editor.commit();
+        	
+        	//Set the Locale resources
+        	myLocale.set();       	
         	        	
+        	//getActionBar().setTitle(getString(R.string.app_name));
+        	
         	item.setTitle(prefsLanguage);  // Change text on the action bar
+        	
         	// Change the lists on the display
         	populateListOfBooknames();
         	adapterNT.notifyDataSetChanged();

@@ -1,5 +1,6 @@
 package com.hz7225.cebible;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +30,8 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     private SQLiteDatabase myDataBase;  
     private final Context myContext;
     
+    boolean update_database = false;
+    
     public void setDB(String dbname) {
     	DB_NAME = dbname;
     }
@@ -40,8 +43,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
      */
     public DataBaseHelper(Context context, String db_name) {
  
-    	//super(context, DB_NAME, null, 1);
-    	super(context, db_name, null, 1);
+    	super(context, db_name, null, 2); //Increment this number when an existing database needs to be updated
     	DB_NAME = db_name;
         this.myContext = context;
     }	
@@ -50,28 +52,24 @@ public class DataBaseHelper extends SQLiteOpenHelper{
      * Creates a empty database on the system and rewrites it with your own database.
      * */
     public void createDataBase() throws IOException{
- 
+    	//Log.d(TAG, "createDatabase(): update_database = " + String.valueOf(update_database));
+    	
     	boolean dbExist = checkDataBase();
- 
-    	if(dbExist){
-    		//do nothing - database already exist
-    	}else{
- 
+    	
+    	if(dbExist && !update_database){
+    		//do nothing - database already exist and doesn't need to be updated
+    		//Log.d(TAG, "database already exist and doesn't need to be updated");
+    	}else{ 
     		//By calling this method and empty database will be created into the default system path
             //of your application so we are gonna be able to overwrite that database with our database.
-        	this.getReadableDatabase();
- 
+    		//if (update_database) Log.d(TAG, "Updating databases");
+        	this.getReadableDatabase(); 
         	try {
- 
     			copyDataBase();
- 
     		} catch (IOException e) {
- 
         		throw new Error("Error copying database");
- 
         	}
     	}
- 
     }
  
     /**
@@ -84,18 +82,13 @@ public class DataBaseHelper extends SQLiteOpenHelper{
  
     	try{
     		String myPath = DB_PATH + DB_NAME;
-    		checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
- 
-    	}catch(SQLiteException e){
- 
+    		checkDB = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY); 
+    	}catch(SQLiteException e){ 
     		//database does't exist yet.
- 
     	}
  
-    	if(checkDB != null){
- 
-    		checkDB.close();
- 
+    	if(checkDB != null){ 
+    		checkDB.close(); 
     	}
  
     	return checkDB != null ? true : false;
@@ -127,8 +120,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     	//Close the streams
     	myOutput.flush();
     	myOutput.close();
-    	myInput.close();
- 
+    	myInput.close(); 
     }
  
     public void openDataBase() throws SQLException{
@@ -137,25 +129,45 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     	myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
     	//Log.d(TAG, "openDataBase() path = " + myPath);
     }
+    
+    public void deleteDataBase() {
+    	//Log.d(TAG, "deleteDatabase()");
+    	File file = new File(DB_PATH + DB_NAME);
+    	if(file.exists())
+    	{
+    		file.delete();
+    	}
+    }
  
     @Override
-	public synchronized void close() {
- 
+	public synchronized void close() { 
     	    if(myDataBase != null)
     		    myDataBase.close();
  
-    	    super.close();
- 
+    	    super.close(); 
 	}
  
 	@Override
 	public void onCreate(SQLiteDatabase db) {
- 
+		//Log.d(TAG, "Database onCreate, db.getVersion = " + String.valueOf(db.getVersion()));
 	}
  
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
- 
+		//Log.d(TAG, "Database onUpgrade, old = " + String.valueOf(oldVersion) + " new = " + String.valueOf(newVersion));
+		if (newVersion > oldVersion)
+        {
+              //Log.d(TAG, "Set update_database to true");
+              update_database = true;
+              //deleteDataBase();
+              /*
+              try {
+            	  createDataBase();
+              } catch (IOException ioe) {
+            	  throw new Error("Unable to create database");
+              } 
+              */
+        }
 	}
  
 	// Add your public helper methods to access and get content from the database.
@@ -177,7 +189,8 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
 	public int getNumOfVerses(int book, int chapter) throws SQLException {
 		// SQL Select Query
-		String selectQuery = "SELECT Verse FROM Bible WHERE Book=" + String.valueOf(book) + " AND Chapter=" + String.valueOf(chapter);
+		String selectQuery = "SELECT Verse FROM Bible WHERE Book=" + String.valueOf(book) + 
+													" AND Chapter=" + String.valueOf(chapter);
 
 		//Log.d(TAG, selectQuery); 
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -191,8 +204,8 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	public String getVerse(int book, int chapter, int verse) throws SQLException {
 		// SQL Select Query
 		String selectQuery = "SELECT Scripture FROM Bible WHERE Book=" + String.valueOf(book) + 
-													" AND Chapter=" + String.valueOf(chapter) +
-													" AND Verse=" + String.valueOf(verse);
+														" AND Chapter=" + String.valueOf(chapter) +
+														" AND Verse=" + String.valueOf(verse);
 		//Log.d(TAG, selectQuery); 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
@@ -206,7 +219,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		List<String> scriptureList = new ArrayList<String>();
 		// SQL Select Query
 		String selectQuery = "SELECT Scripture FROM Bible WHERE Book=" + String.valueOf(book) + 
-															" AND Chapter=" + String.valueOf(chapter);
+														" AND Chapter=" + String.valueOf(chapter);
 		//Log.d(TAG, "getChapter: " + selectQuery); 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
