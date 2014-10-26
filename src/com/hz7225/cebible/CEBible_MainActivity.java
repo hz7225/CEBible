@@ -74,13 +74,13 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     	} catch (IOException ioe) {
     		throw new Error("Unable to create database");
     	} 
-    	myDbHelper.setDB("cuvslite.bbl.db");
+    	myDbHelper.setDB("CB_cuvslite.bbl.db");
     	try {
     		myDbHelper.createDataBase();
     	} catch (IOException ioe) {
     		throw new Error("Unable to create database");
     	} 
-    	myDbHelper.setDB("cuvtlite.bbl.db");
+    	myDbHelper.setDB("CB_cuvtlite.bbl.db");
     	try {
     		myDbHelper.createDataBase();
     	} catch (IOException ioe) {
@@ -273,7 +273,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		int v;
 
 		//Log.d(TAG, "prefsBook = " + String.valueOf(prefsBook) + " prefsChapter = " + String.valueOf(prefsChapter) + " prefsVerse = " + String.valueOf(prefsVerse));
-		DataBaseHelper BibleDB = new DataBaseHelper(this, "cuvslite.bbl.db");
+		DataBaseHelper BibleDB = new DataBaseHelper(this, "CB_cuvslite.bbl.db");
 		try {
 			c = BibleDB.getNumOfChapters(prefsBook);
 			v = BibleDB.getNumOfVerses(prefsBook, prefsChapter);

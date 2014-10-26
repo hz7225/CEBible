@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">汉英圣经</string>
     <string name="action_settings">设置</string>
-    <string name="action_about">汉英圣经 版本1.6</string>
+    <string name="action_about">汉英圣经 版本1.7</string>
     <string name="action_search">搜索</string>     
     <string name="lang">Eng</string>
     <string name="ch">中文</string> 

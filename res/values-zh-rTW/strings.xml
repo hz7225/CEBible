@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">漢英聖經</string>
     <string name="action_settings">設置</string>
-    <string name="action_about">漢英聖經 版本1.6</string>
+    <string name="action_about">漢英聖經 版本1.7</string>
     <string name="action_search">搜索</string>     
     <string name="lang">Eng</string>
     <string name="ch">中文</string> 

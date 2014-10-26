@@ -105,9 +105,9 @@ public class DisplayPageFragment extends Fragment {
 		//Log.d(TAG, "mBook="+String.valueOf(mBook) + " mChapter"+String.valueOf(mChapter));
 		
 		if (mCh_trans.equals(getString(R.string.cuvs))) {
-        	chinese_db = "cuvslite.bbl.db";
+        	chinese_db = "CB_cuvslite.bbl.db";
         } else if (mCh_trans.equals(getString(R.string.cuvt))) {
-        	chinese_db = "cuvtlite.bbl.db";
+        	chinese_db = "CB_cuvtlite.bbl.db";
         }
 		
 		if (mEn_trans.equals(getString(R.string.kjv))) {

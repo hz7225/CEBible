@@ -107,9 +107,9 @@ public class SearchActivity extends Activity {
     	String db;
     	if (DisplayPageFragment.in_lv1_or_lv2 == 1) {
     		if (prefsCH_Trans.equals(getString(R.string.cuvs))) 
-    			db = "cuvslite.bbl.db";
+    			db = "CB_cuvslite.bbl.db";
     		else 
-    			db = "cuvtlite.bbl.db";
+    			db = "CB_cuvtlite.bbl.db";
     	} else {
     		if (prefsEN_Trans.equals(getString(R.string.kjv))) 
     			db = "EB_kjv_bbl.db";
