@@ -1,5 +1,6 @@
 package com.hz7225.cebible;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,18 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	setContentView(R.layout.activity_main);    
+    	setContentView(R.layout.activity_main); 
+    	
+    	//Delete the old databases files. 
+    	File file = new File("/data/data/com.hz7225.cebible/databases/cuvslite.bbl.db");
+    	file.delete();
+    	File file2 = new File("/data/data/com.hz7225.cebible/databases/cuvslite.bbl.db-journal");
+    	file2.delete();
+    	File file3 = new File("/data/data/com.hz7225.cebible/databases/cuvtlite.bbl.db");
+    	file3.delete();
+    	File file4 = new File("/data/data/com.hz7225.cebible/databases/cuvtlite.bbl.db-journal");
+    	file4.delete(); 
+    	 
     	
     	//Log.d(TAG, "Device API level = " + String.valueOf(android.os.Build.VERSION.SDK_INT));
 
