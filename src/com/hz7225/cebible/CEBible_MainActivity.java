@@ -1,6 +1,5 @@
 package com.hz7225.cebible;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,12 +9,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.res.Configuration;
-import android.content.res.Resources;
+import android.content.pm.PackageManager.NameNotFoundException;
+
 import android.database.SQLException;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,8 +33,8 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 	
 	SharedPreferences prefs;
 	int prefsBook; //1-66
-    int prefsChapter;
-    int prefsVerse;
+    int[] prefsChapter; //low limit is 1
+    int prefsVerse; //low limit is 1
     String prefsLanguage;
     String prefsEN_Trans;
     String prefsCH_Trans;
@@ -52,12 +50,35 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 	List<String> verseList = new ArrayList<String>();
 	
 	SetLocale myLocale;
+	
+	String swVersion;
+	
+	static public TextToSpeech ttsobj;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	setContentView(R.layout.activity_main); 
     	
+    	//Get the sw version number from the AndroidManifest.XML file
+    	try {
+    		swVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+    		//Log.d(TAG, "sw version v" + swVersion);
+    	} catch (NameNotFoundException e) {
+    		//Log.e("tag", e.getMessage());
+    	}
+    	
+    	//Log.d(TAG, "Create ttsobj");
+        ttsobj=new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+			@Override
+			public void onInit(int status) {
+				if(status != TextToSpeech.ERROR){
+					ttsobj.setLanguage(Locale.CHINESE);
+				}				
+			}
+		});
+    	
+    	/*
     	//Delete the old databases files. 
     	File file = new File("/data/data/com.hz7225.cebible/databases/cuvslite.bbl.db");
     	file.delete();
@@ -67,7 +88,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     	file3.delete();
     	File file4 = new File("/data/data/com.hz7225.cebible/databases/cuvtlite.bbl.db-journal");
     	file4.delete(); 
-    	 
+    	*/    	 
     	
     	//Log.d(TAG, "Device API level = " + String.valueOf(android.os.Build.VERSION.SDK_INT));
 
@@ -99,45 +120,28 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     		throw new Error("Unable to create database");
     	} 
     	
-    	/*
-    	DataBaseHelper myDbHelper2 = new DataBaseHelper(this, "EB_kjv_bbl.db");
-    	try {
-    		myDbHelper2.createDataBase();
-    	} catch (IOException ioe) {
-    		throw new Error("Unable to create database");
-    	} 
-    	DataBaseHelper myDbHelper3 = new DataBaseHelper(this, "cuvtlite.bbl.db");
-    	try {
-    		myDbHelper3.createDataBase();
-    	} catch (IOException ioe) {
-    		throw new Error("Unable to create database");
-    	} 
-    	DataBaseHelper myDbHelper4 = new DataBaseHelper(this, "EB_web_bbl.db");
-    	try {
-    		myDbHelper4.createDataBase();
-    	} catch (IOException ioe) {
-    		throw new Error("Unable to create database");
-    	} 
-    	*/
+    	//Initialize prefsChapter array
+    	prefsChapter = new int[66];
     	
     	// Get saved preferences
     	prefs  = getSharedPreferences("BiblePreferences", MODE_PRIVATE);		    
     	prefsBook = prefs.getInt("BOOK", 1);
-    	prefsChapter = prefs.getInt("CHAPTER", 1);
+    	for (int i=0; i<66; i++) {
+    		prefsChapter[i] = prefs.getInt("CHAPTER_"+String.valueOf(i), 1);
+    	}
     	prefsVerse = prefs.getInt("VERSE", 1);
     	prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
     	prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.kjv));
-    	prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvt));
+    	prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvs));
     	
-    	//Log.d(TAG, "Preferences: Book=" + prefsBook + " Chapter=" + prefsChapter + " Verse=" + prefsVerse);
     	//Log.d(TAG, "Preferences: Lang=" + prefsLanguage + " EN_trans=" + prefsEN_Trans + " CH_Trans=" + prefsCH_Trans);
     	
     	//Set Locale according to saved preferences
-    	//mySetLocale();
     	myLocale = new SetLocale(getApplicationContext());
-    	myLocale.set();
-    	//getActionBar().setTitle(getString(R.string.app_name));
+    	myLocale.set();  
     	
+    	//Set the correct app name according to language
+    	setTitle(getResources().getString(R.string.app_name));
 
     	// Get book names resources from XML and initialize OTList and NTList
     	populateListOfBooknames();
@@ -159,17 +163,19 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     	adapterVerse = new ListDataAdapter(this, verseList);
     	
     	//Highlight selected list items from saved preferences
-	    if (prefsBook < 40) {  //OT book
+	    if (prefsBook <= 39) {  //OT book
+	    	//Log.d(TAG, "OT, prefsBook = " + String.valueOf(prefsBook));
 	    	adapterOT.selected_item = prefsBook - 1;
 	    	listViewOT.setSelection(adapterOT.selected_item);  //Set starting position
 	    }
 	    else {  //NT book
-	    	adapterNT.selected_item = prefsBook - 40;
-	    	listViewNT.setSelection(adapterOT.selected_item);  //Set starting position
+	    	//Log.d(TAG, "NT, prefsBook = " + String.valueOf(prefsBook));
+	    	adapterNT.selected_item = prefsBook - 40; //-39-1
+	    	listViewNT.setSelection(adapterNT.selected_item);  //Set starting position
 	    }
-	    adapterChapter.selected_item = prefsChapter - 1;
+	    adapterChapter.selected_item = prefsChapter[prefsBook-1] - 1;
 		adapterVerse.selected_item = prefsVerse - 1;
-	    
+
 	    //Generate data for Chapter and Verse ListViews, chapterList and verseList
 	    populateListOfChapterAndVerse();
 	    
@@ -181,13 +187,13 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		
 		//Set the starting positions of ListViews to make sure 
 		//the selected items are visible on the screen
-		if (prefsBook < 40) {  //OT book
+		if (prefsBook <= 39) {  //OT book
 	    	listViewOT.setSelection(prefsBook - 1);  
 	    }
 	    else {  //NT book
 	    	listViewNT.setSelection(prefsBook - 40);  
 	    }
-		listViewChapter.setSelection(prefsChapter - 1); 
+		listViewChapter.setSelection(prefsChapter[prefsBook-1] - 1); 
 		listViewVerse.setSelection(prefsVerse - 1); 
 		
 		//Show titles (OT, NT, Chapter, Verse) in preferred language
@@ -196,28 +202,43 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     
 	protected void onResume() {
 		super.onResume();
-		//Log.d(TAG, "onResume()");
-			
+		
+		prefsBook = prefs.getInt("BOOK", 1);
+		for (int i=0; i<66; i++) {
+			prefsChapter[i] = prefs.getInt("CHAPTER_"+String.valueOf(i), 1);
+		}
+    	prefsVerse = prefs.getInt("VERSE", 1);
+    	if (prefsBook <= 39) {
+    		adapterOT.selected_item = prefsBook-1;
+        	adapterOT.notifyDataSetChanged();
+    	} else {
+    		adapterNT.selected_item = prefsBook-40;
+        	adapterNT.notifyDataSetChanged();
+    	}
+    	populateListOfChapterAndVerse(); //re-calculate list of chapters and verses in case they are changed
+    	adapterChapter.selected_item = prefsChapter[prefsBook-1]-1;
+    	adapterChapter.notifyDataSetChanged();
+    	adapterVerse.selected_item = prefsVerse-1;
+    	adapterVerse.notifyDataSetChanged();
+		//Log.d(TAG, "onResume(), prefsChapter=" + String.valueOf(prefsChapter) + " prefsVerse=" + String.valueOf(prefsVerse));
+		
+		//Set the starting position
+		listViewChapter.setSelection(prefsChapter[prefsBook-1] - 1); 
+		listViewVerse.setSelection(prefsVerse - 1);
+		
 		prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
     	prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.kjv));
-    	prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvt));
-    	
-    	//Log.d(TAG, "Lang=" + prefsLanguage + " EN_trans=" + prefsEN_Trans + " CH_Trans=" + prefsCH_Trans);
-    	
-    	//Restore Language preference back to Chinese if it's previously set to
-    	//side by side Chinese-English by the Display activity
-    	if (prefsLanguage.equals(getString(R.string.ch_en))) {
-    		prefsLanguage = getString(R.string.ch);
-    	}
+    	prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvs));
     	
     	//Set Locale
-    	//mySetLocale();
     	myLocale.set();
+    	
+    	//Set the correct app name according to language
+    	setTitle(getResources().getString(R.string.app_name));
     		
 		displayTitles();  // Set book, chapter, and verse titles
 		
 		if (item != null) {
-			//item.setTitle(R.string.lang);  //Set Action bar text
 			item.setTitle(prefsLanguage);  //Set Action bar text
 			// Change the lists on the display
 			populateListOfBooknames();
@@ -233,25 +254,21 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		//Log.d(TAG, "onPause()");
 		Editor editor = prefs.edit();
 		editor.putInt("BOOK", prefsBook);
-		editor.putInt("CHAPTER", prefsChapter);
+		for (int i=0; i<66; i++) {
+			editor.putInt("CHAPTER_"+String.valueOf(i), prefsChapter[i]);
+		}	
 		editor.putInt("VERSE", prefsVerse);
 		editor.putString("LANGUAGE", prefsLanguage);
 		editor.commit();
-	}  
-/*    
-    private void mySetLocale() {
-    	if (prefsLanguage.equals(getString(R.string.en))) {
-    		setLocale("en", "");
-    	} 
-    	else if (prefsLanguage.equals(getString(R.string.ch))) {
-    		if (prefsCH_Trans.equals(getString(R.string.cuvs))) {
-    			setLocale("zh", "CN");
-    		} else if (prefsCH_Trans.equals(getString(R.string.cuvt))) {
-    			setLocale("zh", "TW");
-    		}
-    	} 
-    }
-*/
+	}
+    
+    public void onDestroy() {
+		super.onDestroy();		
+		//Log.d(TAG, "onDestroy(): shutdown ttsobj");
+				
+		//Shut down the TTS engine
+		ttsobj.shutdown();
+	}
     
 	private void displayTitles() {		
 		//Log.d(TAG, "displayTitle()");
@@ -284,11 +301,11 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		int c;
 		int v;
 
-		//Log.d(TAG, "prefsBook = " + String.valueOf(prefsBook) + " prefsChapter = " + String.valueOf(prefsChapter) + " prefsVerse = " + String.valueOf(prefsVerse));
+		//Log.d(TAG, "prefsBook = " + String.valueOf(prefsBook) + " prefsChapter = " + String.valueOf(prefsChapter[prefsBook-1]) + " prefsVerse = " + String.valueOf(prefsVerse));
 		DataBaseHelper BibleDB = new DataBaseHelper(this, "CB_cuvslite.bbl.db");
 		try {
 			c = BibleDB.getNumOfChapters(prefsBook);
-			v = BibleDB.getNumOfVerses(prefsBook, prefsChapter);
+			v = BibleDB.getNumOfVerses(prefsBook, prefsChapter[prefsBook-1]);
 		} catch(SQLException sqle) {	    	
 	    	throw sqle;
 	    }
@@ -306,28 +323,28 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {			
     	if (parent == (ListView) findViewById(R.id.listViewOT)) {
 			if (adapterOT.selected_item == position) {
-				launchDisplayActivity(prefsBook, prefsChapter, prefsVerse, prefsLanguage);
+				launchDisplayActivity(prefsBook, prefsChapter[prefsBook-1], prefsVerse, prefsLanguage);
 			} else {
     		adapterOT.selected_item = position; //Select OT book
 			adapterNT.selected_item = -1; //Unselect NT book
 			prefsBook = position + 1; //Set book preferences
-			prefsChapter = 1;  //Reset chapter preferences to 1
+			//prefsChapter[prefsBook-1] = 1;  //Reset chapter preferences to 1
 			prefsVerse = 1;  //Reset verse preferences to 1
-			adapterChapter.selected_item = prefsChapter-1;
-			adapterVerse.selected_item = prefsVerse-1;
+			adapterChapter.selected_item = prefsChapter[prefsBook-1]-1;
+			adapterVerse.selected_item = prefsVerse-1; 
 			//Log.d(TAG, "position="+String.valueOf(position) + ", id=" + String.valueOf(id) + " prefsBook = " + String.valueOf(prefsBook));
 			}
 		}
 		if (parent == (ListView) findViewById(R.id.listViewNT)) {
 			if (adapterNT.selected_item == position) {
-				launchDisplayActivity(prefsBook, prefsChapter, prefsVerse, prefsLanguage);
+				launchDisplayActivity(prefsBook, prefsChapter[prefsBook-1], prefsVerse, prefsLanguage);
 			} else {
 			adapterOT.selected_item = -1;  //Unselect OT book
-			adapterNT.selected_item = position;  //Select NT book
+			adapterNT.selected_item = position;  //Select NT book			
 			prefsBook = position + 40;  //Set book preferences
-			prefsChapter = 1; //Reset chapter preferences to 1
+			//prefsChapter[prefsBook-1] = 1; //Reset chapter preferences to 1
 			prefsVerse = 1;  //Reset verse preferences to 1
-			adapterChapter.selected_item = prefsChapter-1;
+			adapterChapter.selected_item = prefsChapter[prefsBook-1]-1;
 			adapterVerse.selected_item = prefsVerse-1;
 			//Log.d(TAG, "position="+String.valueOf(position) + ", id=" + String.valueOf(id) + " prefsBook = " + String.valueOf(prefsBook));
 			}
@@ -335,10 +352,10 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 				
 		if (parent == (ListView) findViewById(R.id.listViewChapter)) {
 			if (adapterChapter.selected_item == position) {
-				launchDisplayActivity(prefsBook, prefsChapter, prefsVerse, prefsLanguage);
+				launchDisplayActivity(prefsBook, prefsChapter[prefsBook-1], prefsVerse, prefsLanguage);
 			} else {
 			adapterChapter.selected_item = position;
-			prefsChapter = position + 1; 
+			prefsChapter[prefsBook-1] = position + 1; 
 			prefsVerse = 1; //Reset verse preference to 1
 			//Log.d(TAG, "position="+String.valueOf(position) + ", id=" + String.valueOf(id) + " prefsChapter = " + String.valueOf(prefsChapter));
 			}
@@ -350,7 +367,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 			//Log.d(TAG, "position="+String.valueOf(position) + ", id=" + String.valueOf(id) + " prefsVerse = " + String.valueOf(prefsVerse));
 			
 			//Start DisplayActivity
-			launchDisplayActivity(prefsBook, prefsChapter, prefsVerse, prefsLanguage);
+			launchDisplayActivity(prefsBook, prefsChapter[prefsBook-1], prefsVerse, prefsLanguage);
 		}
 		
 		populateListOfChapterAndVerse();
@@ -358,30 +375,23 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		adapterOT.notifyDataSetChanged();
 		adapterNT.notifyDataSetChanged();		
 		adapterChapter.notifyDataSetChanged();
-		adapterVerse.notifyDataSetChanged();	
+		adapterVerse.notifyDataSetChanged();
+		
+		//Set the starting position
+		listViewChapter.setSelection(prefsChapter[prefsBook-1] - 1); 
+		listViewVerse.setSelection(prefsVerse - 1);
     }
     
     private void launchDisplayActivity(int book, int chapter, int verse, String language) {
 		Intent intent = new Intent(this, DisplayActivity.class);
+		intent.putExtra("PARENT", "MainActivity");
 		intent.putExtra("BOOK", book);
 		intent.putExtra("CHAPTER", chapter);
 		intent.putExtra("VERSE", verse);
 		intent.putExtra("LANGUAGE", language);
 		startActivity(intent);
 	}
-/*    
-	public void setLocale(String lang, String country) {
-		myLocale = new Locale(lang, country);
-		Resources res = getResources();
-		DisplayMetrics dm = res.getDisplayMetrics();
-		Configuration conf = res.getConfiguration();
-		conf.locale = myLocale;
-		res.updateConfiguration(conf, dm);
-		//Intent refresh = new Intent(this, CEBible_MainActivity.class);
-		//finish();
-		//startActivity(refresh);
-	}
-*/	 
+ 
     //Action bar menu
   	MenuItem item;
     
@@ -391,6 +401,17 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		getMenuInflater().inflate(R.menu.ce_bible, menu);
 		item = menu.findItem(R.id.action_language);  //change item on the action bar
 		item.setTitle(prefsLanguage);
+		
+		//Set the version number
+		menu.findItem(R.id.action_about).setTitle(getString(R.string.action_about) + swVersion);
+		
+		//Make the Favorite icon invisible if the Notebook DB has no entry yet
+		NotebookDbHelper mDbHelper = new NotebookDbHelper(this.getApplicationContext());
+    	if (mDbHelper.getScriptureDataList().size() == 0) {
+    		item = menu.findItem(R.id.action_favorite);
+    		item.setVisible(false);
+    	}	
+		
 		return true;
 	}
     
@@ -398,19 +419,16 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     public boolean onOptionsItemSelected(MenuItem it) {
         // Handle presses on the action bar items
         switch (it.getItemId()) 
-        {		
+        {	
+        case R.id.action_favorite:
+        	Intent intent2 = new Intent(this.getApplicationContext(), FavoriteActivity.class);
+    		startActivity(intent2);
+        	return true;
         case R.id.action_language:        	
-        	//Log.d(TAG, "Language clicked");	
         	if (prefsLanguage.equals(getString(R.string.ch))) {
         		prefsLanguage = getString(R.string.en);
-        		//setLocale("en", "");
         	} else if (prefsLanguage.equals(getString(R.string.en))){
         		prefsLanguage = getString(R.string.ch);
-        		if (prefsCH_Trans.equals(getString(R.string.cuvs))) {
-        			//setLocale("zh", "CN");
-        		} else if (prefsCH_Trans.equals(getString(R.string.cuvt))) {
-        			//setLocale("zh", "TW");
-        		}
         	}
         	
         	// Save the change in the Preferences
@@ -419,9 +437,10 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
         	editor.commit();
         	
         	//Set the Locale resources
-        	myLocale.set();       	
-        	        	
-        	//getActionBar().setTitle(getString(R.string.app_name));
+        	myLocale.set();     
+        	
+        	//Set the correct app name according to language
+        	setTitle(getResources().getString(R.string.app_name));
         	
         	item.setTitle(prefsLanguage);  // Change text on the action bar
         	

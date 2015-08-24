@@ -13,6 +13,12 @@
         android:title="@string/action_about"/>
     
     <item
+         android:id="@+id/action_favorite"
+         android:title="@string/myfavorites"
+         android:icon="@drawable/ic_action_favorite"
+         android:showAsAction="always"/>
+    
+    <item
          android:id="@+id/action_language"
          android:title="@string/ch"
          android:showAsAction="always"/>

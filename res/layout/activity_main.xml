@@ -64,7 +64,7 @@
         android:id="@+id/listViewOT"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="0.80"
+        android:layout_weight="0.78"
         android:paddingLeft="10dip"
     	android:paddingRight="10dip">
     </ListView>

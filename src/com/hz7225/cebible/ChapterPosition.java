@@ -13,7 +13,7 @@ public class ChapterPosition {
 	Activity mActivity;
 	public int mPosition; // from 0 to 1188
 	public int mBook;  // from 1 to 66
-	public int mChapter;
+	public int mChapter; // from 1 to something
 	private int[] num_of_chapters = new int[66]; //Number of chapters for each book
 	private int[] total_chapters = new int[66];  //Summed total chapter number
 	

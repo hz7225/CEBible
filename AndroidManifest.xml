@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hz7225.cebible"
-    android:versionCode="9"
-    android:versionName="1.8" >
+    android:versionCode="13"
+    android:versionName="2.1.1" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -60,6 +60,16 @@
     		<meta-data android:name="android.app.searchable"
             	android:resource="@xml/searchable" />
 		</activity>
+		
+    	<activity android:name=".FavoriteActivity"
+    	    android:screenOrientation="portrait"
+    	    android:theme="@style/My.Holo.Light.FullScreen"
+    	    android:parentActivityName="com.hz7225.cebible.CEBible_MainActivity"
+    	    android:launchMode="singleTop">	
+    	</activity>   
+    	
+    	<provider android:name=".SearchSuggestionProvider"
+              android:authorities="com.hz7225.cebible.SearchSuggestionProvider" />
     	
     </application>
 

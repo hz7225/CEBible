@@ -2,8 +2,13 @@
 <resources>
     <string name="app_name">漢英聖經</string>
     <string name="action_settings">設置</string>
-    <string name="action_about">漢英聖經 版本1.7</string>
-    <string name="action_search">搜索</string>     
+    <string name="action_help">使用提示</string>
+    <string name="action_about">漢英聖經 版本</string>
+    <string name="action_search">搜索</string>  
+    <string name="usagetip">使用提示</string> 
+    <string name="showusagetips">"  顯示使用提示"</string> 
+    <string name="usagetiptext">長按一節經文，即可對此進行複製、讀音、分享、劃線和搜尋</string> 
+    <string name="donotshow">不必再提示</string>
     <string name="lang">Eng</string>
     <string name="ch">中文</string> 
     <string name="en">Eng</string>
@@ -21,14 +26,18 @@
     <string name="cuv">和合本</string>     
     <string name="select_chinese_translation">首選的中文譯本</string>
     <string name="select_english_translation">Preferred English Translation</string>
-    <string name="read">朗讀</string>
+    <string name="read">讀音</string>
  	<string name="stop">停止</string>
  	<string name="share">分享</string>
  	<string name="note">筆記</string>
  	<string name="search">搜尋</string>
+ 	<string name="favorite">喜愛</string>
+ 	<string name="unfavorite">去除喜愛</string>
+ 	<string name="myfavorites">我的金句</string>
  	<string name="bookmark">書籤</string>
  	<string name="searchresult">搜尋結果</string>
  	<string name="wholebook">全書</string>
+ 	<string name="copied">複製成功</string>
         
     <string name="cuvs_kjv">和合本-KJV</string>
    

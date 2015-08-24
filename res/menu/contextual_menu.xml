@@ -34,6 +34,22 @@
         android:visible="false"
         android:titleCondensed="@string/note">
     </item>
+
+    <item
+        android:id="@+id/item_favorite"
+        android:icon="@drawable/ic_action_favorite"
+        android:showAsAction="always"
+        android:title="@string/favorite"
+        android:titleCondensed="@string/favorite">
+    </item>
+    
+    <item
+        android:id="@+id/item_unfavorite"
+        android:icon="@drawable/ic_action_unfavorite"
+        android:showAsAction="always"
+        android:title="@string/unfavorite"
+        android:titleCondensed="@string/favorite">
+    </item>
     
     <item
         android:id="@+id/item_search"
@@ -43,6 +59,5 @@
         android:visible="true"
         android:titleCondensed="@string/search">
     </item>
-
 
 </menu>

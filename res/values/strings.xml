@@ -2,8 +2,13 @@
 <resources>
     <string name="app_name">CEBible</string>
     <string name="action_settings">Settings</string>
-    <string name="action_about">CEBible v1.7</string>
-    <string name="action_search">Search</string>     
+    <string name="action_help">Tips</string>
+    <string name="action_about">CEBible v</string>
+    <string name="action_search">Search</string> 
+    <string name="usagetip">Usage Tip</string> 
+    <string name="showusagetips">"  Show Usage Tips"</string>  
+    <string name="usagetiptext">Long press a scripture, then you can Copy, Play, Share, Highlight, and Search</string> 
+    <string name="donotshow">Do not show again</string>    
     <string name="lang">Eng</string>
     <string name="ch">中文</string> 
     <string name="en">Eng</string>
@@ -25,9 +30,13 @@
  	<string name="share">Share</string>
  	<string name="note">Note</string>
  	<string name="search">Search</string>
+ 	<string name="favorite">Favorite</string>
+ 	<string name="unfavorite">Unfavorite</string>
+ 	<string name="myfavorites">My favorite verses</string>
  	<string name="bookmark">Bookmark</string>
  	<string name="searchresult">Search Result</string>
  	<string name="wholebook">Whole Book</string>
+ 	<string name="copied">Text copied</string>
     
     <string name="cuvs_kjv">和合本-KJV</string>
    

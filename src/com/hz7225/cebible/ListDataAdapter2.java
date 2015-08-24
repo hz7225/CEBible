@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.Selection;
 import android.text.Spannable;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,13 +22,13 @@ import android.widget.TextView;
 public class ListDataAdapter2 extends BaseAdapter {
 	String TAG = "MyDataAdapter2";
 	
-	private List<String> listData;
+	private List<SpannableString> listData;
 	private LayoutInflater layoutInflater;
 	public int selected_item;
 	Context mContext;
 	Drawable orig_color;
 	
-	public ListDataAdapter2(Context context, List<String> listData) {
+	public ListDataAdapter2(Context context, List<SpannableString> listData) {
 		mContext = context;
 		this.listData = listData;
 		layoutInflater = LayoutInflater.from(context);
@@ -53,7 +54,7 @@ public class ListDataAdapter2 extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View v, ViewGroup vg) {
-		//Log.d(TAG, "vg = " + vg);
+		//Log.d(TAG, "vg = " + vg + " position=" + String.valueOf(position));
 		
 		ViewHolder holder;
 		if (v == null) {

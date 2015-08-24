@@ -1,19 +1,17 @@
 package com.hz7225.cebible;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import android.app.Fragment;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.text.Selection;
 import android.text.Spannable;
-import android.util.DisplayMetrics;
+import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -27,8 +25,8 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class DisplayPageFragment extends Fragment {
 	
@@ -40,10 +38,11 @@ public class DisplayPageFragment extends Fragment {
     public static final String ARG_PAGE = "page";
     public static final String ARG_VERSION = "version";
 	
-	private int mPageNumber;
-	static private int mBook;
-	static private int mChapter;
-	static private int mVerse;
+	private int mPageNumber; //This is the page position number of ScrollView
+	static private int mBook; //book number passed in from the DisplayActivity via user selection,from 1 to 66
+	static private int mChapter; //chapter number passed in from the DisplayActivity via user selection, start from 1
+	static private int mVerse;  //verse number passed in from the DisplayActivity via user selection, start from 1, used for setting the starting position of the ListView
+	static private int longclickedVerse; //highlighted verse number via long click, used for creating a database record for favorite scriptures
 	static private String mLanguage;
 	static private String mEn_trans;
 	static private String mCh_trans;
@@ -52,6 +51,8 @@ public class DisplayPageFragment extends Fragment {
 		
 	ListView listView1;
 	ListView listView2;
+	List<SpannableString> spl1;
+	List<SpannableString> spl2;
 	ListDataAdapter2 adapter1;
 	ListDataAdapter2 adapter2;
 	
@@ -63,18 +64,23 @@ public class DisplayPageFragment extends Fragment {
 	TextView mTextView;
 	
 	TextToSpeech ttsobj;
+	
 	int selected_listview = 0; //used by TTS to play the text in correct language
 	
 	static int in_lv1_or_lv2 = 0; //used in search the correct language database, 1=Chinese, 2 = English
+	
 	ActionMode amode;
 	
-	public static DisplayPageFragment create(int pageNumber, int book, int verse, String lang, String en_trans, String ch_trans) {
+	NotebookDbHelper mDbHelper;
+	
+	public static DisplayPageFragment create(int pageNumber, int book, int chapter, int verse, String lang, String en_trans, String ch_trans) {
         mBook = book;
+        mChapter = chapter;
         mVerse = verse;
         mLanguage = lang;
         mEn_trans = en_trans;
-        mCh_trans = ch_trans;
-                     
+        mCh_trans = ch_trans;     
+        
 		DisplayPageFragment fragment = new DisplayPageFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, pageNumber);  
@@ -99,10 +105,13 @@ public class DisplayPageFragment extends Fragment {
 		
 		// initialize mBook and mChapter from ViewPager position number
 		ChapterPosition cp = new ChapterPosition(getActivity(), mPageNumber);
-		mBook = cp.getBook();
-		mChapter = cp.getChapter();
+		int book = cp.getBook();
+		int chapter = cp.getChapter();
+		int verse = mVerse;
 		
-		//Log.d(TAG, "mBook="+String.valueOf(mBook) + " mChapter"+String.valueOf(mChapter));
+		//3 PageViews will be created, 1 to the left and 1 to the right of the selected chapter.
+		//Set verse to 1 to the two budding ViewPages so that they start at verse 1 when turning to.
+		if (chapter != mChapter) verse = 1;
 		
 		if (mCh_trans.equals(getString(R.string.cuvs))) {
         	chinese_db = "CB_cuvslite.bbl.db";
@@ -116,73 +125,90 @@ public class DisplayPageFragment extends Fragment {
         	english_db = "EB_web_bbl.db";
         }
 		
-		//Log.d(TAG, "onCreateView(): mPageNumber = " + String.valueOf(mPageNumber) + " mChapter = " + String.valueOf(mChapter));
-		//Log.d(TAG, "onCreateView(): mPageNumber = " + String.valueOf(mPageNumber) + " mVersion = " + mVersion);		
-        //Use 2 ListViews in Linear layout for displaying Chinese and English Bibles respectively
+		//Log.d(TAG, "onCreateView(): mPageNumber = " + String.valueOf(mPageNumber) + " mChapter = " + String.valueOf(mChapter) + " mVerse = " + String.valueOf(mVerse));
+        
+		//Use 2 ListViews in Linear layout for displaying Chinese and English Bibles respectively
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.listviews, container, false);
         
         //ListView1 for Chinese translation
-        listView1 = (ListView) rootView.findViewById(R.id.listView1);
-        List<String> sl1 = getScriptureFromDB(mBook, mChapter, chinese_db);
-    	adapter1 = new ListDataAdapter2(this.getActivity(), sl1);     	
+        listView1 = (ListView) rootView.findViewById(R.id.listView1); 
+        spl1 = getSpannableScriptureFromDB(book, chapter, chinese_db);
+    	adapter1 = new ListDataAdapter2(this.getActivity(), spl1);     	
 	    listView1.setAdapter(adapter1);  //Set ListView adapters	    
-    	listView1.setSelection(mVerse-1);  //Set starting position
+    	listView1.setSelection(verse-1);  //Set starting position
+    	/* Test to make the verse number clickable. Doesn't work because tvn is null
+    	TextView tvn = (TextView)listView1.findViewById(R.id.scripture_number);
+    	tvn.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				// TODO Auto-generated method stub
+				return false;
+			}    		
+    	});
+    	*/
     	
     	//ListView2 for English translation
     	listView2 = (ListView) rootView.findViewById(R.id.listView2);    	
-    	List<String> sl2 = getScriptureFromDB(mBook, mChapter, english_db);
-    	adapter2 = new ListDataAdapter2(this.getActivity(), sl2);    	
+    	spl2 = getSpannableScriptureFromDB(book, chapter, english_db);
+    	adapter2 = new ListDataAdapter2(this.getActivity(), spl2);    	
     	listView2.setAdapter(adapter2);  //Set ListView adapters    	
-    	listView2.setSelection(mVerse-1);  //Set starting position
-
+    	listView2.setSelection(verse-1);  //Set starting position
     	
     	//Set listener
     	listView1.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> av, View v, int position, long id) {
-				//Log.d(TAG, "LV1: onItemClick");
 				//delete action mode
 				//amode.finish();
 			}
 		});
     	listView2.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> av, View v, int position, long id) {
-				//Log.d(TAG, "LV1: onItemClick");
 				//delete action mode
 				//amode.finish();
 			}
 		});
-		
+    	
     	//Set long click listener
 		listView1.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> av, View v, int position, long id) {	
-				//Log.d(TAG, "LV1: onItemLongClick selected_listview = 1");
-				if (in_lv1_or_lv2 != 0) {
+				longclickedVerse = position + 1;
+				//Log.d(TAG, "setOnItemLongClickListener,listView1, position=" + String.valueOf(position));
 				TextView tv = (TextView)v.findViewById(R.id.scripture);
-				title = getBookName() + String.valueOf(DisplayActivity.mChapter) + ":" + String.valueOf(position+1);
 				mTextView = tv;
-				mTextView.setTextIsSelectable(true);
-				selected_listview = 1;
-				if (in_lv1_or_lv2 != 0) setCustomSelectionCAB(true);
-				in_lv1_or_lv2 = 1; 
+				if (in_lv1_or_lv2 != 0) {
+					//title = getBookName() + String.valueOf(DisplayActivity.mChapter) + ":" + String.valueOf(position+1);
+					title = getBookName() + String.valueOf(mChapter) + ":" + String.valueOf(position+1);
+					//mTextView.setTextIsSelectable(true);
+					selected_listview = 1;
+					setCustomSelectionCAB(true);
+					in_lv1_or_lv2 = 1; 
 				}
-		    	return false; //pass event to onItemClickListener
-		    	//return true;  //consume event
+				else {					
+					mTextView.setTextIsSelectable(false); //Disable Text Selection in side-by-side view 
+				}
+				return false; //pass event to onItemClickListener
+				//return true;  //consume event
 			}
 		});
 		listView2.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			public boolean onItemLongClick(AdapterView<?> av, View v, int position, long id) {
-				//Log.d(TAG, "LV1: onItemLongClick selected_listview = 2");
-				if (in_lv1_or_lv2 != 0) {
+				longclickedVerse = position + 1;
+				//Log.d(TAG, "setOnItemLongClickListener,listView2, position=" + String.valueOf(position));
 				TextView tv = (TextView)v.findViewById(R.id.scripture);
-				title = getBookName() + String.valueOf(DisplayActivity.mChapter) + ":" + String.valueOf(position+1);
 				mTextView = tv;
-				mTextView.setTextIsSelectable(true);
-				selected_listview = 2;
-				setCustomSelectionCAB(true);
-				in_lv1_or_lv2 = 2;
+				if (in_lv1_or_lv2 != 0) {
+					//title = getBookName() + String.valueOf(DisplayActivity.mChapter) + ":" + String.valueOf(position+1);
+					title = getBookName() + String.valueOf(mChapter) + ":" + String.valueOf(position+1);
+					//mTextView.setTextIsSelectable(true);
+					selected_listview = 2;
+					setCustomSelectionCAB(true);
+					in_lv1_or_lv2 = 2;
 				}
-		    	return false; //pass event to onItemClickListener
-		    	//return true;  //consume event
+				else {					
+					mTextView.setTextIsSelectable(false); //Disable Text Selection in side-by-side view 
+				}
+				return false; //pass event to onItemClickListener
+				//return true;  //consume event
 			}
 		});
 		
@@ -263,10 +289,31 @@ public class DisplayPageFragment extends Fragment {
 
         //Get the whole chapter of a book from database
         List<String> sl = BibleDB.getChapter(book, chapter);
-        for (int i=0; i<sl.size(); i++) {
-        	sl.set(i, sl.get(i));
-        }
+
         return sl;
+	}
+	
+	private List<SpannableString> getSpannableScriptureFromDB(int book, int chapter, String db) {
+		//Log.d(TAG, "getSpannableScriptureFromDB: " + db + " mChapter = " + String.valueOf(chapter));
+		DataBaseHelper BibleDB = new DataBaseHelper(getActivity().getApplicationContext(), db);
+
+        //Get the whole chapter of a book from database
+        List<String> sl = BibleDB.getChapter(book, chapter);
+        
+        //Construct a SpannableString list
+        //Log.d(TAG, "sl size = " + String.valueOf(sl.size()));
+        List<SpannableString> spl = new ArrayList<SpannableString>();
+        for (int i=0; i<sl.size(); i++) {
+        	SpannableString ss = new SpannableString(sl.get(i));
+        	if (mDbHelper == null) mDbHelper = new NotebookDbHelper(getActivity().getApplicationContext());	
+			boolean test = mDbHelper.checkIfRecordExists(book, chapter, i+1);
+			if (test == true) {
+				//ss.setSpan(new BackgroundColorSpan(Color.YELLOW), 0, ss.length(), 0);
+				ss.setSpan(new BackgroundColorSpan(0x60ffff00), 0, ss.length(), 0);
+			}
+        	spl.add(ss);
+        }
+        return spl;
 	}
 	
 	private String getBookName() {
@@ -287,9 +334,11 @@ public class DisplayPageFragment extends Fragment {
 	
 	private void setCustomSelectionCAB(boolean longClick) {
 		//Select all text
-		//Selection.selectAll((Spannable) mTextView.getText());	
+		Selection.selectAll((Spannable) mTextView.getText());	
     	
 		mTextView.setCustomSelectionActionModeCallback(new Callback() {
+			NotebookDbHelper mDbHelper = new NotebookDbHelper(getActivity().getApplicationContext());					
+			boolean test = mDbHelper.checkIfRecordExists(mBook, mChapter, longclickedVerse);
 
 			@Override
 			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -298,6 +347,7 @@ public class DisplayPageFragment extends Fragment {
 				mode.getMenuInflater().inflate(R.menu.contextual_menu, menu);
 				mode.setTitle("");
 				amode = mode;
+
 				return true;
 			}
 
@@ -308,8 +358,21 @@ public class DisplayPageFragment extends Fragment {
 				
 				// Remove the "select all" option
 				//menu.removeItem(android.R.id.selectAll);
+				
 				// Just make the select all option invisiable
-				//mode.getMenu().getItem(0).setVisible(false);
+				mode.getMenu().getItem(0).setVisible(false);
+				
+				//Don't show Share icon untill SelectAll is clicked
+				//mode.getMenu().getItem(4).setVisible(false);
+				
+				//Show Favorite or Unfavorite depends on if the verse is already highlighted or not
+				if (test == true) {
+					mode.getMenu().getItem(7).setVisible(true);  //Make Unfavorite visible
+					mode.getMenu().getItem(6).setVisible(false);
+				} else {
+					mode.getMenu().getItem(6).setVisible(true);  //Make Favorite visible
+					mode.getMenu().getItem(7).setVisible(false);
+				}
 				
 				//Don't show the TTS Play icon for API level older than 17 (Jelly Bean MR1)
 				if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
@@ -322,37 +385,54 @@ public class DisplayPageFragment extends Fragment {
 			public boolean onActionItemClicked(ActionMode mode,
 					MenuItem item) {
 				//Log.d(TAG, "setCustomSelectionCAB: onActionItemClicked");
+				
 				switch (item.getItemId()) {
+				case android.R.id.selectAll:
+					mode.getMenu().getItem(4).setVisible(true); //Make Share icon visible
+					mode.getMenu().getItem(0).setVisible(false); //Make SelectAll invisible
+					mode.getMenu().getItem(8).setVisible(false);  //Make Search invisible
+					//See if the clicked verse is already a favorite verse or not					
+					if (test == true) {
+						mode.getMenu().getItem(7).setVisible(true);  //Make Unfavorite visible
+					} else {
+						mode.getMenu().getItem(6).setVisible(true);  //Make Favorite visible
+					}
+					return false;
+				case android.R.id.copy:
+					Toast.makeText(getActivity(), getString(R.string.copied), Toast.LENGTH_SHORT).show();
+					return false;
 				case R.id.item_play:
 					//Log.d(TAG, "Play selected text in " + mVersion);
 					if (selected_listview == 1) {
-						DisplayActivity.ttsobj.setLanguage(Locale.CHINESE);						
-						DisplayActivity.ttsobj.speak(selectedText(), TextToSpeech.QUEUE_FLUSH, null);
+						CEBible_MainActivity.ttsobj.setLanguage(Locale.CHINESE);						
+						CEBible_MainActivity.ttsobj.speak(selectedText(), TextToSpeech.QUEUE_FLUSH, null);
 					} 					
 					else if (selected_listview == 2) {
 						if (mEn_trans.equals(getString(R.string.kjv))) {
-							DisplayActivity.ttsobj.setLanguage(Locale.UK);
+							CEBible_MainActivity.ttsobj.setLanguage(Locale.UK);
 						}
 						else {
-							DisplayActivity.ttsobj.setLanguage(Locale.US);
+							CEBible_MainActivity.ttsobj.setLanguage(Locale.US);
 						}
-						DisplayActivity.ttsobj.speak(selectedText(), TextToSpeech.QUEUE_FLUSH, null);
+						CEBible_MainActivity.ttsobj.speak(selectedText(), TextToSpeech.QUEUE_FLUSH, null);
 					}
 						
 					mode.getMenu().getItem(0).setVisible(false); //Select All
 					mode.getMenu().getItem(1).setVisible(false); //Copy
 					mode.getMenu().getItem(3).setVisible(true);  //Pause
 					mode.getMenu().getItem(4).setVisible(false);  //Share
-					mode.getMenu().getItem(5).setVisible(false);  //Note
-					mode.getMenu().getItem(6).setVisible(false);  //Search
+					mode.getMenu().getItem(5).setVisible(false);  //Note					
+					mode.getMenu().getItem(6).setVisible(false);  //Favorite
+					mode.getMenu().getItem(7).setVisible(false);  //Unfavorite
+					mode.getMenu().getItem(8).setVisible(false);  //Search
 					return true;
 				case R.id.item_pause:
-					DisplayActivity.ttsobj.stop();
+					CEBible_MainActivity.ttsobj.stop();
 					return true;
 				case R.id.item_share:
 					//Log.d(TAG, "mode size = " + String.valueOf(mode.getMenu().size()));
 					//Select the text of the whole verse to share
-					Selection.selectAll((Spannable) mTextView.getText());
+					//Selection.selectAll((Spannable) mTextView.getText());
 					
 					Intent i=new Intent(android.content.Intent.ACTION_SEND);
 					i.setType("text/plain");
@@ -369,6 +449,56 @@ public class DisplayPageFragment extends Fragment {
 		    		startActivity(intent);
 					
 					return true;
+				case R.id.item_favorite:	
+					//Log.d(TAG, "Favorite icon pressed");
+					//Log.d(TAG, "mBook=" + String.valueOf(mBook) + " mChapter=" + String.valueOf(mChapter) + " mVerse=" + String.valueOf(mVerse) + " longclickedVerse=" + String.valueOf(longclickedVerse));
+					
+					if (test == true) {
+						//Log.d(TAG, "update existing DB record");
+						mDbHelper.updateRecord(mBook, mChapter, longclickedVerse, selectedText(), "", "");
+					} else {
+						//Log.d(TAG, "inserting new DB record");
+						mDbHelper.insertRecord(mBook, mChapter, longclickedVerse, selectedText(), "", "");
+					}
+
+					//Log.d(TAG, "Favorite clicked, longclickedVerse=" + String.valueOf(longclickedVerse));
+					
+					//Highlight the text via Spannable string for ListView1
+					SpannableString ss1 = spl1.get(longclickedVerse - 1);
+					ss1.setSpan(new BackgroundColorSpan(0x60ffff00), 0, ss1.length(), 0);
+					spl1.set(longclickedVerse-1, ss1);
+					adapter1.notifyDataSetChanged();
+					
+					//Highlight the text via Spannable string for ListView2
+					SpannableString ss2 = spl2.get(longclickedVerse - 1);
+					ss2.setSpan(new BackgroundColorSpan(0x60ffff00), 0, ss2.length(), 0);
+					spl2.set(longclickedVerse-1, ss2);
+					adapter2.notifyDataSetChanged();
+					
+					return true;
+				case R.id.item_unfavorite:	
+					//Log.d(TAG, "Unfavorite icon pressed");	
+					mDbHelper.deleteRecord(mBook, mChapter, longclickedVerse);
+					
+					//Clear the Span for ListView1
+					SpannableString s1 = spl1.get(longclickedVerse - 1);
+					BackgroundColorSpan[] sp1 = s1.getSpans(0, s1.length(), BackgroundColorSpan.class);
+					for (int j = 0; j < sp1.length; j++) {
+						s1.removeSpan(sp1[j]);
+					}
+					spl1.set(longclickedVerse-1, s1);
+					adapter1.notifyDataSetChanged();
+					
+					//Clear the Span for ListView2
+					SpannableString s2 = spl2.get(longclickedVerse - 1);
+					BackgroundColorSpan[] sp2 = s2.getSpans(0, s2.length(), BackgroundColorSpan.class);
+					for (int j = 0; j < sp2.length; j++) {
+						s2.removeSpan(sp2[j]);
+					}
+					spl2.set(longclickedVerse-1, s2);
+					adapter2.notifyDataSetChanged();
+					
+					return true;
 				default:	
 					return false;
 				}
@@ -376,7 +506,7 @@ public class DisplayPageFragment extends Fragment {
 
 			@Override
 			public void onDestroyActionMode(ActionMode mode) {
-				DisplayActivity.ttsobj.stop();
+				CEBible_MainActivity.ttsobj.stop();
 				//Log.d(TAG, "setCustomSelectionCAB: onDestroyActionMode" + mTextView.getText());
 				//mTextView.setTextIsSelectable(false); //Investigate, app crashes
 			}

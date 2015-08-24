@@ -12,12 +12,16 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +45,9 @@ public class SettingsActivity extends Activity {
     String prefsCH_Trans;
     
     Locale myLocale;
+    
+    CheckBox ckBox;
+    Boolean showUsageTip;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -51,7 +58,7 @@ public class SettingsActivity extends Activity {
 		
 		prefs  = getSharedPreferences("BiblePreferences", MODE_PRIVATE);
 		prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.kjv));
-    	prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvt));
+    	prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvs));
 		
     	//Listview1 is for Chinese
         ListView listView1 = (ListView) findViewById(R.id.lv_ch_translations); 
@@ -123,7 +130,30 @@ public class SettingsActivity extends Activity {
 	
 	@Override
 	protected void onResume() {
-		super.onResume();
+		super.onResume();	
+		
+		//Get saved SHOW_USAGE_TIP value from the Preferences
+    	showUsageTip = prefs.getBoolean("SHOW_USAGE_TIP", true);
+    	Log.d(TAG, "ShowUsageTip CheckBox = " + showUsageTip.toString());
+    	
+		//CheckBox listener
+		ckBox = (CheckBox) findViewById(R.id.checkBox);
+		ckBox.setChecked(showUsageTip);
+		ckBox.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				if (((CheckBox) v).isChecked()) {
+					Log.d(TAG, "ShowUsageTip checked");
+					showUsageTip = true;
+				}	else {
+					Log.d(TAG, "ShowUsageTip unchecked");
+					showUsageTip = false;
+				}
+				//Save the value in Preferences
+				Editor editor = prefs.edit();
+				editor.putBoolean("SHOW_USAGE_TIP", showUsageTip);
+				editor.commit();
+			}
+		});
 	}	
 	
 	@Override

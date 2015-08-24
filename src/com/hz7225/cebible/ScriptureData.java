@@ -2,6 +2,7 @@ package com.hz7225.cebible;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.SpannableString;
 
 public class ScriptureData {
 	//private Activity activity;
@@ -9,10 +10,10 @@ public class ScriptureData {
 	private String book;  //number String between "1" and "66"
 	private String chapter;
 	private String verse;
-	private String scripture;
+	private SpannableString scripture;
 	private String bookName;
 	
-	public ScriptureData(Context context, String b, String c, String v, String s) {
+	public ScriptureData(Context context, String b, String c, String v, SpannableString s) {
 		mContext = context;
 		book = b;
 		chapter = c;
@@ -62,11 +63,11 @@ public class ScriptureData {
 		return verse;
 	}
 	
-	public void setScripture(String s) {
+	public void setScripture(SpannableString s) {
 		scripture = s;
 	}
 
-	public String getScripture() {
+	public SpannableString getScripture() {
 		return scripture;
 	}
 	

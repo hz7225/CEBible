@@ -11,10 +11,12 @@ import java.util.List;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.SpannableString;
 import android.util.Log;
 
 public class DataBaseHelper extends SQLiteOpenHelper{
@@ -174,6 +176,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	// You could return cursors by doing "return myDataBase.query(....)" so it'd be easy
 	// to you to create adapters for your views.
 	
+	/* For SQL query, the low limit for book is 1, not 0 */
 	public int getNumOfChapters(int book) throws SQLException {
 		// SQL Select Query
 		String selectQuery = "SELECT Chapter FROM Bible WHERE Book=" + String.valueOf(book);
@@ -181,12 +184,18 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		//Log.d(TAG, selectQuery); 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
-		cursor.moveToLast();
-		int num = cursor.getInt(0);
+		int num;
+		if (cursor.moveToLast() == true) {
+			num = cursor.getInt(0);
+		} else {
+			num = 0;
+		}
 		cursor.close();
+		db.close();
 		return num;
 	}   
 
+	/* low limits for book and chapter are 1, not 0 */
 	public int getNumOfVerses(int book, int chapter) throws SQLException {
 		// SQL Select Query
 		String selectQuery = "SELECT Verse FROM Bible WHERE Book=" + String.valueOf(book) + 
@@ -195,9 +204,15 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		//Log.d(TAG, selectQuery); 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
-		cursor.moveToLast();
-		int num = cursor.getInt(0);
+		//Log.d(TAG, "getNumOfVerses() cursor.getCount()=" + String.valueOf(cursor.getCount()));
+		int num;
+		if (cursor.moveToLast() == true) {  //true means cursor is not empty
+			num = cursor.getInt(0);
+		} else {
+			num = 0;
+		}
 		cursor.close();
+		db.close();
 		return num;
 	}
 	
@@ -212,6 +227,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		cursor.moveToFirst();
 		String str = cursor.getString(0);
 		cursor.close();
+		db.close();
 		return str;
 	}
 	
@@ -231,28 +247,38 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		}
 		
 		cursor.close();
+		db.close();
 		return scriptureList;
 	}
 	
 	public List<ScriptureData> searchWholeBible(String searchStr) throws SQLException {
 		List<ScriptureData> scriptureList = new ArrayList<ScriptureData>();
+		/* TODO: study if SQLiteQueryBuilder should be used to create a SQL select command*/
 		// SQL Select Query
-		String selectQuery = "SELECT * FROM Bible WHERE Scripture LIKE " + "\'%" + searchStr + "%\'";
-		//Log.d(TAG, "searchBible: " + selectQuery); 
+		//DatabaseUtils.sqlEscapeString(searchStr); //doesn't work
+		searchStr = searchStr.replaceAll("'","''"); //seems to work to prevent crash of single quote in sql query				
+		String selectQuery = "SELECT * FROM Bible WHERE Scripture LIKE " + "\'%" + searchStr + "%\'";	
+		//Log.d(TAG, "searchBible: " + selectQuery + " won\'t"); 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
 		
 		while (cursor.moveToNext()) {			
 			//Log.d(TAG, cursor.getString(0) + " " + cursor.getString(1) + ":" + cursor.getString(2) + " " + cursor.getString(3));
-			scriptureList.add(new ScriptureData(myContext, cursor.getString(0), cursor.getString(1),cursor.getString(2), cursor.getString(3)));
+			SpannableString ss = new SpannableString(cursor.getString(3));
+			//scriptureList.add(new ScriptureData(myContext, cursor.getString(0), cursor.getString(1),cursor.getString(2), cursor.getString(3)));
+			scriptureList.add(new ScriptureData(myContext, cursor.getString(0), cursor.getString(1),cursor.getString(2), ss));
 		}
 		
+		cursor.close();
+		db.close();
 		return scriptureList;
 	}
 	
 	public List<ScriptureData> searchOneBibleBook(String book, String searchStr) throws SQLException {
 		List<ScriptureData> scriptureList = new ArrayList<ScriptureData>();
 		// SQL Select Query
+		//DatabaseUtils.sqlEscapeString(searchStr); //doesn't work
+		searchStr = searchStr.replaceAll("'","''"); //seems to work to prevent crash of single quote in sql query
 		String selectQuery = "SELECT * FROM Bible WHERE Book = " + book + " AND Scripture LIKE " + "\'%" + searchStr + "%\'";
 		//Log.d(TAG, "searchBibleBook " + book + ": " + selectQuery); 
 		SQLiteDatabase db = this.getWritableDatabase();
@@ -260,9 +286,13 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		
 		while (cursor.moveToNext()) {			
 			//Log.d(TAG, cursor.getString(0) + " " + cursor.getString(1) + ":" + cursor.getString(2) + " " + cursor.getString(3));
-			scriptureList.add(new ScriptureData(myContext, cursor.getString(0), cursor.getString(1),cursor.getString(2), cursor.getString(3)));
+			SpannableString ss = new SpannableString(cursor.getString(3));
+			//scriptureList.add(new ScriptureData(myContext, cursor.getString(0), cursor.getString(1),cursor.getString(2), cursor.getString(3)));
+			scriptureList.add(new ScriptureData(myContext, cursor.getString(0), cursor.getString(1),cursor.getString(2), ss));
 		}
 		
+		cursor.close();
+		db.close();
 		return scriptureList;
 	}
  
