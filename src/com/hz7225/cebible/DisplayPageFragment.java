@@ -347,7 +347,12 @@ public class DisplayPageFragment extends Fragment {
 				mode.getMenuInflater().inflate(R.menu.contextual_menu, menu);
 				mode.setTitle("");
 				amode = mode;
-
+				
+				//Lollipop MR1 (Build # 22) workaround, onPrepareActionMode didn't get called automatically. So call is manually
+				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+					onPrepareActionMode(mode, menu);
+				}
+				
 				return true;
 			}
 
