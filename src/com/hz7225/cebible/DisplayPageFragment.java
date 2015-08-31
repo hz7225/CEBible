@@ -7,6 +7,8 @@ import java.util.Locale;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.speech.tts.TextToSpeech;
 import android.text.Selection;
 import android.text.Spannable;
@@ -73,6 +75,9 @@ public class DisplayPageFragment extends Fragment {
 	
 	NotebookDbHelper mDbHelper;
 	
+	//Msg types
+	private final int EVENT_HIGHLIGHT = 1;
+	
 	public static DisplayPageFragment create(int pageNumber, int book, int chapter, int verse, String lang, String en_trans, String ch_trans) {
         mBook = book;
         mChapter = chapter;
@@ -93,9 +98,65 @@ public class DisplayPageFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 	}
 	
-	public void onDestroyView() {
-		super.onDestroyView();
+	int _book;
+	int _chapter;
+	public void onResume() {
+		super.onResume();
+				
+		mPageNumber = getArguments().getInt(ARG_PAGE);
+		ChapterPosition cp = new ChapterPosition(getActivity(), mPageNumber);
+		_book = cp.getBook();
+		_chapter = cp.getChapter();
+		
+		//Log.d(TAG, "DisplayPageFragment::onResume(), book=" + String.valueOf(_book) + " chapter=" + String.valueOf(_chapter));
+		
+		//After the scriptures are displayed, send an event to the Activity itself 
+		//to start highlighting favored verses
+		Thread thBackground = new Thread(run);
+    	thBackground.start();
 	}
+	
+	Runnable run = new Runnable() {    	
+		public synchronized void run() {
+			//Log.d(TAG, "Runable() executed");
+
+			//Set an event to search for favored verses and highlight them
+			Message msg = handler.obtainMessage(EVENT_HIGHLIGHT);
+			handler.sendMessage(msg);
+		}
+	};
+    	
+	private final Handler handler = new Handler() {
+		public void handleMessage(Message m) {
+			super.handleMessage(m);
+
+			switch(m.what) {
+			case EVENT_HIGHLIGHT:
+				//Search notebook database and highlight the favored verses
+				if (mDbHelper == null) mDbHelper = new NotebookDbHelper(getActivity().getApplicationContext());
+				for (int i=0; i<spl1.size(); i++) {
+					SpannableString ss = spl1.get(i);
+					boolean test = mDbHelper.checkIfRecordExists(_book, _chapter, i+1);
+					if (test == true) {
+		        		ss.setSpan(new BackgroundColorSpan(0x60ffff00), 0, ss.length(), 0);
+		        	}
+					spl1.set(i, ss);
+				}
+				adapter1.notifyDataSetChanged();
+				for (int i=0; i<spl2.size(); i++) {
+					SpannableString ss = spl2.get(i);
+					boolean test = mDbHelper.checkIfRecordExists(_book, _chapter, i+1);
+					if (test == true) {
+		        		ss.setSpan(new BackgroundColorSpan(0x60ffff00), 0, ss.length(), 0);
+		        	}
+					spl2.set(i, ss);
+				}
+				adapter2.notifyDataSetChanged();
+
+				break;
+			}
+		}
+	};	
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -303,14 +364,16 @@ public class DisplayPageFragment extends Fragment {
         //Construct a SpannableString list
         //Log.d(TAG, "sl size = " + String.valueOf(sl.size()));
         List<SpannableString> spl = new ArrayList<SpannableString>();
+        if (mDbHelper == null) mDbHelper = new NotebookDbHelper(getActivity().getApplicationContext());	
         for (int i=0; i<sl.size(); i++) {
         	SpannableString ss = new SpannableString(sl.get(i));
-        	if (mDbHelper == null) mDbHelper = new NotebookDbHelper(getActivity().getApplicationContext());	
-			boolean test = mDbHelper.checkIfRecordExists(book, chapter, i+1);
-			if (test == true) {
-				//ss.setSpan(new BackgroundColorSpan(Color.YELLOW), 0, ss.length(), 0);
-				ss.setSpan(new BackgroundColorSpan(0x60ffff00), 0, ss.length(), 0);
-			}
+        	/* Do this after first displaying the verses for speed consideration. See EVENT_HIGHLIGHT
+        	boolean test = mDbHelper.checkIfRecordExists(book, chapter, i+1);
+        	if (test == true) {
+        		//ss.setSpan(new BackgroundColorSpan(Color.YELLOW), 0, ss.length(), 0);
+        		ss.setSpan(new BackgroundColorSpan(0x60ffff00), 0, ss.length(), 0);
+        	}
+        	*/
         	spl.add(ss);
         }
         return spl;
