@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/popup"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAF0BE"
+    android:padding="10sp"
+    android:orientation="vertical" >
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="0dip"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:text="@string/usagetip"
+        />
+
+    <View
+        android:id="@+id/horizontal_line1"
+        android:layout_width="fill_parent"
+        android:layout_marginTop="10dp"
+        android:layout_height="1dp"
+        android:background="#50101010"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dip"
+        android:textSize="20dp"
+        android:text="@string/usagetiptext"
+        />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="260dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/cab_usage"
+        android:layout_gravity="center_horizontal" />
+    
+    <LinearLayout
+    	android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+    	android:layout_marginTop="15dip"
+    	android:orientation="horizontal" >
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"        
+        android:text="@string/donotshow"
+        />
+
+    <Button
+        android:id="@+id/btn_close_popup"
+        android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+        android:minHeight="30dp"
+        android:layout_marginLeft="40dp"
+        android:background="#007FFF"
+        android:text="OK"        
+        />
+    
+	</LinearLayout>
+</LinearLayout>

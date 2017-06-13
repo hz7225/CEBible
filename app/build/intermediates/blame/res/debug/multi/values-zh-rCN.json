@@ -1,0 +1,866 @@
+[
+    {
+        "outputFile": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-zh-rCN\\values-zh-rCN.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endLine": 30,
+                    "endColumn": 19,
+                    "endOffset": 893
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 89,
+                        "startColumn": 1,
+                        "startOffset": 3118,
+                        "endLine": 117,
+                        "endColumn": 19,
+                        "endOffset": 3956
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 31,
+                    "startColumn": 4,
+                    "startOffset": 898,
+                    "endLine": 71,
+                    "endColumn": 19,
+                    "endOffset": 2079
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 48,
+                        "startColumn": 4,
+                        "startOffset": 1935,
+                        "endLine": 88,
+                        "endColumn": 19,
+                        "endOffset": 3116
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 72,
+                    "startColumn": 4,
+                    "startOffset": 2084,
+                    "endColumn": 48,
+                    "endOffset": 2128
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 5,
+                        "startColumn": 4,
+                        "startOffset": 189,
+                        "endColumn": 48,
+                        "endOffset": 233
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 73,
+                    "startColumn": 4,
+                    "startOffset": 2133,
+                    "endColumn": 44,
+                    "endOffset": 2173
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 4,
+                        "startColumn": 4,
+                        "startOffset": 144,
+                        "endColumn": 44,
+                        "endOffset": 184
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 74,
+                    "startColumn": 4,
+                    "startOffset": 2178,
+                    "endColumn": 44,
+                    "endOffset": 2218
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 6,
+                        "startColumn": 4,
+                        "startOffset": 238,
+                        "endColumn": 44,
+                        "endOffset": 278
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 75,
+                    "startColumn": 4,
+                    "startOffset": 2223,
+                    "endColumn": 46,
+                    "endOffset": 2265
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 3,
+                        "startColumn": 4,
+                        "startOffset": 97,
+                        "endColumn": 46,
+                        "endOffset": 139
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 76,
+                    "startColumn": 4,
+                    "startOffset": 2270,
+                    "endColumn": 41,
+                    "endOffset": 2307
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 2,
+                        "startColumn": 4,
+                        "startOffset": 55,
+                        "endColumn": 41,
+                        "endOffset": 92
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 77,
+                    "startColumn": 4,
+                    "startOffset": 2312,
+                    "endColumn": 35,
+                    "endOffset": 2343
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 21,
+                        "startColumn": 4,
+                        "startOffset": 902,
+                        "endColumn": 35,
+                        "endOffset": 933
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 78,
+                    "startColumn": 4,
+                    "startOffset": 2348,
+                    "endColumn": 39,
+                    "endOffset": 2383
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 36,
+                        "startColumn": 2,
+                        "startOffset": 1541,
+                        "endColumn": 37,
+                        "endOffset": 1576
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 79,
+                    "startColumn": 4,
+                    "startOffset": 2388,
+                    "endColumn": 33,
+                    "endOffset": 2417
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 12,
+                        "startColumn": 4,
+                        "startOffset": 534,
+                        "endColumn": 33,
+                        "endOffset": 563
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 80,
+                    "startColumn": 4,
+                    "startOffset": 2422,
+                    "endColumn": 40,
+                    "endOffset": 2458
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 14,
+                        "startColumn": 4,
+                        "startOffset": 604,
+                        "endColumn": 40,
+                        "endOffset": 640
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 81,
+                    "startColumn": 4,
+                    "startOffset": 2463,
+                    "endColumn": 44,
+                    "endOffset": 2503
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 17,
+                        "startColumn": 4,
+                        "startOffset": 722,
+                        "endColumn": 44,
+                        "endOffset": 762
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 82,
+                    "startColumn": 4,
+                    "startOffset": 2508,
+                    "endColumn": 47,
+                    "endOffset": 2551
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 45,
+                        "startColumn": 4,
+                        "startOffset": 1838,
+                        "endColumn": 47,
+                        "endOffset": 1881
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 83,
+                    "startColumn": 4,
+                    "startOffset": 2556,
+                    "endColumn": 39,
+                    "endOffset": 2591
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 39,
+                        "startColumn": 2,
+                        "startOffset": 1664,
+                        "endColumn": 37,
+                        "endOffset": 1699
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 84,
+                    "startColumn": 4,
+                    "startOffset": 2596,
+                    "endColumn": 35,
+                    "endOffset": 2627
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 25,
+                        "startColumn": 4,
+                        "startOffset": 1058,
+                        "endColumn": 35,
+                        "endOffset": 1089
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 85,
+                    "startColumn": 4,
+                    "startOffset": 2632,
+                    "endColumn": 38,
+                    "endOffset": 2666
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 23,
+                        "startColumn": 4,
+                        "startOffset": 976,
+                        "endColumn": 38,
+                        "endOffset": 1010
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 86,
+                    "startColumn": 4,
+                    "startOffset": 2671,
+                    "endColumn": 44,
+                    "endOffset": 2711
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 41,
+                        "startColumn": 4,
+                        "startOffset": 1709,
+                        "endColumn": 44,
+                        "endOffset": 1749
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 87,
+                    "startColumn": 4,
+                    "startOffset": 2716,
+                    "endColumn": 38,
+                    "endOffset": 2750
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 24,
+                        "startColumn": 4,
+                        "startOffset": 1015,
+                        "endColumn": 38,
+                        "endOffset": 1049
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 88,
+                    "startColumn": 4,
+                    "startOffset": 2755,
+                    "endColumn": 43,
+                    "endOffset": 2794
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 10,
+                        "startColumn": 4,
+                        "startOffset": 451,
+                        "endColumn": 43,
+                        "endOffset": 490
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 89,
+                    "startColumn": 4,
+                    "startOffset": 2799,
+                    "endColumn": 34,
+                    "endOffset": 2829
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 13,
+                        "startColumn": 4,
+                        "startOffset": 569,
+                        "endColumn": 34,
+                        "endOffset": 599
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 90,
+                    "startColumn": 4,
+                    "startOffset": 2834,
+                    "endColumn": 56,
+                    "endOffset": 2886
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 19,
+                        "startColumn": 4,
+                        "startOffset": 809,
+                        "endColumn": 56,
+                        "endOffset": 861
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 91,
+                    "startColumn": 4,
+                    "startOffset": 2891,
+                    "endColumn": 39,
+                    "endOffset": 2926
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 33,
+                        "startColumn": 2,
+                        "startOffset": 1418,
+                        "endColumn": 37,
+                        "endOffset": 1453
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 92,
+                    "startColumn": 4,
+                    "startOffset": 2931,
+                    "endColumn": 35,
+                    "endOffset": 2962
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 20,
+                        "startColumn": 4,
+                        "startOffset": 866,
+                        "endColumn": 35,
+                        "endOffset": 897
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 93,
+                    "startColumn": 4,
+                    "startOffset": 2967,
+                    "endColumn": 36,
+                    "endOffset": 2999
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 11,
+                        "startColumn": 4,
+                        "startOffset": 497,
+                        "endColumn": 36,
+                        "endOffset": 529
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 94,
+                    "startColumn": 4,
+                    "startOffset": 3004,
+                    "endColumn": 44,
+                    "endOffset": 3044
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 35,
+                        "startColumn": 2,
+                        "startOffset": 1498,
+                        "endColumn": 42,
+                        "endOffset": 1538
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 95,
+                    "startColumn": 4,
+                    "startOffset": 3049,
+                    "endColumn": 35,
+                    "endOffset": 3080
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 31,
+                        "startColumn": 2,
+                        "startOffset": 1348,
+                        "endColumn": 33,
+                        "endOffset": 1379
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 96,
+                    "startColumn": 4,
+                    "startOffset": 3085,
+                    "endColumn": 38,
+                    "endOffset": 3119
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 16,
+                        "startColumn": 4,
+                        "startOffset": 683,
+                        "endColumn": 38,
+                        "endOffset": 717
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 97,
+                    "startColumn": 4,
+                    "startOffset": 3124,
+                    "endColumn": 41,
+                    "endOffset": 3161
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 44,
+                        "startColumn": 4,
+                        "startOffset": 1796,
+                        "endColumn": 41,
+                        "endOffset": 1833
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 98,
+                    "startColumn": 4,
+                    "startOffset": 3166,
+                    "endColumn": 37,
+                    "endOffset": 3199
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 15,
+                        "startColumn": 4,
+                        "startOffset": 645,
+                        "endColumn": 37,
+                        "endOffset": 678
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 99,
+                    "startColumn": 4,
+                    "startOffset": 3204,
+                    "endColumn": 40,
+                    "endOffset": 3240
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 43,
+                        "startColumn": 4,
+                        "startOffset": 1755,
+                        "endColumn": 40,
+                        "endOffset": 1791
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 100,
+                    "startColumn": 4,
+                    "startOffset": 3245,
+                    "endColumn": 35,
+                    "endOffset": 3276
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 28,
+                        "startColumn": 4,
+                        "startOffset": 1245,
+                        "endColumn": 35,
+                        "endOffset": 1276
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 101,
+                    "startColumn": 4,
+                    "startOffset": 3281,
+                    "endColumn": 37,
+                    "endOffset": 3314
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 32,
+                        "startColumn": 2,
+                        "startOffset": 1382,
+                        "endColumn": 35,
+                        "endOffset": 1415
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 102,
+                    "startColumn": 4,
+                    "startOffset": 3319,
+                    "endColumn": 45,
+                    "endOffset": 3360
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 37,
+                        "startColumn": 2,
+                        "startOffset": 1581,
+                        "endColumn": 43,
+                        "endOffset": 1622
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 103,
+                    "startColumn": 4,
+                    "startOffset": 3365,
+                    "endColumn": 62,
+                    "endOffset": 3423
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 26,
+                        "startColumn": 4,
+                        "startOffset": 1096,
+                        "endColumn": 62,
+                        "endOffset": 1154
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 104,
+                    "startColumn": 4,
+                    "startOffset": 3428,
+                    "endColumn": 84,
+                    "endOffset": 3508
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 27,
+                        "startColumn": 4,
+                        "startOffset": 1159,
+                        "endColumn": 84,
+                        "endOffset": 1239
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 105,
+                    "startColumn": 4,
+                    "startOffset": 3513,
+                    "endColumn": 36,
+                    "endOffset": 3545
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 30,
+                        "startColumn": 2,
+                        "startOffset": 1313,
+                        "endColumn": 34,
+                        "endOffset": 1345
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 106,
+                    "startColumn": 4,
+                    "startOffset": 3550,
+                    "endColumn": 52,
+                    "endOffset": 3598
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 8,
+                        "startColumn": 4,
+                        "startOffset": 326,
+                        "endColumn": 52,
+                        "endOffset": 374
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 107,
+                    "startColumn": 4,
+                    "startOffset": 3603,
+                    "endColumn": 35,
+                    "endOffset": 3634
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 29,
+                        "startColumn": 2,
+                        "startOffset": 1279,
+                        "endColumn": 33,
+                        "endOffset": 1310
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 108,
+                    "startColumn": 4,
+                    "startOffset": 3639,
+                    "endColumn": 43,
+                    "endOffset": 3678
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 34,
+                        "startColumn": 2,
+                        "startOffset": 1456,
+                        "endColumn": 41,
+                        "endOffset": 1495
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 109,
+                    "startColumn": 4,
+                    "startOffset": 3683,
+                    "endColumn": 41,
+                    "endOffset": 3720
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 7,
+                        "startColumn": 4,
+                        "startOffset": 284,
+                        "endColumn": 41,
+                        "endOffset": 321
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 110,
+                    "startColumn": 4,
+                    "startOffset": 3725,
+                    "endColumn": 69,
+                    "endOffset": 3790
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 9,
+                        "startColumn": 4,
+                        "startOffset": 379,
+                        "endColumn": 69,
+                        "endOffset": 444
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 111,
+                    "startColumn": 4,
+                    "startOffset": 3795,
+                    "endColumn": 40,
+                    "endOffset": 3831
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 18,
+                        "startColumn": 4,
+                        "startOffset": 767,
+                        "endColumn": 40,
+                        "endOffset": 803
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 112,
+                    "startColumn": 4,
+                    "startOffset": 3836,
+                    "endColumn": 43,
+                    "endOffset": 3875
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 46,
+                        "startColumn": 4,
+                        "startOffset": 1886,
+                        "endColumn": 43,
+                        "endOffset": 1925
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 113,
+                    "startColumn": 4,
+                    "startOffset": 3880,
+                    "endColumn": 35,
+                    "endOffset": 3911
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 22,
+                        "startColumn": 4,
+                        "startOffset": 939,
+                        "endColumn": 35,
+                        "endOffset": 970
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 114,
+                    "startColumn": 4,
+                    "startOffset": 3916,
+                    "endColumn": 40,
+                    "endOffset": 3952
+                },
+                "from": {
+                    "file": "C:\\Users\\Hong\\Documents\\Projects\\CEBible\\app\\src\\main\\res\\values-zh-rCN\\strings.xml",
+                    "position": {
+                        "startLine": 38,
+                        "startColumn": 2,
+                        "startOffset": 1625,
+                        "endColumn": 38,
+                        "endOffset": 1661
+                    }
+                }
+            }
+        ]
+    }
+]

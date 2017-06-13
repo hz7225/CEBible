@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hz7225.cebible"
+    android:versionCode="16"
+    android:versionName="2.1.4" >
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="23" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <meta-data
+            android:name="android.app.default_searchable"
+            android:value=".SearchActivity" />
+
+        <activity
+            android:name="com.hz7225.cebible.CEBible_MainActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/My.Holo.Light.FullScreen" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.hz7225.cebible.DisplayActivity"
+            android:label="@string/app_name"
+            android:parentActivityName="com.hz7225.cebible.CEBible_MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/My.Holo.Light.FullScreen" >
+        </activity>
+        <activity
+            android:name="com.hz7225.cebible.SettingsActivity"
+            android:label="@string/app_name"
+            android:parentActivityName="com.hz7225.cebible.CEBible_MainActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.hz7225.cebible.SearchActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName="com.hz7225.cebible.DisplayActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/My.Holo.Light.FullScreen" >
+
+            <!-- Receives the search request. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <!-- Points to searchable meta data. -->
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity
+            android:name="com.hz7225.cebible.FavoriteActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName="com.hz7225.cebible.CEBible_MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/My.Holo.Light.FullScreen" >
+        </activity>
+
+        <provider
+            android:name="com.hz7225.cebible.SearchSuggestionProvider"
+            android:authorities="com.hz7225.cebible.SearchSuggestionProvider" />
+    </application>
+
+</manifest>

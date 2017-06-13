@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_settings"/>
+    
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/action_about"/>
+    
+    <item
+         android:id="@+id/action_favorite"
+         android:title="@string/myfavorites"
+         android:icon="@drawable/ic_action_favorite"
+         android:showAsAction="always"/>
+    
+    <item
+         android:id="@+id/action_language"
+         android:title="@string/ch"
+         android:showAsAction="always"/>
+
+</menu>
