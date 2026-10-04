@@ -275,6 +275,36 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		db.close();
 		return scriptureList;
 	}
+
+	public List<ScriptureData> searchWholeBible2(List<String> StrList) throws SQLException {
+		List<ScriptureData> scriptureList = new ArrayList<ScriptureData>();
+
+		String selectQuery = "SELECT * FROM Bible WHERE";
+		Iterator<String> iterator = StrList.iterator();
+		for (int i=0; i < StrList.size(); i++) {
+			String searchStr = StrList.get(i);
+			searchStr = searchStr.replaceAll("'","''"); //seems to work to prevent crash of single quote in sql query
+			if (i == 0)
+				selectQuery += " instr(scripture, " + "\'" + searchStr + "\'" + ") > 0";
+			else
+				selectQuery += " AND instr(scripture, " + "\'" + searchStr + "\'" + ") > 0";
+		}
+
+		//Log.d(TAG, "searchWholeBible: selectQuery = " + selectQuery);
+		SQLiteDatabase db = this.getWritableDatabase();
+		Cursor cursor = db.rawQuery(selectQuery, null);
+
+		while (cursor.moveToNext()) {
+			//Log.d(TAG, cursor.getString(0) + " " + cursor.getString(1) + ":" + cursor.getString(2) + " " + cursor.getString(3));
+			SpannableString ss = new SpannableString(cursor.getString(3));
+			//scriptureList.add(new ScriptureData(myContext, cursor.getString(0), cursor.getString(1),cursor.getString(2), cursor.getString(3)));
+			scriptureList.add(new ScriptureData(myContext, cursor.getString(0), cursor.getString(1),cursor.getString(2), ss));
+		}
+
+		cursor.close();
+		db.close();
+		return scriptureList;
+	}
 	
 	public List<ScriptureData> searchOneBibleBook(String book, String searchStr) throws SQLException {
 		List<ScriptureData> scriptureList = new ArrayList<ScriptureData>();

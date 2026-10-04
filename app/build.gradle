@@ -1,13 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 30
 
     defaultConfig {
         applicationId "com.hz7225.cebible"
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 30
+        versionCode 21
+        versionName "3.0.1"
     }
 
     buildTypes {
@@ -16,9 +17,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+    namespace 'com.hz7225.cebible'
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:23.4.0'
-    compile 'com.android.support:support-v13:23.4.0'
+
+    implementation 'com.android.support:support-v4:23.4.0'
+    implementation 'com.android.support:support-v13:23.4.0'
 }

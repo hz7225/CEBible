@@ -28,7 +28,7 @@ public class SetLocale {
 		String prefsLanguage = prefs.getString("LANGUAGE", context.getString(R.string.ch));
     	String prefsCH_Trans = prefs.getString("CH_TRANS", context.getString(R.string.cuvs));
 		
-    	//Log.d("CEBible", "SetLocale(): Lang=" + prefsLanguage  + " CH_Trans=" + prefsCH_Trans);
+    	Log.d("CEBible", "SetLocale(): Lang=" + prefsLanguage  + " CH_Trans=" + prefsCH_Trans);
 		if (prefsLanguage.equals(context.getString(R.string.en))) {
 			lang = "en";
 			country = "";

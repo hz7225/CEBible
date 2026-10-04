@@ -45,6 +45,7 @@
     <string name="nt_ch">"   新约"</string>
     <string name="chapter_ch">"     章"</string>
     <string name="verse_ch">"   节"</string>
+
     
     <string-array name="old_testament">
         <item>Genesis,50</item>

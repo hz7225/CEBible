@@ -100,12 +100,14 @@ public class SearchActivity extends Activity {
     private void handleIntent(Intent intent) {
     	//Log.d(TAG, "intent = " + intent);    	
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            //This Intent is sent from the SearchView widget createdin the DisplayActivity
             String query = intent.getStringExtra(SearchManager.QUERY);        
             //use the query to search your data somehow
             //Log.d(TAG, "Intent.ACTION_SEARCH query extra = " + query);
             doSearch(query);
         }
         else if (intent.getComponent().getClassName().equalsIgnoreCase("com.hz7225.cebible.SearchActivity")) {
+            //This Intent is sent from the DisplayPageFragment class for the selected text
             String query = intent.getStringExtra("SEARCH_STR");        
             //use the query to search your data somehow
             //Log.d(TAG, "Intent SearchActivity query extra = " + query);
@@ -122,7 +124,36 @@ public class SearchActivity extends Activity {
 		intent.putExtra("LANGUAGE", language);
 		startActivity(intent);
 	}
-    
+
+	//This method parses the '&' separated input String into a List of Strings
+	private List<String> parseSearchString(String str) {
+
+		List<String> strList = new ArrayList<String>();;
+
+		//Find out the total number of search phrases separated by '&'
+		int num = 1;
+		String temp = str;
+		int i = temp.indexOf("&");
+		while (i != -1) {
+			temp = temp.substring(i+1, temp.length());
+			i = temp.indexOf("&");
+			num += 1;
+		}
+		Log.d("TAG", "Total number of search phrases = " + String.valueOf(num));
+
+		//Parse the input search string into a List of Strings
+		i = str.indexOf("&");
+		while (i != -1) {
+			//ss = search_str.substring(0, i);
+			strList.add(str.substring(0, i).trim());  //The trim() removes the leading and trailing spaces
+			str = str.substring(i+1, str.length());
+			i = str.indexOf("&");
+		}
+		strList.add(str.trim()); //Don't forget to add this one
+
+		return strList;
+	}
+
     private void doSearch(String queryStr) {
     	//Log.d(TAG, "doSearch = " + queryStr);
     	
@@ -132,7 +163,7 @@ public class SearchActivity extends Activity {
         suggestions.saveRecentQuery(queryStr, null);
     	
     	ActionBar actionBar = getActionBar();
-    	actionBar.setTitle(getString(R.string.searchresult) + " (" + queryStr + ")");
+    	actionBar.setTitle(getString(R.string.searchresult) + " (" + queryStr.trim() + ")");
     	
     	//Set the correct database for search
     	prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.kjv));
@@ -152,7 +183,8 @@ public class SearchActivity extends Activity {
     	DataBaseHelper BibleDB = new DataBaseHelper(this, db);
     	
     	//Perform search
-    	list = BibleDB.searchWholeBible(queryStr);
+    	//list = BibleDB.searchWholeBible(queryStr);
+		list = BibleDB.searchWholeBible2(parseSearchString(queryStr));
     	
     	//Prepare a sublist for displaying the result in a ListView
     	sublist = new ArrayList<ScriptureData>();
@@ -161,19 +193,26 @@ public class SearchActivity extends Activity {
     	//Span the query string in the searched result
     	for (ScriptureData scripture : sublist) {
     		SpannableString str = scripture.getScripture();
-    		int first = str.toString().indexOf(queryStr);
 
-			if (first < 0) {
+			List<String> qlist = parseSearchString(queryStr);
+			for (String qstr: qlist) {
+				int first = str.toString().indexOf(qstr);
+				str.setSpan(new BackgroundColorSpan(0x30007FFF), first, first + qstr.length(), 0);
+				scripture.setScripture(str);
+			}
+
+    		//int first = str.toString().indexOf(queryStr);
+			//if (first < 0) {
 				/*The search result of db.rawQuery(selectQuery, null) method in DataBaseHelper.java is case insensitive.
 				  So the index 'first' can be -1, which will cause the Activity to crash in the following
 				  str.setSpan() call. The real fix is to make the SQL search case sensitive. I have tried to add
 				  'COLLATE SQL_Latin1_General_CP1_CS_AS' at the end of the search string, but it didn't work.
 				*/
 				//Log.d(TAG, "index=" + String.valueOf(first)+ ": " + "'" + queryStr + "'" + " not found in: " + str);
-			} else {
-				str.setSpan(new BackgroundColorSpan(0x30007FFF), first, first + queryStr.length(), 0);
-				scripture.setScripture(str);
-			}
+			//} else {
+			//	str.setSpan(new BackgroundColorSpan(0x30007FFF), first, first + queryStr.length(), 0);
+			//	scripture.setScripture(str);
+			//}
     	}
     	
     	//Display the detail search result in the ListView

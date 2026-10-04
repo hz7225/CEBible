@@ -18,7 +18,7 @@
         />
 
     <View
-        android:id="@+id/horizontal_line1"
+        android:id="@+id/horizontal_line"
         android:layout_width="fill_parent"
         android:layout_marginTop="10dp"
         android:layout_height="1dp"
@@ -34,11 +34,18 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="260dp"
-        android:layout_height="140dp"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
         android:layout_marginTop="10dp"
         android:src="@drawable/cab_usage"
         android:layout_gravity="center_horizontal" />
+
+    <View
+        android:id="@+id/horizontal_space"
+        android:layout_width="fill_parent"
+        android:layout_marginTop="10dp"
+        android:layout_height="10dp"
+        android:background="#FAF0BE"/>
     
     <LinearLayout
     	android:layout_width="match_parent"

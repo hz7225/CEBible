@@ -30,6 +30,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.SearchView;
 
@@ -271,7 +272,7 @@ public class DisplayActivity extends FragmentActivity {
 		
 		//Save the menu
 		ab_menu = menu;	
-		
+
 		// Associate searchable configuration with the SearchView
 	    SearchManager searchManager =
 	           (SearchManager) getSystemService(Context.SEARCH_SERVICE);
@@ -279,12 +280,25 @@ public class DisplayActivity extends FragmentActivity {
 	            (SearchView) menu.findItem(R.id.action_search).getActionView();
 	    searchView.setSearchableInfo(
 	            searchManager.getSearchableInfo(getComponentName()));
-		
+		//Add hint to the Display widget window
+		//Log.d(TAG, "SearchView prefsLanguage = " + prefsLanguage);
+		if (prefsLanguage.equals(getString(R.string.en))) {
+			searchView.setQueryHint("String1 & String2 ...");
+		} else {
+			searchView.setQueryHint("字串1 & 字串2 ...");
+		}
+
 		return true;
 	}
 	
 	@Override
     public boolean onOptionsItemSelected(MenuItem it) {
+		SearchManager searchManager =
+				(SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		SearchView searchView =
+				(SearchView) ab_menu.findItem(R.id.action_search).getActionView();
+		searchView.setSearchableInfo(
+				searchManager.getSearchableInfo(getComponentName()));
 		Editor editor = prefs.edit();
         // Handle presses on the action bar items
         switch (it.getItemId()) 
@@ -301,6 +315,7 @@ public class DisplayActivity extends FragmentActivity {
         		item.setTitle(prefsEN_Trans);
         		//Enable the Search menu        		
         		ab_menu.getItem(1).setVisible(true);
+				searchView.setQueryHint("String1 & String2 ...");
         	} else if (prefsLanguage.equals(getString(R.string.en))) {
         		//Change to display Chinese-English side by side
         		prefsLanguage = getString(R.string.ch_en);
@@ -320,8 +335,9 @@ public class DisplayActivity extends FragmentActivity {
         		}
         		//Enable the Search menu        		
         		ab_menu.getItem(1).setVisible(true);
-        	}    	
-        	
+				searchView.setQueryHint("字串1 & 字串2 ...");
+        	}
+
         	editor.putString("LANGUAGE", prefsLanguage);
         	editor.commit();
         	
@@ -333,7 +349,9 @@ public class DisplayActivity extends FragmentActivity {
     		mPagerAdapter.notifyDataSetChanged();  
         	
         	return true;
-        case R.id.action_search: 
+        case R.id.action_search:
+        	//Check: never reaches here when the Search button is pressed
+			//Log.d(TAG, "Search button pressed");
         	return true;
 		
         default:
@@ -363,7 +381,7 @@ public class DisplayActivity extends FragmentActivity {
 			// We need to get the instance of the LayoutInflater
 			LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.tip_popup, (ViewGroup)findViewById(R.id.popup));
-			pwindo = new PopupWindow(layout, (int)(1.75*densityDpi), (int)(2.15*densityDpi), true); //true = PopupWindow has focus
+			pwindo = new PopupWindow(layout, (int)(1.75*densityDpi), (int)(2.65*densityDpi), true); //true = PopupWindow has focus
 			pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
 
 			//Button OK
@@ -374,6 +392,17 @@ public class DisplayActivity extends FragmentActivity {
 				}
 			};
 			btnClosePopup.setOnClickListener(cancel_button_click_listener);
+
+			//Show the new new usage popup if the platform release is after M
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+				if (prefsLanguage.equals(getString(R.string.en))) {
+					ImageView iv = (ImageView) layout.findViewById(R.id.imageView);
+					iv.setImageResource(R.drawable.cab_usage_en);
+				} else {
+					ImageView iv = (ImageView) layout.findViewById(R.id.imageView);
+					iv.setImageResource(R.drawable.cab_usage_ch);
+				}
+			}
 
 			//"Don't Show Again" CheckBox listener
 			ckBox = (CheckBox) layout.findViewById(R.id.checkBox);

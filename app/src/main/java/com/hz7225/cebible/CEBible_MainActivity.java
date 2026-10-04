@@ -12,9 +12,12 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
 
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -138,7 +141,10 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     	//Log.d(TAG, "Preferences: Lang=" + prefsLanguage + " EN_trans=" + prefsEN_Trans + " CH_Trans=" + prefsCH_Trans);
     	
     	//Set Locale according to saved preferences
-    	myLocale = new SetLocale(getApplicationContext());
+    	//myLocale = new SetLocale(getApplicationContext());
+		// Changed to Activity context instead of Application context because since API 26,
+		// See https://proandroiddev.com/change-language-programmatically-at-runtime-on-android-5e6bc15c758
+		myLocale = new SetLocale(this);
     	myLocale.set();  
     	
     	//Set the correct app name according to language
@@ -415,7 +421,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		
 		return true;
 	}
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem it) {
         // Handle presses on the action bar items

@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,6 +15,7 @@ import android.text.Selection;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -246,6 +248,32 @@ public class DisplayPageFragment extends Fragment {
 				longclickedVerse = position + 1;
 				//Log.d(TAG, "setOnItemLongClickListener,listView1, position=" + String.valueOf(position));
 				TextView tv = (TextView)v.findViewById(R.id.scripture);
+
+				/*test the following
+				for (int i = 0; i < listView1.getChildCount(); i++) {
+					if(position == i ){
+						listView1.getChildAt(i).setBackgroundColor(Color.YELLOW);
+					}else{
+						listView1.getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
+					}
+				}
+				*/
+				/* test
+				for (int i=0; i<spl1.size(); i++) {
+					SpannableString ss = spl1.get(i);
+					if(position == i ) {
+						Log.d(TAG, "set color");
+						ss.setSpan(new BackgroundColorSpan(0x60ffff00), 0, ss.length(), 0);
+						spl1.set(i, ss);
+					} else {
+						ForegroundColorSpan[] spans=ss.getSpans(0, ss.length(), ForegroundColorSpan.class);
+						//for (i = 0; i < ss.length(); i++)
+						//	if (ss!=null) ss.removeSpan(spans[i]);
+					}
+				}
+				adapter1.notifyDataSetChanged();
+				*/
+
 				mTextView = tv;
 				if (in_lv1_or_lv2 != 0) {
 					//title = getBookName() + String.valueOf(DisplayActivity.mChapter) + ":" + String.valueOf(position+1);
@@ -406,9 +434,9 @@ public class DisplayPageFragment extends Fragment {
 		return book;
 	}
 	
-	private void setCustomSelectionCAB(boolean longClick) {		
+	private void setCustomSelectionCAB(boolean longClick) {
 		//Select all text
-		Selection.selectAll((Spannable) mTextView.getText());	
+		Selection.selectAll((Spannable) mTextView.getText());
     	
 		mTextView.setCustomSelectionActionModeCallback(new Callback() {
 			NotebookDbHelper mDbHelper = new NotebookDbHelper(getActivity().getApplicationContext());					
@@ -417,14 +445,14 @@ public class DisplayPageFragment extends Fragment {
 			@Override
 			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 				// TODO Auto-generated method stub
-				//Log.d(TAG, "setCustomSelectionCAB: onCreateActionMode");					
+				Log.d(TAG, "setCustomSelectionCAB: onCreateActionMode");
 				mode.getMenuInflater().inflate(R.menu.contextual_menu, menu);
 				mode.setTitle("");
 				//Log.d(TAG, "order of Favorite is " + String.valueOf(i));
 				amode = mode;
 				
 				//Lollipop MR1 (Build # 22) workaround, onPrepareActionMode didn't get called automatically. So call is manually
-				if ((android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1)  
+				if ((android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1)
 						&& (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M))
 				{
 					onPrepareActionMode(mode, menu);
@@ -436,11 +464,12 @@ public class DisplayPageFragment extends Fragment {
 			@Override
 			public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
 				// TODO Auto-generated method stub
-				//Log.d(TAG, "setCustomSelectionCAB: onPrepareActionMode");
-				
+				Log.d(TAG, "setCustomSelectionCAB: onPrepareActionMode");
+
+				/* versionCode 20: January 2018 submission
 				// Remove the "select all" option
 				menu.removeItem(android.R.id.selectAll);
-				
+
 				//Show Favorite or Unfavorite depends on if the verse is already highlighted or not
 				if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
 					if (test == true) {
@@ -462,12 +491,13 @@ public class DisplayPageFragment extends Fragment {
 					if (menu.size()>8) mode.getMenu().getItem(8).setVisible(false); //make the Default Translate item invisible
 					if (menu.size()>9) mode.getMenu().getItem(9).setVisible(false); //make the Default Assist item invisible
 				}
-				
+				*/
+
 				//Don't show the TTS Play icon for API level older than 17 (Jelly Bean MR1)
 				if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
 					menu.getItem(5).setVisible(false);
 				}
-				
+
 				/*
 				for (int i=0; i < mode.getMenu().size(); i++) {
 					String s = mode.getMenu().getItem(i).getTitle().toString();
@@ -475,6 +505,49 @@ public class DisplayPageFragment extends Fragment {
 					    Log.d(TAG,  String.valueOf(i) + ":   " + s );
 				}
 				*/
+
+				if (mLanguage.equals(getString(R.string.ch))) {
+					if (android.os.Build.VERSION.SDK_INT == android.os.Build.VERSION_CODES.R) {
+						if (test == true) {
+							mode.getMenu().getItem(1).setVisible(true);  //Make Unfavorite visible
+							mode.getMenu().getItem(0).setVisible(false);
+						} else {
+							mode.getMenu().getItem(0).setVisible(true);  //Make Favorite visible
+							mode.getMenu().getItem(1).setVisible(false);
+						}
+						mode.getMenu().getItem(9).setVisible(false); //make the Default Share item invisible
+					}
+					else if (android.os.Build.VERSION.SDK_INT == android.os.Build.VERSION_CODES.Q) {
+						mode.getMenu().getItem(7).setVisible(false);
+						if (test == true) {
+							mode.getMenu().getItem(1).setVisible(true);  //Make Unfavorite visible
+							mode.getMenu().getItem(0).setVisible(false);
+						} else {
+							mode.getMenu().getItem(0).setVisible(true);  //Make Favorite visible
+							mode.getMenu().getItem(1).setVisible(false);
+						}
+						mode.getMenu().getItem(8).setVisible(false); //make the Default Share item invisible
+					} else if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.P){
+						mode.getMenu().getItem(0).setVisible(false);
+						if (test == true) {
+							mode.getMenu().getItem(2).setVisible(true);  //Make Unfavorite visible
+							mode.getMenu().getItem(1).setVisible(false);
+						} else {
+							mode.getMenu().getItem(1).setVisible(true);  //Make Favorite visible
+							mode.getMenu().getItem(2).setVisible(false);
+						}
+						mode.getMenu().getItem(9).setVisible(false); //make the Default Share item invisible
+					}
+				} else {
+					if (test == true) {
+						mode.getMenu().getItem(1).setVisible(true);  //Make Unfavorite visible
+						mode.getMenu().getItem(0).setVisible(false);
+					} else {
+						mode.getMenu().getItem(0).setVisible(true);  //Make Favorite visible
+						mode.getMenu().getItem(1).setVisible(false);
+					}
+					mode.getMenu().getItem(8).setVisible(false); //make the Default Share item invisible
+				}
 				
 				return true;
 			}
@@ -483,8 +556,9 @@ public class DisplayPageFragment extends Fragment {
 			public boolean onActionItemClicked(ActionMode mode,
 					MenuItem item) {
 				//Log.d(TAG, "setCustomSelectionCAB: onActionItemClicked");
-				
-				switch (item.getItemId()) {
+				int it = item.getItemId();
+				//switch (item.getItemId()) {
+				switch(it) {
 				/*
 				case android.R.id.selectAll:
 					mode.getMenu().getItem(4).setVisible(true); //Make Share icon visible
