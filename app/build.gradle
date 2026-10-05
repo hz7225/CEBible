@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 37
 
     defaultConfig {
         applicationId "com.hz7225.cebible"
         minSdkVersion 14
-        targetSdkVersion 30
+        targetSdkVersion 36
         versionCode 21
-        versionName "3.0.1"
+        versionName "4.0.0"
     }
 
     buildTypes {

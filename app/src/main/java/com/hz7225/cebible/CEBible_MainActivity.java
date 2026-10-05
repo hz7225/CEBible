@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -149,6 +150,10 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     	
     	//Set the correct app name according to language
     	setTitle(getResources().getString(R.string.app_name));
+    	ActionBar actionBar = getActionBar();
+    	if (actionBar != null) {
+    		actionBar.setIcon(R.drawable.ic_actionbar_icon);
+    	}
 
     	// Get book names resources from XML and initialize OTList and NTList
     	populateListOfBooknames();

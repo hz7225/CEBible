@@ -20,6 +20,7 @@ import android.text.SpannableString;
 import android.text.style.BackgroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -80,7 +81,14 @@ public class SearchActivity extends Activity {
        	sp = (Spinner) findViewById(R.id.spinner1);
        	
        	ActionBar actionBar = getActionBar();
-		actionBar.setTitle(getString(R.string.searchresult));
+		if (actionBar != null) {
+			actionBar.setTitle(getString(R.string.searchresult));
+			actionBar.setDisplayHomeAsUpEnabled(true);
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+				actionBar.setHomeAsUpIndicator(R.drawable.ic_home_up_padded);
+			}
+			actionBar.setIcon(R.drawable.ic_actionbar_icon);
+		}
 		
 		// Get saved preferences
     	prefs  = getSharedPreferences("BiblePreferences", MODE_PRIVATE);
@@ -89,6 +97,15 @@ public class SearchActivity extends Activity {
     	prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvs));
        	
         handleIntent(getIntent());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

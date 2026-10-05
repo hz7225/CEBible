@@ -3,7 +3,8 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         
@@ -15,7 +16,8 @@
             android:name="com.hz7225.cebible.CEBible_MainActivity"
             android:theme="@style/My.Holo.Light.FullScreen"
             android:screenOrientation="portrait"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -41,7 +43,8 @@
     	    android:screenOrientation="portrait"
     	    android:theme="@style/My.Holo.Light.FullScreen"
     	    android:parentActivityName="com.hz7225.cebible.DisplayActivity"
-    	    android:launchMode="singleTop">
+    	    android:launchMode="singleTop"
+    	    android:exported="true">
             
     	    <!-- Receives the search request. -->
     		<intent-filter>
@@ -61,7 +64,8 @@
     	</activity>   
     	
     	<provider android:name=".SearchSuggestionProvider"
-              android:authorities="com.hz7225.cebible.SearchSuggestionProvider" />
+              android:authorities="com.hz7225.cebible.SearchSuggestionProvider"
+              android:exported="false" />
     	
     </application>
 

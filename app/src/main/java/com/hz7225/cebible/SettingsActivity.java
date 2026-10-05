@@ -2,6 +2,7 @@ package com.hz7225.cebible;
 
 import java.util.Locale;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -14,6 +15,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
@@ -52,7 +54,15 @@ public class SettingsActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		getActionBar().setTitle(R.string.action_settings);
+		ActionBar actionBar = getActionBar();
+		if (actionBar != null) {
+			actionBar.setTitle(R.string.action_settings);
+			actionBar.setDisplayHomeAsUpEnabled(true);
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+				actionBar.setHomeAsUpIndicator(R.drawable.ic_home_up_padded);
+			}
+			actionBar.setIcon(R.drawable.ic_actionbar_icon);
+		}
 		
 		setContentView(R.layout.activity_settings);
 		
@@ -159,6 +169,15 @@ public class SettingsActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == android.R.id.home) {
+			finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 	
 	public void setLocale(String lang, String country) {

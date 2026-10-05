@@ -15,10 +15,10 @@ import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NavUtils;
-import android.support.v13.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
+import androidx.fragment.app.FragmentActivity;
+import androidx.core.app.NavUtils;
+import androidx.legacy.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -83,6 +83,10 @@ public class DisplayActivity extends FragmentActivity {
         
         // To allow Up navigation with the app icon in the action bar
     	getActionBar().setDisplayHomeAsUpEnabled(true);
+    	if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    		getActionBar().setHomeAsUpIndicator(R.drawable.ic_home_up_padded);
+    	}
+    	getActionBar().setIcon(R.drawable.ic_actionbar_icon);
         
         // Get saved preferences
     	prefs  = getSharedPreferences("BiblePreferences", MODE_PRIVATE);		    
@@ -304,7 +308,7 @@ public class DisplayActivity extends FragmentActivity {
         switch (it.getItemId()) 
         {		
         case android.R.id.home:
-            NavUtils.navigateUpFromSameTask(this);
+            finish();
             return true;
         case R.id.action_change:
         	//Log.d(TAG, "onOptionsItemSelected: R.id.action_change");

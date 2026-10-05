@@ -466,87 +466,34 @@ public class DisplayPageFragment extends Fragment {
 				// TODO Auto-generated method stub
 				Log.d(TAG, "setCustomSelectionCAB: onPrepareActionMode");
 
-				/* versionCode 20: January 2018 submission
-				// Remove the "select all" option
-				menu.removeItem(android.R.id.selectAll);
-
-				//Show Favorite or Unfavorite depends on if the verse is already highlighted or not
-				if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
-					if (test == true) {
-						mode.getMenu().getItem(2).setVisible(true);  //Make Unfavorite visible
-						mode.getMenu().getItem(1).setVisible(false);
-					} else {
-						mode.getMenu().getItem(1).setVisible(true);  //Make Favorite visible
-						mode.getMenu().getItem(2).setVisible(false);
+				// Remove all system-injected items (Share, Read Aloud, Translate, Assist, etc.)
+				for (int i = menu.size() - 1; i >= 0; i--) {
+					MenuItem item = menu.getItem(i);
+					int itemId = item.getItemId();
+					if (itemId != R.id.item_favorite &&
+						itemId != R.id.item_unfavorite &&
+						itemId != R.id.item_share &&
+						itemId != R.id.item_play &&
+						itemId != R.id.item_pause &&
+						itemId != R.id.item_search &&
+						itemId != R.id.item_note &&
+						itemId != android.R.id.copy) {
+						menu.removeItem(itemId);
 					}
+				}
+
+				// Find Favorite and Unfavorite menu items directly by ID
+				MenuItem favoriteItem = menu.findItem(R.id.item_favorite);
+				MenuItem unfavoriteItem = menu.findItem(R.id.item_unfavorite);
+
+				if (test) {
+					// Verse is already favorited -> show Unfavorite, hide Favorite
+					if (favoriteItem != null) favoriteItem.setVisible(false);
+					if (unfavoriteItem != null) unfavoriteItem.setVisible(true);
 				} else {
-					if (test == true) {
-						mode.getMenu().getItem(1).setVisible(true);  //Make Unfavorite visible
-						mode.getMenu().getItem(0).setVisible(false);
-					} else {
-						mode.getMenu().getItem(0).setVisible(true);  //Make Favorite visible
-						mode.getMenu().getItem(1).setVisible(false);
-					}
-					menu.removeItem(android.R.id.shareText);  //remove the default Share item
-					if (menu.size()>8) mode.getMenu().getItem(8).setVisible(false); //make the Default Translate item invisible
-					if (menu.size()>9) mode.getMenu().getItem(9).setVisible(false); //make the Default Assist item invisible
-				}
-				*/
-
-				//Don't show the TTS Play icon for API level older than 17 (Jelly Bean MR1)
-				if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
-					menu.getItem(5).setVisible(false);
-				}
-
-				/*
-				for (int i=0; i < mode.getMenu().size(); i++) {
-					String s = mode.getMenu().getItem(i).getTitle().toString();
-					if (s != null)
-					    Log.d(TAG,  String.valueOf(i) + ":   " + s );
-				}
-				*/
-
-				if (mLanguage.equals(getString(R.string.ch))) {
-					if (android.os.Build.VERSION.SDK_INT == android.os.Build.VERSION_CODES.R) {
-						if (test == true) {
-							mode.getMenu().getItem(1).setVisible(true);  //Make Unfavorite visible
-							mode.getMenu().getItem(0).setVisible(false);
-						} else {
-							mode.getMenu().getItem(0).setVisible(true);  //Make Favorite visible
-							mode.getMenu().getItem(1).setVisible(false);
-						}
-						mode.getMenu().getItem(9).setVisible(false); //make the Default Share item invisible
-					}
-					else if (android.os.Build.VERSION.SDK_INT == android.os.Build.VERSION_CODES.Q) {
-						mode.getMenu().getItem(7).setVisible(false);
-						if (test == true) {
-							mode.getMenu().getItem(1).setVisible(true);  //Make Unfavorite visible
-							mode.getMenu().getItem(0).setVisible(false);
-						} else {
-							mode.getMenu().getItem(0).setVisible(true);  //Make Favorite visible
-							mode.getMenu().getItem(1).setVisible(false);
-						}
-						mode.getMenu().getItem(8).setVisible(false); //make the Default Share item invisible
-					} else if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.P){
-						mode.getMenu().getItem(0).setVisible(false);
-						if (test == true) {
-							mode.getMenu().getItem(2).setVisible(true);  //Make Unfavorite visible
-							mode.getMenu().getItem(1).setVisible(false);
-						} else {
-							mode.getMenu().getItem(1).setVisible(true);  //Make Favorite visible
-							mode.getMenu().getItem(2).setVisible(false);
-						}
-						mode.getMenu().getItem(9).setVisible(false); //make the Default Share item invisible
-					}
-				} else {
-					if (test == true) {
-						mode.getMenu().getItem(1).setVisible(true);  //Make Unfavorite visible
-						mode.getMenu().getItem(0).setVisible(false);
-					} else {
-						mode.getMenu().getItem(0).setVisible(true);  //Make Favorite visible
-						mode.getMenu().getItem(1).setVisible(false);
-					}
-					mode.getMenu().getItem(8).setVisible(false); //make the Default Share item invisible
+					// Verse is not favorited -> show Favorite, hide Unfavorite
+					if (favoriteItem != null) favoriteItem.setVisible(true);
+					if (unfavoriteItem != null) unfavoriteItem.setVisible(false);
 				}
 				
 				return true;
