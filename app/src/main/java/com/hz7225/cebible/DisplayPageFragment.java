@@ -85,6 +85,8 @@ public class DisplayPageFragment extends Fragment {
 	static int in_lv1_or_lv2 = 0; //used in search the correct language database, 1=Chinese, 2 = English
 	
 	ActionMode amode;
+	SpannableString selectedVerseSpan;
+	BackgroundColorSpan selectionSpan;
 	
 	NotebookDbHelper mDbHelper;
 	
@@ -505,48 +507,10 @@ public class DisplayPageFragment extends Fragment {
 				//Log.d(TAG, "setCustomSelectionCAB: onActionItemClicked");
 				int it = item.getItemId();
 				//switch (item.getItemId()) {
-				switch(it) {
-				/*
-				case android.R.id.selectAll:
-					mode.getMenu().getItem(4).setVisible(true); //Make Share icon visible
-					mode.getMenu().getItem(0).setVisible(false); //Make SelectAll invisible
-					mode.getMenu().getItem(8).setVisible(false);  //Make Search invisible
-					//See if the clicked verse is already a favorite verse or not					
-					if (test == true) {
-						mode.getMenu().getItem(7).setVisible(true);  //Make Unfavorite visible
-					} else {
-						mode.getMenu().getItem(6).setVisible(true);  //Make Favorite visible
-					}
-					return false;
-				*/	
-				case android.R.id.copy:
+				if (it == android.R.id.copy) {
 					Toast.makeText(getActivity(), getString(R.string.copied), Toast.LENGTH_SHORT).show();
 					return false;
-				case R.id.item_play:
-					//Log.d(TAG, "Play selected text in " + mVersion);
-					if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
-						//mode.getMenu().getItem(0).setVisible(false); //Select All
-						mode.getMenu().getItem(0).setVisible(false); //Copy
-						mode.getMenu().getItem(5).setVisible(true);  //Pause
-						mode.getMenu().getItem(3).setVisible(false);  //Share
-						mode.getMenu().getItem(7).setVisible(false);  //Note					
-						mode.getMenu().getItem(1).setVisible(false);  //Favorite
-						mode.getMenu().getItem(2).setVisible(false);  //Unfavorite
-						mode.getMenu().getItem(6).setVisible(false);  //Search
-					}
-					else {
-						/* Doesn't work for M somehow
-						mode.getMenu().getItem(7).setVisible(false); //Copy
-						mode.getMenu().getItem(3).setVisible(true);  //Play
-						mode.getMenu().getItem(4).setVisible(true);  //Pause
-						mode.getMenu().getItem(2).setVisible(false);  //Share
-						mode.getMenu().getItem(6).setVisible(false);  //Note					
-						mode.getMenu().getItem(0).setVisible(false);  //Favorite
-						mode.getMenu().getItem(1).setVisible(false);  //Unfavorite
-						mode.getMenu().getItem(5).setVisible(false);  //Search
-						mode.invalidate();
-						*/
-					}
+				} else if (it == R.id.item_play) {
 					if (selected_listview == 1) {
 						CEBible_MainActivity.ttsobj.setLanguage(Locale.CHINESE);						
 						CEBible_MainActivity.ttsobj.speak(selectedText(), TextToSpeech.QUEUE_FLUSH, null);
@@ -561,62 +525,44 @@ public class DisplayPageFragment extends Fragment {
 						CEBible_MainActivity.ttsobj.speak(selectedText(), TextToSpeech.QUEUE_FLUSH, null);
 					}
 					return true;
-				case R.id.item_pause:
+				} else if (it == R.id.item_pause) {
 					CEBible_MainActivity.ttsobj.stop();
 					return true;
-				case R.id.item_share:
-					//Log.d(TAG, "setCustomSelectionCAB: onActionItemClicked: item_share");
-					//Log.d(TAG, "mode size = " + String.valueOf(mode.getMenu().size()));
-					//Select the text of the whole verse to share
-					//Selection.selectAll((Spannable) mTextView.getText());
-					
+				} else if (it == R.id.item_share) {
 					Intent i=new Intent(android.content.Intent.ACTION_SEND);
 					i.setType("text/plain");
 					i.putExtra(android.content.Intent.EXTRA_SUBJECT, title);
 					i.putExtra(android.content.Intent.EXTRA_TEXT, selectedText() + " (" + title + ")");
 					startActivity(Intent.createChooser(i,"Share via"));
-					mode.finish();  //Action is executed, close the CAB
+					mode.finish();
 					return true;
-				case R.id.item_search:
-					//do Search with the selected text and 
-					//launch SearchResultsActivity to display results
+				} else if (it == R.id.item_search) {
 					Intent intent = new Intent(getActivity(), SearchActivity.class);
 					intent.putExtra("SEARCH_STR", selectedText());
 		    		startActivity(intent);
-					
 					return true;
-				case R.id.item_favorite:	
-					//Log.d(TAG, "Favorite icon pressed");
-					//Log.d(TAG, "mBook=" + String.valueOf(mBook) + " mChapter=" + String.valueOf(mChapter) + " mVerse=" + String.valueOf(mVerse) + " longclickedVerse=" + String.valueOf(longclickedVerse));
-					
+				} else if (it == R.id.item_favorite) {	
 					if (test == true) {
-						//Log.d(TAG, "update existing DB record");
 						mDbHelper.updateRecord(mBook, mChapter, longclickedVerse, selectedText(), "", "");
 					} else {
-						//Log.d(TAG, "inserting new DB record");
 						mDbHelper.insertRecord(mBook, mChapter, longclickedVerse, selectedText(), "", "");
 					}
 
-					//Log.d(TAG, "Favorite clicked, longclickedVerse=" + String.valueOf(longclickedVerse));
-					
-					//Highlight the text via Spannable string for ListView1
 					SpannableString ss1 = spl1.get(longclickedVerse - 1);
 					ss1.setSpan(new BackgroundColorSpan(0x60ffff00), 0, ss1.length(), 0);
 					spl1.set(longclickedVerse-1, ss1);
 					adapter1.notifyDataSetChanged();
 					
-					//Highlight the text via Spannable string for ListView2
 					SpannableString ss2 = spl2.get(longclickedVerse - 1);
 					ss2.setSpan(new BackgroundColorSpan(0x60ffff00), 0, ss2.length(), 0);
 					spl2.set(longclickedVerse-1, ss2);
 					adapter2.notifyDataSetChanged();
 					
+					mode.finish();
 					return true;
-				case R.id.item_unfavorite:	
-					//Log.d(TAG, "Unfavorite icon pressed");	
+				} else if (it == R.id.item_unfavorite) {	
 					mDbHelper.deleteRecord(mBook, mChapter, longclickedVerse);
 					
-					//Clear the Span for ListView1
 					SpannableString s1 = spl1.get(longclickedVerse - 1);
 					BackgroundColorSpan[] sp1 = s1.getSpans(0, s1.length(), BackgroundColorSpan.class);
 					for (int j = 0; j < sp1.length; j++) {
@@ -625,7 +571,6 @@ public class DisplayPageFragment extends Fragment {
 					spl1.set(longclickedVerse-1, s1);
 					adapter1.notifyDataSetChanged();
 					
-					//Clear the Span for ListView2
 					SpannableString s2 = spl2.get(longclickedVerse - 1);
 					BackgroundColorSpan[] sp2 = s2.getSpans(0, s2.length(), BackgroundColorSpan.class);
 					for (int j = 0; j < sp2.length; j++) {
@@ -634,17 +579,23 @@ public class DisplayPageFragment extends Fragment {
 					spl2.set(longclickedVerse-1, s2);
 					adapter2.notifyDataSetChanged();
 					
+					mode.finish();
 					return true;
-				default:	
-					return false;
 				}
+				return false;
 			}
 
 			@Override
 			public void onDestroyActionMode(ActionMode mode) {
 				CEBible_MainActivity.ttsobj.stop();
-				//Log.d(TAG, "setCustomSelectionCAB: onDestroyActionMode" + mTextView.getText());
-				//mTextView.setTextIsSelectable(false); //Investigate, app crashes
+				if (selectionSpan != null && selectedVerseSpan != null) {
+					selectedVerseSpan.removeSpan(selectionSpan);
+					selectionSpan = null;
+					selectedVerseSpan = null;
+					if (adapter1 != null) adapter1.notifyDataSetChanged();
+					if (adapter2 != null) adapter2.notifyDataSetChanged();
+				}
+				amode = null;
 			}
 			
 			private String selectedText() {

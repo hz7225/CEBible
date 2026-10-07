@@ -297,71 +297,50 @@ public class DisplayActivity extends FragmentActivity {
 	
 	@Override
     public boolean onOptionsItemSelected(MenuItem it) {
-		SearchManager searchManager =
-				(SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		SearchView searchView =
-				(SearchView) ab_menu.findItem(R.id.action_search).getActionView();
-		searchView.setSearchableInfo(
-				searchManager.getSearchableInfo(getComponentName()));
-		Editor editor = prefs.edit();
-        // Handle presses on the action bar items
-        switch (it.getItemId()) 
-        {		
-        case android.R.id.home:
+        int id = it.getItemId();
+        MenuItem item = it;
+        SearchView searchView = (ab_menu != null && ab_menu.findItem(R.id.action_search) != null) ? (SearchView) ab_menu.findItem(R.id.action_search).getActionView() : null;
+        if (id == android.R.id.home) {
             finish();
             return true;
-        case R.id.action_change:
-        	//Log.d(TAG, "onOptionsItemSelected: R.id.action_change");
+        } else if (id == R.id.action_change) {
         	if (prefsLanguage.equals(getString(R.string.ch))) {
-        		//Change to display English only      		
         		prefsLanguage = getString(R.string.en);
         		mySetLocale();
         		item.setTitle(prefsEN_Trans);
-        		//Enable the Search menu        		
-        		ab_menu.getItem(1).setVisible(true);
-				searchView.setQueryHint("String1 & String2 ...");
+        		if (ab_menu != null) ab_menu.getItem(1).setVisible(true);
+				if (searchView != null) searchView.setQueryHint("String1 & String2 ...");
         	} else if (prefsLanguage.equals(getString(R.string.en))) {
-        		//Change to display Chinese-English side by side
         		prefsLanguage = getString(R.string.ch_en);
         		mySetLocale();
         		item.setTitle(getString(R.string.cuv) + "/" + prefsEN_Trans);
-        		//Disable the Search menu        		
-        		ab_menu.getItem(1).setVisible(false);
+        		if (ab_menu != null) ab_menu.getItem(1).setVisible(false);
         	} else if (prefsLanguage.equals(getString(R.string.ch_en))) {	
-        		//Change to display Chinese only
         		prefsLanguage = getString(R.string.ch);
         		mySetLocale();
-        		//item.setTitle(getString(R.string.cuv));
         		if (prefsCH_Trans.equals(getString(R.string.cuvs))) {
         			item.setTitle(getString(R.string.cuvs));
         		} else if (prefsCH_Trans.equals(getString(R.string.cuvt))) {
         			item.setTitle(getString(R.string.cuvt));
         		}
-        		//Enable the Search menu        		
-        		ab_menu.getItem(1).setVisible(true);
-				searchView.setQueryHint("字串1 & 字串2 ...");
+        		if (ab_menu != null) ab_menu.getItem(1).setVisible(true);
+				if (searchView != null) searchView.setQueryHint("字串1 & 字串2 ...");
         	}
 
+        	Editor editor = prefs.edit();
         	editor.putString("LANGUAGE", prefsLanguage);
         	editor.commit();
         	
-        	// Update action bar title with book name and chapter number
     		ActionBar actionBar = getActionBar();
     		actionBar.setTitle(getBookName() +" "+String.valueOf(mChapter));
     		
-    		// Update the ViewPager's content on the screen immediately
     		mPagerAdapter.notifyDataSetChanged();  
-        	
         	return true;
-        case R.id.action_search:
-        	//Check: never reaches here when the Search button is pressed
-			//Log.d(TAG, "Search button pressed");
+        } else if (id == R.id.action_search) {
         	return true;
-		
-        default:
-            return super.onOptionsItemSelected(it);	        	
         }
-	}  
+        return super.onOptionsItemSelected(it);	        	
+	}
 	
 	public void onConfigurationChanged(Configuration newConfig) {
 	    super.onConfigurationChanged(newConfig);

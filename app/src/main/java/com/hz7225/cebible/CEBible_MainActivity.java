@@ -429,49 +429,39 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 
     @Override
     public boolean onOptionsItemSelected(MenuItem it) {
-        // Handle presses on the action bar items
-        switch (it.getItemId()) 
-        {	
-        case R.id.action_favorite:
+        int id = it.getItemId();
+        if (id == R.id.action_favorite) {
         	Intent intent2 = new Intent(this.getApplicationContext(), FavoriteActivity.class);
     		startActivity(intent2);
         	return true;
-        case R.id.action_language:        	
+        } else if (id == R.id.action_language) {        	
         	if (prefsLanguage.equals(getString(R.string.ch))) {
         		prefsLanguage = getString(R.string.en);
         	} else if (prefsLanguage.equals(getString(R.string.en))){
         		prefsLanguage = getString(R.string.ch);
         	}
         	
-        	// Save the change in the Preferences
         	Editor editor = prefs.edit();
         	editor.putString("LANGUAGE", prefsLanguage);
         	editor.commit();
         	
-        	//Set the Locale resources
         	myLocale.set();     
-        	
-        	//Set the correct app name according to language
         	setTitle(getResources().getString(R.string.app_name));
-        	
-        	item.setTitle(prefsLanguage);  // Change text on the action bar
-        	
-        	// Change the lists on the display
+        	item.setTitle(prefsLanguage);
         	populateListOfBooknames();
         	adapterNT.notifyDataSetChanged();
         	adapterOT.notifyDataSetChanged();
-        	displayTitles();  // Set book, chapter, and verse titles
-        	this.invalidateOptionsMenu(); // Update the ActionBar menu with the correct language
+        	displayTitles();
+        	this.invalidateOptionsMenu();
         	return true;
-        case R.id.action_settings: 
+        } else if (id == R.id.action_settings) { 
         	Intent intent = new Intent(this, SettingsActivity.class);
     		startActivity(intent);
         	return true;
-        case R.id.action_about: 
+        } else if (id == R.id.action_about) { 
         	return true;	
-        default:
-            return super.onOptionsItemSelected(it);	        	
         }
+        return super.onOptionsItemSelected(it);	        	
 	}   
 }
 

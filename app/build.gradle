@@ -1,27 +1,50 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
-    compileSdkVersion 37
+    compileSdk = 37
 
     defaultConfig {
-        applicationId "com.hz7225.cebible"
-        minSdkVersion 14
-        targetSdkVersion 36
-        versionCode 21
-        versionName "4.0.0"
+        applicationId = "com.hz7225.cebible"
+        minSdk = 21
+        targetSdk = 37
+        versionCode = 22
+        versionName = "4.0.0"
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
         }
     }
-    namespace 'com.hz7225.cebible'
+    buildFeatures {
+        buildConfig true
+    }
+    namespace = 'com.hz7225.cebible'
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.group == 'org.jetbrains.kotlin') {
+            if (details.requested.name == 'kotlin-stdlib-jdk7' || details.requested.name == 'kotlin-stdlib-jdk8') {
+                details.useVersion '1.8.22'
+            }
+        }
+    }
 }
 
 dependencies {
 
-    implementation 'com.android.support:support-v4:23.4.0'
-    implementation 'com.android.support:support-v13:23.4.0'
+    implementation 'androidx.core:core:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.viewpager:viewpager:1.0.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
 }
