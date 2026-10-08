@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -46,7 +47,11 @@ public class FavoriteActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-       	//Log.d(TAG, "onCreate");
+
+    	// Set locale according to saved preferences
+    	SetLocale myLocale = new SetLocale(this);
+    	myLocale.set();
+
        	setContentView(R.layout.search_result_layout);    
        	listview = (ListView) findViewById(R.id.listViewSearch);
        	
@@ -112,11 +117,50 @@ public class FavoriteActivity extends Activity {
 	}
     
     private void doSearch() {
-    	//Log.d(TAG, "doSearch()");
-    	
+    	// Get active language and translation preferences
+    	SharedPreferences prefs = getSharedPreferences("BiblePreferences", MODE_PRIVATE);
+    	String prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
+    	String prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.kjv));
+    	String prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvs));
+
+    	String activeDb;
+    	if (prefsLanguage.equals(getString(R.string.en))) {
+    		if (prefsEN_Trans.equals(getString(R.string.web))) {
+    			activeDb = "EB_web_bbl.db";
+    		} else {
+    			activeDb = "EB_kjv_bbl.db";
+    		}
+    	} else {
+    		if (prefsCH_Trans.equals(getString(R.string.cuvt))) {
+    			activeDb = "CB_cuvtlite.bbl.db";
+    		} else {
+    			activeDb = "CB_cuvslite.bbl.db";
+    		}
+    	}
+
     	//Get the complete list of data from the Notebook database
-    	NotebookDbHelper mDbHelper = new NotebookDbHelper(this.getApplicationContext());
+    	NotebookDbHelper mDbHelper = new NotebookDbHelper(this);
     	list = mDbHelper.getScriptureDataList();
+
+    	// Dynamically update verse text using active Bible translation
+    	try {
+    		DataBaseHelper bibleDb = new DataBaseHelper(this, activeDb);
+    		for (ScriptureData sd : list) {
+    			try {
+    				int b = Integer.parseInt(sd.getBook());
+    				int c = Integer.parseInt(sd.getChapter());
+    				int v = Integer.parseInt(sd.getVerse());
+    				String freshVerseText = bibleDb.getVerse(b, c, v);
+    				if (freshVerseText != null && !freshVerseText.isEmpty()) {
+    					sd.setScripture(new SpannableString(freshVerseText));
+    				}
+    			} catch (Exception e) {
+    				// Fallback to stored text if query fails
+    			}
+    		}
+    	} catch (Exception e) {
+    		// Keep stored fallback text
+    	}
     	
     	//Prepare a sublist for displaying the result in a ListView
     	sublist = new ArrayList<ScriptureData>();
