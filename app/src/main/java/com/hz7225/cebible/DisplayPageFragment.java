@@ -911,9 +911,18 @@ public class DisplayPageFragment extends Fragment {
 	private void applyAutoVoice(Locale targetLocale) {
 		if (CEBible_MainActivity.ttsobj == null || getActivity() == null) return;
 
-		// Reset natural pitch, rate, and language
-		CEBible_MainActivity.ttsobj.setPitch(1.0f);
-		CEBible_MainActivity.ttsobj.setSpeechRate(1.0f);
+		String targetLang = targetLocale != null ? targetLocale.getLanguage().toLowerCase(Locale.US) : "";
+		boolean isChinese = targetLang.equals("zh") || targetLang.equals("cmn");
+
+		// Lower pitch and speech rate slightly for Chinese reading
+		if (isChinese) {
+			CEBible_MainActivity.ttsobj.setPitch(0.80f);      // Slightly deeper pitch
+			CEBible_MainActivity.ttsobj.setSpeechRate(0.90f); // Slightly slower speech speed
+		} else {
+			CEBible_MainActivity.ttsobj.setPitch(1.0f);
+			CEBible_MainActivity.ttsobj.setSpeechRate(1.0f);
+		}
+
 		CEBible_MainActivity.ttsobj.setLanguage(targetLocale);
 
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -923,7 +932,6 @@ public class DisplayPageFragment extends Fragment {
 					return;
 				}
 
-				String targetLang = targetLocale.getLanguage().toLowerCase(Locale.US);
 				List<Voice> availableVoices = new ArrayList<Voice>();
 
 				for (Voice voice : voices) {
