@@ -96,6 +96,7 @@ public class DisplayPageFragment extends Fragment {
 	BackgroundColorSpan selectionSpan;
 
 	private boolean isContinuousReading = false;
+	private boolean isReadingPaused = false;
 	public boolean isContinuousReading() { return isContinuousReading; }
 	private int activeReadingVerseIndex = 0;
 	private BackgroundColorSpan readingHighlightSpan = new BackgroundColorSpan(0x60007FFF);
@@ -632,16 +633,68 @@ public class DisplayPageFragment extends Fragment {
 
 	public void toggleContinuousReading() {
 		if (isContinuousReading) {
-			stopContinuousReading();
+			pauseContinuousReading();
+		} else if (isReadingPaused) {
+			resumeContinuousReading();
 		} else {
 			startContinuousReading();
 		}
+	}
+
+	public void pauseContinuousReading() {
+		isContinuousReading = false;
+		isReadingPaused = true;
+
+		if (CEBible_MainActivity.ttsobj != null) {
+			CEBible_MainActivity.ttsobj.stop();
+		}
+
+		if (wakeLock != null) {
+			try {
+				if (wakeLock.isHeld()) {
+					wakeLock.release();
+				}
+			} catch (Exception e) {
+				Log.e(TAG, "Error releasing WakeLock", e);
+			}
+			wakeLock = null;
+		}
+
+		if (getActivity() instanceof DisplayActivity) {
+			((DisplayActivity) getActivity()).updateReadAloudIcon(false);
+		}
+	}
+
+	public void resumeContinuousReading() {
+		if (CEBible_MainActivity.ttsobj == null) return;
+
+		isContinuousReading = true;
+		isReadingPaused = false;
+
+		if (getActivity() != null) {
+			try {
+				PowerManager pm = (PowerManager) getActivity().getSystemService(Context.POWER_SERVICE);
+				if (pm != null) {
+					wakeLock = pm.newWakeLock(1, "CEBible:TTSWakeLock");
+					wakeLock.acquire(15 * 60 * 1000L);
+				}
+			} catch (Exception e) {
+				Log.e(TAG, "Error acquiring WakeLock", e);
+			}
+		}
+
+		if (getActivity() instanceof DisplayActivity) {
+			((DisplayActivity) getActivity()).updateReadAloudIcon(true);
+		}
+
+		speakCurrentReadingVerse();
 	}
 
 	public void startContinuousReading() {
 		if (CEBible_MainActivity.ttsobj == null) return;
 
 		isContinuousReading = true;
+		isReadingPaused = false;
 		activeReadingVerseIndex = 0;
 
 		if (getActivity() != null) {
@@ -734,6 +787,34 @@ public class DisplayPageFragment extends Fragment {
 		speakCurrentReadingVerse();
 	}
 
+	private String formatBiblicalSSML(String rawText) {
+		if (rawText == null || rawText.isEmpty()) return "";
+
+		String text = rawText;
+
+		// Correct common Chinese biblical polyphonic characters (多音字)
+		text = text.replace("重新", "<phoneme alphabet=\"pinyin\" ph=\"chong2\">重</phoneme>新");
+		text = text.replace("重修", "<phoneme alphabet=\"pinyin\" ph=\"chong2\">重</phoneme>修");
+		text = text.replace("重立", "<phoneme alphabet=\"pinyin\" ph=\"chong2\">重</phoneme>立");
+		text = text.replace("重建", "<phoneme alphabet=\"pinyin\" ph=\"chong2\">重</phoneme>建");
+		text = text.replace("重造", "<phoneme alphabet=\"pinyin\" ph=\"chong2\">重</phoneme>造");
+
+		text = text.replace("长存", "<phoneme alphabet=\"pinyin\" ph=\"chang2\">长</phoneme>存");
+		text = text.replace("长远", "<phoneme alphabet=\"pinyin\" ph=\"chang2\">长</phoneme>远");
+		text = text.replace("长久", "<phoneme alphabet=\"pinyin\" ph=\"chang2\">长</phoneme>久");
+		text = text.replace("成长", "成<phoneme alphabet=\"pinyin\" ph=\"zhang2\">长</phoneme>");
+		text = text.replace("族长", "族<phoneme alphabet=\"pinyin\" ph=\"zhang2\">长</phoneme>");
+		text = text.replace("长老", "<phoneme alphabet=\"pinyin\" ph=\"zhang2\">长</phoneme>老");
+
+		text = text.replace("音乐", "音<phoneme alphabet=\"pinyin\" ph=\"yue4\">乐</phoneme>");
+		text = text.replace("喜乐", "喜<phoneme alphabet=\"pinyin\" ph=\"le4\">乐</phoneme>");
+		text = text.replace("快乐", "快<phoneme alphabet=\"pinyin\" ph=\"le4\">乐</phoneme>");
+
+		text = text.replace("传福音", "<phoneme alphabet=\"pinyin\" ph=\"chuan2\">传</phoneme>福音");
+
+		return "<speak>" + text + "</speak>";
+	}
+
 	private void speakCurrentReadingVerse() {
 		List<SpannableString> currentList = (mLanguage != null && mLanguage.equals(getString(R.string.en))) ? spl2 : spl1;
 		if (currentList == null || activeReadingVerseIndex >= currentList.size()) {
@@ -743,6 +824,11 @@ public class DisplayPageFragment extends Fragment {
 
 		SpannableString verseText = currentList.get(activeReadingVerseIndex);
 		String textToSpeak = verseText != null ? verseText.toString() : "";
+
+		// Format as SSML for Chinese
+		if (mLanguage == null || !mLanguage.equals(getString(R.string.en))) {
+			textToSpeak = formatBiblicalSSML(textToSpeak);
+		}
 
 		if (CEBible_MainActivity.ttsobj != null) {
 			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -894,6 +980,8 @@ public class DisplayPageFragment extends Fragment {
 
 	public void stopContinuousReading() {
 		isContinuousReading = false;
+		isReadingPaused = false;
+		activeReadingVerseIndex = 0;
 		if (CEBible_MainActivity.ttsobj != null) {
 			CEBible_MainActivity.ttsobj.stop();
 		}
