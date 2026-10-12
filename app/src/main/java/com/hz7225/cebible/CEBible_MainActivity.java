@@ -136,7 +136,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
     	}
     	prefsVerse = prefs.getInt("VERSE", 1);
     	prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
-    	prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.kjv));
+    	prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.web));
     	prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvs));
     	
     	//Log.d(TAG, "Preferences: Lang=" + prefsLanguage + " EN_trans=" + prefsEN_Trans + " CH_Trans=" + prefsCH_Trans);
@@ -239,7 +239,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		listViewVerse.setSelection(prefsVerse - 1);
 		
 		prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
-    	prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.kjv));
+    	prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.web));
     	prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvs));
     	
     	//Set Locale

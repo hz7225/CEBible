@@ -30,6 +30,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.SearchView;
@@ -91,7 +92,7 @@ public class DisplayActivity extends FragmentActivity {
         // Get saved preferences
     	prefs  = getSharedPreferences("BiblePreferences", MODE_PRIVATE);		    
     	prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
-    	prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.kjv));
+    	prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.web));
     	prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvs));
     	showUsageTip = prefs.getBoolean("SHOW_USAGE_TIP", true);
     	
@@ -120,6 +121,9 @@ public class DisplayActivity extends FragmentActivity {
 		mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
+				if (!isAutoAdvancingPage) {
+					stopActiveReading();
+				}
 				//Log.d(TAG, "PageFragment position = " + String.valueOf(position));
 				
 				page_fragment_scrolled++; //counter used for deciding when to the usage tip PopupWindow
@@ -152,6 +156,9 @@ public class DisplayActivity extends FragmentActivity {
 	}		
 	
 	public void onPause() {
+		if (isFinishing()) {
+			stopActiveReading();
+		}
 		super.onPause();
 		//Log.d(TAG, "onPause()");	
 		
@@ -225,10 +232,19 @@ public class DisplayActivity extends FragmentActivity {
 		onConfigurationChanged(conf);
 	}
 	
-	private class PagerAdapter extends FragmentStatePagerAdapter {
+	public class PagerAdapter extends FragmentStatePagerAdapter {
+		public DisplayPageFragment currentFragment;
 		
         public PagerAdapter(FragmentManager fm) {
             super(fm);
+        }
+
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            if (object instanceof DisplayPageFragment) {
+                currentFragment = (DisplayPageFragment) object;
+            }
+            super.setPrimaryItem(container, position, object);
         }
 
         @Override
@@ -292,7 +308,65 @@ public class DisplayActivity extends FragmentActivity {
 			searchView.setQueryHint("字串1 & 字串2 ...");
 		}
 
+		//Configure Read Aloud actionView click listener
+		MenuItem readItem = menu.findItem(R.id.action_read_aloud);
+		if (readItem != null && readItem.getActionView() != null) {
+			View readView = readItem.getActionView();
+			readView.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (mPagerAdapter != null && mPagerAdapter.currentFragment != null) {
+						mPagerAdapter.currentFragment.toggleContinuousReading();
+					}
+				}
+			});
+		}
+
 		return true;
+	}
+
+	public void updateReadAloudIcon(boolean isReading) {
+		if (ab_menu != null) {
+			MenuItem item = ab_menu.findItem(R.id.action_read_aloud);
+			if (item != null) {
+				if (item.getActionView() instanceof ImageButton) {
+					((ImageButton) item.getActionView()).setImageResource(
+						isReading ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play
+					);
+				} else {
+					item.setIcon(isReading ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
+				}
+			}
+		}
+	}
+	
+	public boolean isAutoAdvancingPage = false;
+
+	public boolean advanceToNextChapter() {
+		if (mPager != null && mPagerAdapter != null) {
+			int nextPos = mPager.getCurrentItem() + 1;
+			if (nextPos < mPagerAdapter.getCount()) {
+				isAutoAdvancingPage = true;
+				mPager.setCurrentItem(nextPos, true);
+				mPager.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						if (mPagerAdapter != null && mPagerAdapter.currentFragment != null) {
+							mPagerAdapter.currentFragment.startContinuousReading();
+						}
+						isAutoAdvancingPage = false;
+					}
+				}, 600);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void stopActiveReading() {
+		if (mPagerAdapter != null && mPagerAdapter.currentFragment != null) {
+			mPagerAdapter.currentFragment.stopContinuousReading();
+		}
 	}
 	
 	@Override
@@ -301,9 +375,11 @@ public class DisplayActivity extends FragmentActivity {
         MenuItem item = it;
         SearchView searchView = (ab_menu != null && ab_menu.findItem(R.id.action_search) != null) ? (SearchView) ab_menu.findItem(R.id.action_search).getActionView() : null;
         if (id == android.R.id.home) {
+            stopActiveReading();
             finish();
             return true;
         } else if (id == R.id.action_change) {
+            stopActiveReading();
         	if (prefsLanguage.equals(getString(R.string.ch))) {
         		prefsLanguage = getString(R.string.en);
         		mySetLocale();
@@ -335,6 +411,11 @@ public class DisplayActivity extends FragmentActivity {
     		actionBar.setTitle(getBookName() +" "+String.valueOf(mChapter));
     		
     		mPagerAdapter.notifyDataSetChanged();  
+        	return true;
+        } else if (id == R.id.action_read_aloud) {
+        	if (mPagerAdapter != null && mPagerAdapter.currentFragment != null) {
+        		mPagerAdapter.currentFragment.toggleContinuousReading();
+        	}
         	return true;
         } else if (id == R.id.action_search) {
         	return true;

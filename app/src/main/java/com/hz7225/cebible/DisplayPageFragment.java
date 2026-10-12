@@ -1,16 +1,23 @@
 package com.hz7225.cebible;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.AudioAttributes;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
+import android.speech.tts.Voice;
 import android.text.Selection;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -87,6 +94,13 @@ public class DisplayPageFragment extends Fragment {
 	ActionMode amode;
 	SpannableString selectedVerseSpan;
 	BackgroundColorSpan selectionSpan;
+
+	private boolean isContinuousReading = false;
+	public boolean isContinuousReading() { return isContinuousReading; }
+	private int activeReadingVerseIndex = 0;
+	private BackgroundColorSpan readingHighlightSpan = new BackgroundColorSpan(0x60007FFF);
+	private SpannableString activeReadingSpan = null;
+	private PowerManager.WakeLock wakeLock = null;
 	
 	NotebookDbHelper mDbHelper;
 	
@@ -614,5 +628,293 @@ public class DisplayPageFragment extends Fragment {
 				return text.toString();
 			}
 		});
-	}	
+	}
+
+	public void toggleContinuousReading() {
+		if (isContinuousReading) {
+			stopContinuousReading();
+		} else {
+			startContinuousReading();
+		}
+	}
+
+	public void startContinuousReading() {
+		if (CEBible_MainActivity.ttsobj == null) return;
+
+		isContinuousReading = true;
+		activeReadingVerseIndex = 0;
+
+		if (getActivity() != null) {
+			try {
+				PowerManager pm = (PowerManager) getActivity().getSystemService(Context.POWER_SERVICE);
+				if (pm != null) {
+					wakeLock = pm.newWakeLock(1, "CEBible:TTSWakeLock"); // 1 = PARTIAL_WAKELOCK
+					wakeLock.acquire(15 * 60 * 1000L); // 15 min max timeout
+				}
+			} catch (Exception e) {
+				Log.e(TAG, "Error acquiring WakeLock", e);
+			}
+		}
+
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+			AudioAttributes audioAttributes = new AudioAttributes.Builder()
+					.setUsage(AudioAttributes.USAGE_MEDIA)
+					.setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+					.build();
+			CEBible_MainActivity.ttsobj.setAudioAttributes(audioAttributes);
+		}
+
+		if (getActivity() instanceof DisplayActivity) {
+			((DisplayActivity) getActivity()).updateReadAloudIcon(true);
+		}
+
+		Locale targetLocale = Locale.CHINESE;
+		if (mLanguage != null && mLanguage.equals(getString(R.string.en))) {
+			if (mEn_trans != null && mEn_trans.equals(getString(R.string.kjv))) {
+				targetLocale = Locale.UK;
+			} else {
+				targetLocale = Locale.US;
+			}
+		}
+
+		applyAutoVoice(targetLocale);
+
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+			CEBible_MainActivity.ttsobj.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+				@Override
+				public void onStart(String utteranceId) {
+					if (getActivity() == null) return;
+					getActivity().runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							highlightReadingVerse(activeReadingVerseIndex);
+						}
+					});
+				}
+
+				@Override
+				public void onDone(String utteranceId) {
+					if (!isContinuousReading) return;
+					if (getActivity() == null) return;
+					getActivity().runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							activeReadingVerseIndex++;
+							List<SpannableString> currentList = (mLanguage != null && mLanguage.equals(getString(R.string.en))) ? spl2 : spl1;
+							if (currentList != null && activeReadingVerseIndex < currentList.size()) {
+								speakCurrentReadingVerse();
+							} else {
+								if (getActivity() instanceof DisplayActivity) {
+									boolean advanced = ((DisplayActivity) getActivity()).advanceToNextChapter();
+									if (!advanced) {
+										stopContinuousReading();
+									}
+								} else {
+									stopContinuousReading();
+								}
+							}
+						}
+					});
+				}
+
+				@Override
+				public void onError(String utteranceId) {
+					if (getActivity() != null) {
+						getActivity().runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								stopContinuousReading();
+							}
+						});
+					}
+				}
+			});
+		}
+
+		speakCurrentReadingVerse();
+	}
+
+	private void speakCurrentReadingVerse() {
+		List<SpannableString> currentList = (mLanguage != null && mLanguage.equals(getString(R.string.en))) ? spl2 : spl1;
+		if (currentList == null || activeReadingVerseIndex >= currentList.size()) {
+			stopContinuousReading();
+			return;
+		}
+
+		SpannableString verseText = currentList.get(activeReadingVerseIndex);
+		String textToSpeak = verseText != null ? verseText.toString() : "";
+
+		if (CEBible_MainActivity.ttsobj != null) {
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+				CEBible_MainActivity.ttsobj.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, null, "verse_" + activeReadingVerseIndex);
+			} else {
+				HashMap<String, String> params = new HashMap<String, String>();
+				params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "verse_" + activeReadingVerseIndex);
+				CEBible_MainActivity.ttsobj.speak(textToSpeak, TextToSpeech.QUEUE_FLUSH, params);
+			}
+		}
+	}
+
+	private void highlightReadingVerse(int verseIndex) {
+		List<SpannableString> currentList = (mLanguage != null && mLanguage.equals(getString(R.string.en))) ? spl2 : spl1;
+		ListDataAdapter2 currentAdapter = (mLanguage != null && mLanguage.equals(getString(R.string.en))) ? adapter2 : adapter1;
+		ListView currentListView = (mLanguage != null && mLanguage.equals(getString(R.string.en))) ? listView2 : listView1;
+
+		if (currentList == null || verseIndex < 0 || verseIndex >= currentList.size()) return;
+
+		if (activeReadingSpan != null && readingHighlightSpan != null) {
+			activeReadingSpan.removeSpan(readingHighlightSpan);
+		}
+
+		activeReadingSpan = currentList.get(verseIndex);
+		if (activeReadingSpan != null) {
+			activeReadingSpan.setSpan(readingHighlightSpan, 0, activeReadingSpan.length(), 0);
+		}
+
+		if (currentAdapter != null) {
+			currentAdapter.notifyDataSetChanged();
+		}
+
+		if (currentListView != null) {
+			currentListView.smoothScrollToPosition(verseIndex);
+		}
+	}
+
+	private void applyAutoVoice(Locale targetLocale) {
+		if (CEBible_MainActivity.ttsobj == null || getActivity() == null) return;
+
+		// Reset natural pitch, rate, and language
+		CEBible_MainActivity.ttsobj.setPitch(1.0f);
+		CEBible_MainActivity.ttsobj.setSpeechRate(1.0f);
+		CEBible_MainActivity.ttsobj.setLanguage(targetLocale);
+
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+			try {
+				Set<Voice> voices = CEBible_MainActivity.ttsobj.getVoices();
+				if (voices == null || voices.isEmpty()) {
+					return;
+				}
+
+				String targetLang = targetLocale.getLanguage().toLowerCase(Locale.US);
+				List<Voice> availableVoices = new ArrayList<Voice>();
+
+				for (Voice voice : voices) {
+					if (voice.getLocale() == null) continue;
+					String vLang = voice.getLocale().getLanguage().toLowerCase(Locale.US);
+
+					boolean langMatch = false;
+					if (targetLang.equals("zh") || targetLang.equals("cmn")) {
+						langMatch = vLang.equals("zh") || vLang.equals("cmn");
+					} else {
+						langMatch = vLang.equals(targetLang);
+					}
+
+					if (!langMatch) continue;
+
+					Set<String> features = voice.getFeatures();
+					if (features != null && features.contains("notInstalled")) {
+						continue; // Skip uninstalled voices
+					}
+					availableVoices.add(voice);
+				}
+
+				if (availableVoices.isEmpty()) {
+					return;
+				}
+
+				Voice targetVoice = null;
+
+				if (targetLang.equals("zh") || targetLang.equals("cmn")) {
+					// High Quality Male voice for Chinese (ccd, cca, cta, male)
+					for (Voice v : availableVoices) {
+						String name = v.getName().toLowerCase(Locale.US);
+						if (name.contains("ccd") || name.contains("cca") || name.contains("cta") || name.contains("m00") || name.contains("male")) {
+							targetVoice = v;
+							break;
+						}
+					}
+					if (targetVoice == null && !availableVoices.isEmpty()) {
+						targetVoice = availableVoices.get(0); // Index 0 is Male in Chinese
+					}
+				} else {
+					// High Quality Female voice for American/British English
+					String targetCountry = targetLocale.getCountry().toLowerCase(Locale.US);
+
+					// First pass: match exact country (e.g. US female voices: tpc, tpd, tpf)
+					for (Voice v : availableVoices) {
+						if (v.getLocale() == null) continue;
+						String country = v.getLocale().getCountry().toLowerCase(Locale.US);
+						String name = v.getName().toLowerCase(Locale.US);
+
+						boolean countryMatch = country.equals(targetCountry) || name.contains(targetCountry);
+						if (countryMatch) {
+							if (name.contains("tpc") || name.contains("tpd") || name.contains("tpf") || name.contains("rjd") || name.contains("gba") || name.contains("f00") || name.contains("female")) {
+								targetVoice = v;
+								break;
+							}
+						}
+					}
+
+					// Second pass: match any US female voice (tpc, tpd, tpf)
+					if (targetVoice == null) {
+						for (Voice v : availableVoices) {
+							String name = v.getName().toLowerCase(Locale.US);
+							if (name.contains("tpc") || name.contains("tpd") || name.contains("tpf") || (name.contains("us") && name.contains("female"))) {
+								targetVoice = v;
+								break;
+							}
+						}
+					}
+
+					// Third pass: match any non-male US voice
+					if (targetVoice == null) {
+						for (Voice v : availableVoices) {
+							String name = v.getName().toLowerCase(Locale.US);
+							if (name.contains("us") && !name.contains("sfg") && !name.contains("iom") && !name.contains("fis") && !name.contains("male")) {
+								targetVoice = v;
+								break;
+							}
+						}
+					}
+
+					if (targetVoice == null && !availableVoices.isEmpty()) {
+						targetVoice = availableVoices.get(0);
+					}
+				}
+
+				if (targetVoice != null) {
+					int res = CEBible_MainActivity.ttsobj.setVoice(targetVoice);
+					Log.d(TAG, "applyAutoVoice: Successfully set voice " + targetVoice.getName() + " for lang=" + targetLang + " (result=" + res + ")");
+				}
+			} catch (Exception e) {
+				Log.e(TAG, "applyAutoVoice error", e);
+			}
+		}
+	}
+
+	public void stopContinuousReading() {
+		isContinuousReading = false;
+		if (CEBible_MainActivity.ttsobj != null) {
+			CEBible_MainActivity.ttsobj.stop();
+		}
+		if (wakeLock != null) {
+			try {
+				if (wakeLock.isHeld()) {
+					wakeLock.release();
+				}
+			} catch (Exception e) {
+				Log.e(TAG, "Error releasing WakeLock", e);
+			}
+			wakeLock = null;
+		}
+		if (activeReadingSpan != null && readingHighlightSpan != null) {
+			activeReadingSpan.removeSpan(readingHighlightSpan);
+			activeReadingSpan = null;
+		}
+		if (adapter1 != null) adapter1.notifyDataSetChanged();
+		if (adapter2 != null) adapter2.notifyDataSetChanged();
+		if (getActivity() instanceof DisplayActivity) {
+			((DisplayActivity) getActivity()).updateReadAloudIcon(false);
+		}
+	}
 }

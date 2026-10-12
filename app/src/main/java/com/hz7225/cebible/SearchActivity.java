@@ -93,7 +93,7 @@ public class SearchActivity extends Activity {
 		// Get saved preferences
     	prefs  = getSharedPreferences("BiblePreferences", MODE_PRIVATE);
     	prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
-    	prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.kjv));
+    	prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.web));
     	prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvs));
        	
         handleIntent(getIntent());
@@ -183,7 +183,7 @@ public class SearchActivity extends Activity {
     	actionBar.setTitle(getString(R.string.searchresult) + " (" + queryStr.trim() + ")");
     	
     	//Set the correct database for search
-    	prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.kjv));
+    	prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.web));
     	prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvs));
     	String db;
     	if (DisplayPageFragment.in_lv1_or_lv2 == 1) {

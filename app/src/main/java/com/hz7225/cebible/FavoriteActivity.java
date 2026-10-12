@@ -120,7 +120,7 @@ public class FavoriteActivity extends Activity {
     	// Get active language and translation preferences
     	SharedPreferences prefs = getSharedPreferences("BiblePreferences", MODE_PRIVATE);
     	String prefsLanguage = prefs.getString("LANGUAGE", getString(R.string.ch));
-    	String prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.kjv));
+    	String prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.web));
     	String prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvs));
 
     	String activeDb;

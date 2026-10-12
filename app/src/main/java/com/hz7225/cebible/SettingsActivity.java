@@ -25,6 +25,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,7 +68,7 @@ public class SettingsActivity extends Activity {
 		setContentView(R.layout.activity_settings);
 		
 		prefs  = getSharedPreferences("BiblePreferences", MODE_PRIVATE);
-		prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.kjv));
+		prefsEN_Trans = prefs.getString("EN_TRANS", getString(R.string.web));
     	prefsCH_Trans = prefs.getString("CH_TRANS", getString(R.string.cuvs));
 		
     	//Listview1 is for Chinese

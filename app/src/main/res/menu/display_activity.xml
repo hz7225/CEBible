@@ -4,7 +4,16 @@
     	android:id="@+id/action_change"
     	android:title=""
     	android:showAsAction="ifRoom"/>
-    
+
+    <item
+    	android:id="@+id/action_read_aloud"
+    	android:icon="@android:drawable/ic_media_play"
+    	android:title="@string/read"
+    	android:titleCondensed="@string/read"
+    	android:visible="true"
+    	android:showAsAction="always"
+    	android:actionLayout="@layout/action_read_aloud_layout"/>
+
     <item
     	android:id="@+id/action_search"
     	android:icon="@drawable/ic_action_search"

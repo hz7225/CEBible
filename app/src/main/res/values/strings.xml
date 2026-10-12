@@ -26,6 +26,13 @@
     <string name="cuv">和合本</string>   
     <string name="select_chinese_translation">Preferred Chinese Translation</string>
     <string name="select_english_translation">Preferred English Translation</string> 
+    <string name="tts_voice_setting">Text-To-Speech Voice</string>
+    <string-array name="tts_voice_options">
+        <item>Default System Voice</item>
+        <item>Female Voice</item>
+        <item>Male Voice</item>
+        <item>High Quality / Natural HD Voice</item>
+    </string-array>
  	<string name="read">Read</string>
  	<string name="stop">Stop</string>
  	<string name="share">Share</string>

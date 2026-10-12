@@ -4,7 +4,7 @@
     <string name="action_settings">設置</string>
     <string name="action_help">使用提示</string>
     <string name="action_about">漢英聖經 版本</string>
-    <string name="action_search">搜索</string>  
+    <string name="action_search">搜尋</string>
     <string name="usagetip">使用提示</string> 
     <string name="showusagetips">"  顯示使用提示"</string> 
     <string name="usagetiptext">長按一節經文，即可對此進行複製、讀音、分享、劃線和搜尋</string> 
@@ -26,8 +26,15 @@
     <string name="cuv">和合本</string>     
     <string name="select_chinese_translation">首選的中文譯本</string>
     <string name="select_english_translation">Preferred English Translation</string>
+    <string name="tts_voice_setting">語音朗讀聲音</string>
+    <string-array name="tts_voice_options">
+        <item>預設系統聲音</item>
+        <item>女聲</item>
+        <item>男聲</item>
+        <item>高清自然聲音</item>
+    </string-array>
     <string name="read">朗讀</string>
- 	<string name="stop">停止</string>
+ 	<string name="stop">停止朗讀</string>
  	<string name="share">分享</string>
  	<string name="note">筆記</string>
  	<string name="search">搜尋</string>

@@ -4,7 +4,7 @@
     <string name="action_settings">设置</string>
     <string name="action_help">使用提示</string>
     <string name="action_about">汉英圣经 版本</string>
-    <string name="action_search">搜索</string> 
+    <string name="action_search">搜索</string>
     <string name="usagetip">使用提示</string>
     <string name="showusagetips">"  显示使用提示"</string>
     <string name="usagetiptext">长按一节经文，既可以对此进行复制、读音、分享、划线和搜索</string>  
@@ -26,8 +26,15 @@
     <string name="cuv">和合本</string>  
     <string name="select_chinese_translation">首选的中文译本</string>
     <string name="select_english_translation">Preferred English Translation</string> 
+    <string name="tts_voice_setting">语音朗读声音</string>
+    <string-array name="tts_voice_options">
+        <item>默认系统声音</item>
+        <item>女声</item>
+        <item>男声</item>
+        <item>高清自然声音</item>
+    </string-array>
     <string name="read">朗读</string>
- 	<string name="stop">停止</string>
+ 	<string name="stop">停止朗读</string>
  	<string name="share">分享</string>
  	<string name="note">笔记</string>
  	<string name="search">搜索</string>
