@@ -322,6 +322,73 @@ public class DisplayActivity extends FragmentActivity {
 			});
 		}
 
+		if (searchView != null) {
+			searchView.setOnSearchClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					stopActiveReading();
+					if (ab_menu != null) {
+						MenuItem readItem = ab_menu.findItem(R.id.action_read_aloud);
+						if (readItem != null) {
+							readItem.setVisible(false);
+							if (readItem.getActionView() != null) {
+								readItem.getActionView().setVisibility(View.GONE);
+							}
+						}
+					}
+				}
+			});
+			searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+				@Override
+				public boolean onClose() {
+					if (ab_menu != null) {
+						MenuItem readItem = ab_menu.findItem(R.id.action_read_aloud);
+						if (readItem != null) {
+							readItem.setVisible(true);
+							if (readItem.getActionView() != null) {
+								readItem.getActionView().setVisibility(View.VISIBLE);
+							}
+						}
+					}
+					return false;
+				}
+			});
+		}
+
+		MenuItem searchMenuItem = menu.findItem(R.id.action_search);
+		if (searchMenuItem != null) {
+			searchMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+				@Override
+				public boolean onMenuItemActionExpand(MenuItem item) {
+					stopActiveReading();
+					if (ab_menu != null) {
+						MenuItem readItem = ab_menu.findItem(R.id.action_read_aloud);
+						if (readItem != null) {
+							readItem.setVisible(false);
+							if (readItem.getActionView() != null) {
+								readItem.getActionView().setVisibility(View.GONE);
+							}
+						}
+					}
+					return true;
+				}
+
+				@Override
+				public boolean onMenuItemActionCollapse(MenuItem item) {
+					if (ab_menu != null) {
+						MenuItem readItem = ab_menu.findItem(R.id.action_read_aloud);
+						if (readItem != null) {
+							readItem.setVisible(true);
+							if (readItem.getActionView() != null) {
+								readItem.getActionView().setVisibility(View.VISIBLE);
+							}
+						}
+					}
+					return true;
+				}
+			});
+		}
+
 		return true;
 	}
 
