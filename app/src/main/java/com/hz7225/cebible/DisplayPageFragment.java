@@ -435,20 +435,21 @@ public class DisplayPageFragment extends Fragment {
         return spl;
 	}
 	
-	private String getBookName() {
-		// Get book name from XML resource
-		
+	private String getBookNameFor(int bookNum) {
 		String[] ot = getResources().getStringArray(R.array.old_testament);
 		String[] nt = getResources().getStringArray(R.array.new_testament);
 
 		String book;
-		if (mBook<40) {
-			book = ot[mBook-1].substring(0, ot[mBook-1].indexOf(","));
+		if (bookNum < 40) {
+			book = ot[bookNum - 1].substring(0, ot[bookNum - 1].indexOf(","));
 		} else {
-			book = nt[mBook-1-39].substring(0, nt[mBook-1-39].indexOf(","));
+			book = nt[bookNum - 1 - 39].substring(0, nt[bookNum - 1 - 39].indexOf(","));
 		}
-		
 		return book;
+	}
+
+	private String getBookName() {
+		return getBookNameFor(mBook);
 	}
 	
 	private void setCustomSelectionCAB(boolean longClick) {
@@ -687,7 +688,11 @@ public class DisplayPageFragment extends Fragment {
 			((DisplayActivity) getActivity()).updateReadAloudIcon(true);
 		}
 
-		speakCurrentReadingVerse();
+		if (activeReadingVerseIndex == 0) {
+			speakChapterHeaderThenVerse();
+		} else {
+			speakCurrentReadingVerse();
+		}
 	}
 
 	public void startContinuousReading() {
@@ -746,12 +751,18 @@ public class DisplayPageFragment extends Fragment {
 				}
 
 				@Override
-				public void onDone(String utteranceId) {
+				public void onDone(final String utteranceId) {
 					if (!isContinuousReading) return;
 					if (getActivity() == null) return;
 					getActivity().runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
+							if ("chapter_header".equals(utteranceId)) {
+								activeReadingVerseIndex = 0;
+								speakCurrentReadingVerse();
+								return;
+							}
+
 							activeReadingVerseIndex++;
 							List<SpannableString> currentList = (mLanguage != null && mLanguage.equals(getString(R.string.en))) ? spl2 : spl1;
 							if (currentList != null && activeReadingVerseIndex < currentList.size()) {
@@ -784,7 +795,38 @@ public class DisplayPageFragment extends Fragment {
 			});
 		}
 
-		speakCurrentReadingVerse();
+		speakChapterHeaderThenVerse();
+	}
+
+	private void speakChapterHeaderThenVerse() {
+		int pageNum = getArguments() != null ? getArguments().getInt(ARG_PAGE, 0) : mPageNumber;
+		ChapterPosition cp = new ChapterPosition(getActivity(), pageNum);
+		int currentBook = cp.getBook();
+		int currentChapter = cp.getChapter();
+
+		String realBookName = getBookNameFor(currentBook);
+
+		String chapterHeader;
+		if (mLanguage != null && mLanguage.equals(getString(R.string.en))) {
+			chapterHeader = realBookName + " Chapter " + currentChapter;
+		} else {
+			if (currentChapter == 2) {
+				chapterHeader = realBookName + " 第<phoneme alphabet=\"pinyin\" ph=\"er4\">二</phoneme>章";
+			} else {
+				chapterHeader = realBookName + " 第" + currentChapter + "章";
+			}
+			chapterHeader = formatBiblicalSSML(chapterHeader);
+		}
+
+		if (CEBible_MainActivity.ttsobj != null) {
+			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+				CEBible_MainActivity.ttsobj.speak(chapterHeader, TextToSpeech.QUEUE_FLUSH, null, "chapter_header");
+			} else {
+				HashMap<String, String> params = new HashMap<String, String>();
+				params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "chapter_header");
+				CEBible_MainActivity.ttsobj.speak(chapterHeader, TextToSpeech.QUEUE_FLUSH, params);
+			}
+		}
 	}
 
 	private String formatBiblicalSSML(String rawText) {
