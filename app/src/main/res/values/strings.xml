@@ -7,7 +7,7 @@
     <string name="action_search">Search</string> 
     <string name="usagetip">Usage Tip</string> 
     <string name="showusagetips">"  Show Usage Tips"</string>  
-    <string name="usagetiptext">Long press a scripture, then you can Copy, Play, Share, Highlight, and Search</string> 
+    <string name="usagetiptext">Long press on a verse, then you can add it to Favorite, Share, Read, or Copy</string>
     <string name="donotshow">Do not show again</string>    
     <string name="lang">Eng</string>
     <string name="ch">中文</string> 

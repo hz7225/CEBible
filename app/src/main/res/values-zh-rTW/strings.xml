@@ -7,7 +7,7 @@
     <string name="action_search">搜尋</string>
     <string name="usagetip">使用提示</string> 
     <string name="showusagetips">"  顯示使用提示"</string> 
-    <string name="usagetiptext">長按一節經文，即可對此進行複製、讀音、分享、劃線和搜尋</string> 
+    <string name="usagetiptext">長按一節經文，即可加入喜愛，或分享，朗讀及複製</string>
     <string name="donotshow">不必再提示</string>
     <string name="lang">Eng</string>
     <string name="ch">中文</string> 
