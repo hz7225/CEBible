@@ -12,7 +12,10 @@ import android.text.Selection;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -58,11 +61,21 @@ public class ListDataAdapter2 extends BaseAdapter {
 		
 		ViewHolder holder;
 		if (v == null) {
-			//Log.d(TAG, "create new view at position = " + String.valueOf(position));
 			holder = new ViewHolder();
 			v = layoutInflater.inflate(R.layout.list_item2, null);
 			holder.tvScripture = (TextView) v.findViewById(R.id.scripture);
-			//holder.tvScripture.setTextIsSelectable(true);
+			holder.tvScripture.setCustomSelectionActionModeCallback(new ActionMode.Callback() {
+				@Override
+				public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+					return false;
+				}
+				@Override
+				public boolean onPrepareActionMode(ActionMode mode, Menu menu) { return false; }
+				@Override
+				public boolean onActionItemClicked(ActionMode mode, MenuItem item) { return false; }
+				@Override
+				public void onDestroyActionMode(ActionMode mode) {}
+			});
 			holder.tvScriptureNum = (TextView) v.findViewById(R.id.scripture_number);
 			v.setTag(holder);
 		} else {

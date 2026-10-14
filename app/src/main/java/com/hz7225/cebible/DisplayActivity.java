@@ -43,7 +43,7 @@ public class DisplayActivity extends FragmentActivity {
 	int num_chapters = 1189;  //total number of chapters in the Holy Bible
 	
 	private ViewPager mPager;
-	private PagerAdapter mPagerAdapter;
+	public PagerAdapter mPagerAdapter;
 	private int mBook;
 	public int mChapter;
 	private int mVerse;
@@ -123,6 +123,9 @@ public class DisplayActivity extends FragmentActivity {
 			public void onPageSelected(int position) {
 				if (!isAutoAdvancingPage) {
 					stopActiveReading();
+				}
+				if (mPagerAdapter != null && mPagerAdapter.currentFragment != null) {
+					mPagerAdapter.currentFragment.dismissCABAndHighlight();
 				}
 				//Log.d(TAG, "PageFragment position = " + String.valueOf(position));
 				

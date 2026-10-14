@@ -7,6 +7,9 @@ import java.util.Locale;
 import java.util.Set;
 
 import android.app.Fragment;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -15,6 +18,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
@@ -25,9 +29,11 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.ActionMode;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ActionMode.Callback;
@@ -99,7 +105,7 @@ public class DisplayPageFragment extends Fragment {
 	private boolean isReadingPaused = false;
 	public boolean isContinuousReading() { return isContinuousReading; }
 	private int activeReadingVerseIndex = 0;
-	private BackgroundColorSpan readingHighlightSpan = new BackgroundColorSpan(0x60007FFF);
+	private BackgroundColorSpan readingHighlightSpan = new BackgroundColorSpan(0x6076FF03);
 	private SpannableString activeReadingSpan = null;
 	private PowerManager.WakeLock wakeLock = null;
 	
@@ -246,16 +252,29 @@ public class DisplayPageFragment extends Fragment {
     	listView2.setSelection(verse-1);  //Set starting position
     	
     	//Set listener
+		View.OnTouchListener listTouchListener = new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if (event.getAction() == MotionEvent.ACTION_DOWN && amode != null) {
+					v.performClick();
+					dismissCABAndHighlight();
+					return true;
+				}
+				return false;
+			}
+		};
+
+		listView1.setOnTouchListener(listTouchListener);
+		listView2.setOnTouchListener(listTouchListener);
+
     	listView1.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> av, View v, int position, long id) {
-				//delete action mode
-				//amode.finish();
+				dismissCABAndHighlight();
 			}
 		});
     	listView2.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> av, View v, int position, long id) {
-				//delete action mode
-				//amode.finish();
+				dismissCABAndHighlight();
 			}
 		});
     	
@@ -303,7 +322,7 @@ public class DisplayPageFragment extends Fragment {
 				else {					
 					mTextView.setTextIsSelectable(false); //Disable Text Selection in side-by-side view 
 				}
-				return false; //pass event to onItemClickListener
+				return true; // consume event so onItemClick is NOT triggered
 				//return true;  //consume event
 			}
 		});
@@ -324,7 +343,7 @@ public class DisplayPageFragment extends Fragment {
 				else {					
 					mTextView.setTextIsSelectable(false); //Disable Text Selection in side-by-side view 
 				}
-				return false; //pass event to onItemClickListener
+				return true; // consume event so onItemClick is NOT triggered
 				//return true;  //consume event
 			}
 		});
@@ -357,6 +376,11 @@ public class DisplayPageFragment extends Fragment {
 				// That's why i set a boolean value
 				if (scrollState == SCROLL_STATE_TOUCH_SCROLL) {
 					isRightListEnabled = false;
+					clearVerseHighlight();
+					if (amode != null) {
+						amode.finish();
+						amode = null;
+					}
 				} else if (scrollState == SCROLL_STATE_IDLE) {
 					isRightListEnabled = true;
 				}
@@ -378,6 +402,11 @@ public class DisplayPageFragment extends Fragment {
 				// That's why i set a boolean value
 				if (scrollState == SCROLL_STATE_TOUCH_SCROLL) {
 					isLeftListEnabled = false;
+					clearVerseHighlight();
+					if (amode != null) {
+						amode.finish();
+						amode = null;
+					}
 				} else if (scrollState == SCROLL_STATE_IDLE) {
 					isLeftListEnabled = true;
 				}
@@ -451,22 +480,98 @@ public class DisplayPageFragment extends Fragment {
 	private String getBookName() {
 		return getBookNameFor(mBook);
 	}
+
+	public void clearVerseHighlight() {
+		if (selectionSpan != null && selectedVerseSpan != null) {
+			selectedVerseSpan.removeSpan(selectionSpan);
+			selectionSpan = null;
+			selectedVerseSpan = null;
+			if (adapter1 != null) adapter1.notifyDataSetChanged();
+			if (adapter2 != null) adapter2.notifyDataSetChanged();
+		}
+		if (mTextView != null && mTextView.getText() instanceof Spannable) {
+			Selection.removeSelection((Spannable) mTextView.getText());
+		}
+	}
+
+	public void dismissCABAndHighlight() {
+		clearVerseHighlight();
+		if (amode != null) {
+			amode.finish();
+			amode = null;
+		}
+	}
 	
-	private void setCustomSelectionCAB(boolean longClick) {
-		//Select all text
-		Selection.selectAll((Spannable) mTextView.getText());
-    	
-		mTextView.setCustomSelectionActionModeCallback(new Callback() {
+	private void setCustomSelectionCAB(final boolean longClick) {
+		if (mTextView == null || mTextView.getText() == null) return;
+
+		// Finish previous Action Mode and clear previous highlight FIRST
+		dismissCABAndHighlight();
+
+		// Apply background selection highlight directly to data model (~37% opacity Light Azure Blue)
+		if (selected_listview == 1 && spl1 != null && longclickedVerse > 0 && longclickedVerse <= spl1.size()) {
+			selectedVerseSpan = spl1.get(longclickedVerse - 1);
+			selectionSpan = new BackgroundColorSpan(0x60007FFF); // 37% opacity Light Azure Blue
+			selectedVerseSpan.setSpan(selectionSpan, 0, selectedVerseSpan.length(), 0);
+			if (adapter1 != null) adapter1.notifyDataSetChanged();
+		} else if (selected_listview == 2 && spl2 != null && longclickedVerse > 0 && longclickedVerse <= spl2.size()) {
+			selectedVerseSpan = spl2.get(longclickedVerse - 1);
+			selectionSpan = new BackgroundColorSpan(0x60007FFF); // 37% opacity Light Azure Blue
+			selectedVerseSpan.setSpan(selectionSpan, 0, selectedVerseSpan.length(), 0);
+			if (adapter2 != null) adapter2.notifyDataSetChanged();
+		}
+
+		mTextView.setMovementMethod(android.text.method.ArrowKeyMovementMethod.getInstance());
+		mTextView.setFocusable(true);
+		mTextView.setFocusableInTouchMode(true);
+		mTextView.setTextIsSelectable(true);
+
+		final GestureDetector doubleTapBlocker = new GestureDetector(getActivity(), new GestureDetector.SimpleOnGestureListener() {
+			@Override
+			public boolean onDoubleTap(MotionEvent e) {
+				dismissCABAndHighlight();
+				return true;
+			}
+		});
+
+		mTextView.setOnTouchListener(new View.OnTouchListener() {
+			private long tapDownTime = 0;
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if (doubleTapBlocker.onTouchEvent(event)) {
+					return true;
+				}
+				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					tapDownTime = SystemClock.uptimeMillis();
+				} else if (event.getAction() == MotionEvent.ACTION_UP) {
+					long duration = SystemClock.uptimeMillis() - tapDownTime;
+					if (duration < 350 && amode != null) {
+						v.performClick();
+						dismissCABAndHighlight();
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+
+		if (mTextView.getText() instanceof Spannable) {
+			Selection.selectAll((Spannable) mTextView.getText());
+		}
+
+		Callback callback = new Callback() {
 			NotebookDbHelper mDbHelper = new NotebookDbHelper(getActivity().getApplicationContext());					
 			boolean test = mDbHelper.checkIfRecordExists(mBook, mChapter, longclickedVerse);
 
 			@Override
 			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-				// TODO Auto-generated method stub
+				if (!longClick) {
+					return false; // Reject double-tap Action Mode!
+				}
 				Log.d(TAG, "setCustomSelectionCAB: onCreateActionMode");
 				mode.getMenuInflater().inflate(R.menu.contextual_menu, menu);
 				mode.setTitle("");
-				//Log.d(TAG, "order of Favorite is " + String.valueOf(i));
 				amode = mode;
 				
 				//Lollipop MR1 (Build # 22) workaround, onPrepareActionMode didn't get called automatically. So call is manually
@@ -493,7 +598,6 @@ public class DisplayPageFragment extends Fragment {
 						itemId != R.id.item_share &&
 						itemId != R.id.item_play &&
 						itemId != R.id.item_pause &&
-						itemId != R.id.item_search &&
 						itemId != R.id.item_note &&
 						itemId != android.R.id.copy) {
 						menu.removeItem(itemId);
@@ -524,20 +628,24 @@ public class DisplayPageFragment extends Fragment {
 				int it = item.getItemId();
 				//switch (item.getItemId()) {
 				if (it == android.R.id.copy) {
+					if (getActivity() != null) {
+						ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+						ClipData clip = ClipData.newPlainText("CEBible", selectedText() + " (" + title + ")");
+						if (clipboard != null) {
+							clipboard.setPrimaryClip(clip);
+						}
+					}
 					Toast.makeText(getActivity(), getString(R.string.copied), Toast.LENGTH_SHORT).show();
-					return false;
+					mode.finish();
+					return true;
 				} else if (it == R.id.item_play) {
 					if (selected_listview == 1) {
-						CEBible_MainActivity.ttsobj.setLanguage(Locale.CHINESE);						
-						CEBible_MainActivity.ttsobj.speak(selectedText(), TextToSpeech.QUEUE_FLUSH, null);
-					} 					
-					else if (selected_listview == 2) {
-						if (mEn_trans.equals(getString(R.string.kjv))) {
-							CEBible_MainActivity.ttsobj.setLanguage(Locale.UK);
-						}
-						else {
-							CEBible_MainActivity.ttsobj.setLanguage(Locale.US);
-						}
+						applyAutoVoice(Locale.CHINESE);
+						String ssmlText = formatBiblicalSSML(selectedText());
+						CEBible_MainActivity.ttsobj.speak(ssmlText, TextToSpeech.QUEUE_FLUSH, null);
+					} else if (selected_listview == 2) {
+						Locale targetLocale = (mEn_trans != null && mEn_trans.equals(getString(R.string.kjv))) ? Locale.UK : Locale.US;
+						applyAutoVoice(targetLocale);
 						CEBible_MainActivity.ttsobj.speak(selectedText(), TextToSpeech.QUEUE_FLUSH, null);
 					}
 					return true;
@@ -551,11 +659,6 @@ public class DisplayPageFragment extends Fragment {
 					i.putExtra(android.content.Intent.EXTRA_TEXT, selectedText() + " (" + title + ")");
 					startActivity(Intent.createChooser(i,"Share via"));
 					mode.finish();
-					return true;
-				} else if (it == R.id.item_search) {
-					Intent intent = new Intent(getActivity(), SearchActivity.class);
-					intent.putExtra("SEARCH_STR", selectedText());
-		    		startActivity(intent);
 					return true;
 				} else if (it == R.id.item_favorite) {	
 					if (test == true) {
@@ -629,7 +732,15 @@ public class DisplayPageFragment extends Fragment {
 				//Log.d(TAG, "selectedText: " + text);
 				return text.toString();
 			}
-		});
+		};
+
+		mTextView.setCustomSelectionActionModeCallback(callback);
+
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+			amode = mTextView.startActionMode(callback, ActionMode.TYPE_FLOATING);
+		} else if (getActivity() != null) {
+			amode = getActivity().startActionMode(callback);
+		}
 	}
 
 	public void toggleContinuousReading() {
