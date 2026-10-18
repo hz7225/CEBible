@@ -1,9 +1,11 @@
 package com.hz7225.cebible;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -210,26 +212,23 @@ public class SearchActivity extends Activity {
     	//Span the query string in the searched result
     	for (ScriptureData scripture : sublist) {
     		SpannableString str = scripture.getScripture();
+			String rawLower = str.toString().toLowerCase(Locale.US);
 
 			List<String> qlist = parseSearchString(queryStr);
-			for (String qstr: qlist) {
-				int first = str.toString().indexOf(qstr);
-				str.setSpan(new BackgroundColorSpan(0x30007FFF), first, first + qstr.length(), 0);
+			Map<String, Integer> lastIndexes = new HashMap<String, Integer>();
+
+			for (String qstr : qlist) {
+				if (qstr == null || qstr.trim().isEmpty()) continue;
+				String term = qstr.trim().toLowerCase(Locale.US);
+				int startFrom = lastIndexes.containsKey(term) ? lastIndexes.get(term) : 0;
+				int foundIndex = rawLower.indexOf(term, startFrom);
+
+				if (foundIndex != -1) {
+					str.setSpan(new BackgroundColorSpan(0x30007FFF), foundIndex, foundIndex + qstr.trim().length(), 0);
+					lastIndexes.put(term, foundIndex + qstr.trim().length());
+				}
 				scripture.setScripture(str);
 			}
-
-    		//int first = str.toString().indexOf(queryStr);
-			//if (first < 0) {
-				/*The search result of db.rawQuery(selectQuery, null) method in DataBaseHelper.java is case insensitive.
-				  So the index 'first' can be -1, which will cause the Activity to crash in the following
-				  str.setSpan() call. The real fix is to make the SQL search case sensitive. I have tried to add
-				  'COLLATE SQL_Latin1_General_CP1_CS_AS' at the end of the search string, but it didn't work.
-				*/
-				//Log.d(TAG, "index=" + String.valueOf(first)+ ": " + "'" + queryStr + "'" + " not found in: " + str);
-			//} else {
-			//	str.setSpan(new BackgroundColorSpan(0x30007FFF), first, first + queryStr.length(), 0);
-			//	scripture.setScripture(str);
-			//}
     	}
     	
     	//Display the detail search result in the ListView

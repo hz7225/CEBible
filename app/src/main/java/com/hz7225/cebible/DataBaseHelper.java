@@ -7,7 +7,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -279,26 +282,55 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	public List<ScriptureData> searchWholeBible2(List<String> StrList) throws SQLException {
 		List<ScriptureData> scriptureList = new ArrayList<ScriptureData>();
 
-		String selectQuery = "SELECT * FROM Bible WHERE";
-		Iterator<String> iterator = StrList.iterator();
-		for (int i=0; i < StrList.size(); i++) {
-			String searchStr = StrList.get(i);
-			searchStr = searchStr.replaceAll("'","''"); //seems to work to prevent crash of single quote in sql query
-			if (i == 0)
-				selectQuery += " instr(scripture, " + "\'" + searchStr + "\'" + ") > 0";
-			else
-				selectQuery += " AND instr(scripture, " + "\'" + searchStr + "\'" + ") > 0";
+		if (StrList == null || StrList.isEmpty()) {
+			return scriptureList;
 		}
 
-		//Log.d(TAG, "searchWholeBible: selectQuery = " + selectQuery);
+		// Count required occurrences for each search phrase
+		Map<String, Integer> termCounts = new LinkedHashMap<String, Integer>();
+		for (String term : StrList) {
+			if (term == null) continue;
+			String trimmed = term.trim();
+			if (trimmed.isEmpty()) continue;
+			String key = trimmed.toLowerCase(Locale.US);
+			Integer current = termCounts.get(key);
+			termCounts.put(key, current == null ? 1 : current + 1);
+		}
+
+		if (termCounts.isEmpty()) {
+			return scriptureList;
+		}
+
+		StringBuilder selectQuery = new StringBuilder("SELECT * FROM Bible WHERE ");
+		boolean firstCondition = true;
+
+		for (Map.Entry<String, Integer> entry : termCounts.entrySet()) {
+			String term = entry.getKey();
+			int requiredCount = entry.getValue();
+
+			// Escape single quotes for SQL
+			String escapedTerm = term.replaceAll("'", "''");
+
+			if (!firstCondition) {
+				selectQuery.append(" AND ");
+			}
+			firstCondition = false;
+
+			// SQLite occurrence count: (length(scripture) - length(replace(lower(scripture), 'term', ''))) / length('term') >= requiredCount
+			selectQuery.append("((length(scripture) - length(replace(lower(scripture), '")
+			           .append(escapedTerm)
+			           .append("', ''))) / ")
+			           .append(escapedTerm.length())
+			           .append(") >= ")
+			           .append(requiredCount);
+		}
+
 		SQLiteDatabase db = this.getWritableDatabase();
-		Cursor cursor = db.rawQuery(selectQuery, null);
+		Cursor cursor = db.rawQuery(selectQuery.toString(), null);
 
 		while (cursor.moveToNext()) {
-			//Log.d(TAG, cursor.getString(0) + " " + cursor.getString(1) + ":" + cursor.getString(2) + " " + cursor.getString(3));
 			SpannableString ss = new SpannableString(cursor.getString(3));
-			//scriptureList.add(new ScriptureData(myContext, cursor.getString(0), cursor.getString(1),cursor.getString(2), cursor.getString(3)));
-			scriptureList.add(new ScriptureData(myContext, cursor.getString(0), cursor.getString(1),cursor.getString(2), ss));
+			scriptureList.add(new ScriptureData(myContext, cursor.getString(0), cursor.getString(1), cursor.getString(2), ss));
 		}
 
 		cursor.close();
