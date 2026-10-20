@@ -3,14 +3,14 @@ plugins {
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.hz7225.cebible"
         minSdk = 21
-        targetSdk = 36
-        versionCode = 23
-        versionName = "4.2.0"
+        targetSdk = 37
+        versionCode = 25
+        versionName = "4.3.1"
     }
 
     compileOptions {
