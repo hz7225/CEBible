@@ -39,8 +39,8 @@ public class SettingsActivity extends Activity {
 	        "繁體和合本",
 	    };
 	String[] en_translations = new String[] {
-	        "King James Version",
 	        "World English Bible",
+	        "King James Version",
 	    };
 	
 	SharedPreferences prefs;
@@ -89,9 +89,9 @@ public class SettingsActivity extends Activity {
         ArrayAdapter<String> adapte2 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, en_translations);
         listView2.setAdapter(adapte2);
         //check the appropriate English translation according to saved preferences
-        if (prefsEN_Trans.equals(getString(R.string.kjv))) {
+        if (prefsEN_Trans.equals(getString(R.string.web))) {
         	listView2.setItemChecked(0, true);
-		} else if (prefsEN_Trans.equals(getString(R.string.web))) {
+		} else if (prefsEN_Trans.equals(getString(R.string.kjv))) {
 			listView2.setItemChecked(1, true);
 		}
         
@@ -126,11 +126,11 @@ public class SettingsActivity extends Activity {
         		Editor editor = prefs.edit();
         		switch (position) {
         		case 0:        			
-        			prefsEN_Trans = getString(R.string.kjv);
+        			prefsEN_Trans = getString(R.string.web);
         			editor.putString("EN_TRANS", prefsEN_Trans);
         			break;        		
         		case 1:
-        			prefsEN_Trans = getString(R.string.web);
+        			prefsEN_Trans = getString(R.string.kjv);
         			editor.putString("EN_TRANS", prefsEN_Trans);
         			break;	
         		}

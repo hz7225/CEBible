@@ -516,6 +516,7 @@ public class DisplayActivity extends FragmentActivity {
 			LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.tip_popup, (ViewGroup)findViewById(R.id.popup));
 			pwindo = new PopupWindow(layout, (int)(1.75*densityDpi), (int)(2.65*densityDpi), true); //true = PopupWindow has focus
+			pwindo.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
 			pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
 
 			//Button OK
