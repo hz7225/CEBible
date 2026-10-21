@@ -21,6 +21,7 @@
     <item
          android:id="@+id/action_language"
          android:title="@string/ch"
-         android:showAsAction="always"/>
+         android:showAsAction="always"
+         android:actionLayout="@layout/action_language_main_layout"/>
 
 </menu>

@@ -19,6 +19,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.core.app.NavUtils;
 import androidx.legacy.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import android.text.SpannableString;
+import android.text.style.AbsoluteSizeSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -33,6 +35,7 @@ import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.SearchView;
 
 public class DisplayActivity extends FragmentActivity {
@@ -114,8 +117,7 @@ public class DisplayActivity extends FragmentActivity {
         
         // Set action bar title with book name and chapter number
         mChapterNameAndNumber = getBookName() +" "+String.valueOf(mChapter);
-		ActionBar actionBar = getActionBar();
-		actionBar.setTitle(mChapterNameAndNumber);	
+		setActionBarTitle15sp(mChapterNameAndNumber);	
 		
 		// Update action bar after scrolling to a new chapter
 		mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -185,6 +187,15 @@ public class DisplayActivity extends FragmentActivity {
     	editor.commit();
 	}	
 	
+	private void setActionBarTitle15sp(String titleText) {
+		ActionBar actionBar = getActionBar();
+		if (actionBar != null && titleText != null) {
+			SpannableString ss = new SpannableString(titleText);
+			ss.setSpan(new AbsoluteSizeSpan(15, true), 0, ss.length(), 0);
+			actionBar.setTitle(ss);
+		}
+	}
+
 	private String getBookName() {
 		// Get book name from XML resource
 		String[] ot;
@@ -274,23 +285,81 @@ public class DisplayActivity extends FragmentActivity {
 	MenuItem item;
 	
 	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+		updateActionBarMenuItemsVisibility(menu);
+		return true;
+	}
+
+	public void updateActionBarMenuItemsVisibility(Menu menu) {
+		if (menu == null) return;
+
+		MenuItem readItem = menu.findItem(R.id.action_read_aloud);
+		MenuItem searchItem = menu.findItem(R.id.action_search);
+
+		boolean isSideBySide = prefsLanguage != null && prefsLanguage.equals(getString(R.string.ch_en));
+
+		if (isSideBySide) {
+			if (readItem != null) {
+				readItem.setVisible(false);
+				if (readItem.getActionView() != null) {
+					readItem.getActionView().setVisibility(View.GONE);
+				}
+			}
+			if (searchItem != null) {
+				searchItem.setVisible(false);
+				if (searchItem.getActionView() != null) {
+					searchItem.getActionView().setVisibility(View.GONE);
+				}
+			}
+		} else {
+			if (readItem != null) {
+				readItem.setVisible(true);
+				if (readItem.getActionView() != null) {
+					readItem.getActionView().setVisibility(View.VISIBLE);
+				}
+			}
+			if (searchItem != null) {
+				searchItem.setVisible(true);
+				if (searchItem.getActionView() != null) {
+					searchItem.getActionView().setVisibility(View.VISIBLE);
+				}
+			}
+		}
+	}
+
+	private void updateLanguageButtonTitle(MenuItem changeItem) {
+		if (changeItem == null) return;
+
+		String titleStr;
+		if (prefsLanguage.equals(getString(R.string.en))) {
+			titleStr = prefsEN_Trans;
+		} else if (prefsLanguage.equals(getString(R.string.ch_en))) {
+			titleStr = prefsCH_Trans + "/" + prefsEN_Trans;
+		} else {
+			titleStr = prefsCH_Trans;
+		}
+
+		changeItem.setTitle(titleStr);
+		if (changeItem.getActionView() instanceof TextView) {
+			((TextView) changeItem.getActionView()).setText(titleStr);
+		}
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.display_activity, menu);
 				
 		item = menu.findItem(R.id.action_change);  //change item on the action bar
-		if (prefsLanguage.equals(getString(R.string.en))) {
-			if (prefsEN_Trans.equals(getString(R.string.kjv))) {
-				item.setTitle(getString(R.string.kjv));
-			} 	else if (prefsEN_Trans.equals(getString(R.string.web))) {
-				item.setTitle(getString(R.string.web));
-			} 		
-		} else {	
-			if (prefsCH_Trans.equals(getString(R.string.cuvs))) {
-    			item.setTitle(getString(R.string.cuvs));
-    		} else if (prefsCH_Trans.equals(getString(R.string.cuvt))) {
-    			item.setTitle(getString(R.string.cuvt));
-    		}
+		updateLanguageButtonTitle(item);
+		if (item != null && item.getActionView() != null) {
+			item.getActionView().setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					onOptionsItemSelected(item);
+				}
+			});
 		}
 		
 		//Save the menu
@@ -344,15 +413,7 @@ public class DisplayActivity extends FragmentActivity {
 			searchView.setOnCloseListener(new SearchView.OnCloseListener() {
 				@Override
 				public boolean onClose() {
-					if (ab_menu != null) {
-						MenuItem readItem = ab_menu.findItem(R.id.action_read_aloud);
-						if (readItem != null) {
-							readItem.setVisible(true);
-							if (readItem.getActionView() != null) {
-								readItem.getActionView().setVisibility(View.VISIBLE);
-							}
-						}
-					}
+					updateActionBarMenuItemsVisibility(ab_menu);
 					return false;
 				}
 			});
@@ -378,20 +439,13 @@ public class DisplayActivity extends FragmentActivity {
 
 				@Override
 				public boolean onMenuItemActionCollapse(MenuItem item) {
-					if (ab_menu != null) {
-						MenuItem readItem = ab_menu.findItem(R.id.action_read_aloud);
-						if (readItem != null) {
-							readItem.setVisible(true);
-							if (readItem.getActionView() != null) {
-								readItem.getActionView().setVisibility(View.VISIBLE);
-							}
-						}
-					}
+					updateActionBarMenuItemsVisibility(ab_menu);
 					return true;
 				}
 			});
 		}
 
+		updateActionBarMenuItemsVisibility(menu);
 		return true;
 	}
 
@@ -453,33 +507,26 @@ public class DisplayActivity extends FragmentActivity {
         	if (prefsLanguage.equals(getString(R.string.ch))) {
         		prefsLanguage = getString(R.string.en);
         		mySetLocale();
-        		item.setTitle(prefsEN_Trans);
-        		if (ab_menu != null) ab_menu.getItem(1).setVisible(true);
 				if (searchView != null) searchView.setQueryHint("String1 & String2 ...");
         	} else if (prefsLanguage.equals(getString(R.string.en))) {
         		prefsLanguage = getString(R.string.ch_en);
         		mySetLocale();
-        		item.setTitle(getString(R.string.cuv) + "/" + prefsEN_Trans);
-        		if (ab_menu != null) ab_menu.getItem(1).setVisible(false);
         	} else if (prefsLanguage.equals(getString(R.string.ch_en))) {	
         		prefsLanguage = getString(R.string.ch);
         		mySetLocale();
-        		if (prefsCH_Trans.equals(getString(R.string.cuvs))) {
-        			item.setTitle(getString(R.string.cuvs));
-        		} else if (prefsCH_Trans.equals(getString(R.string.cuvt))) {
-        			item.setTitle(getString(R.string.cuvt));
-        		}
-        		if (ab_menu != null) ab_menu.getItem(1).setVisible(true);
 				if (searchView != null) searchView.setQueryHint("字串1 & 字串2 ...");
         	}
+
+        	updateLanguageButtonTitle(item);
+        	invalidateOptionsMenu();
 
         	Editor editor = prefs.edit();
         	editor.putString("LANGUAGE", prefsLanguage);
         	editor.commit();
         	
-    		ActionBar actionBar = getActionBar();
-    		actionBar.setTitle(getBookName() +" "+String.valueOf(mChapter));
+    		setActionBarTitle15sp(getBookName() +" "+String.valueOf(mChapter));
     		
+    		invalidateOptionsMenu();
     		mPagerAdapter.notifyDataSetChanged();  
         	return true;
         } else if (id == R.id.action_read_aloud) {

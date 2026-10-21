@@ -404,6 +404,14 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		startActivity(intent);
 	}
  
+	private void updateLanguageButtonTitle(MenuItem changeItem) {
+		if (changeItem == null) return;
+		changeItem.setTitle(prefsLanguage);
+		if (changeItem.getActionView() instanceof TextView) {
+			((TextView) changeItem.getActionView()).setText(prefsLanguage);
+		}
+	}
+
     //Action bar menu
   	MenuItem item;
     
@@ -412,7 +420,16 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		// Inflate the menu; this adds s to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.ce_bible, menu);
 		item = menu.findItem(R.id.action_language);  //change item on the action bar
-		item.setTitle(prefsLanguage);
+		updateLanguageButtonTitle(item);
+		if (item != null && item.getActionView() != null) {
+			final MenuItem langItem = item;
+			item.getActionView().setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					onOptionsItemSelected(langItem);
+				}
+			});
+		}
 		
 		//Set the version number
 		menu.findItem(R.id.action_about).setTitle(getString(R.string.action_about) + swVersion);
@@ -447,7 +464,7 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
         	
         	myLocale.set();     
         	setTitle(getResources().getString(R.string.app_name));
-        	item.setTitle(prefsLanguage);
+        	updateLanguageButtonTitle(item);
         	populateListOfBooknames();
         	adapterNT.notifyDataSetChanged();
         	adapterOT.notifyDataSetChanged();
