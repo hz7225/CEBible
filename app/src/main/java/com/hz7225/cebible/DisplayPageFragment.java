@@ -639,6 +639,9 @@ public class DisplayPageFragment extends Fragment {
 					mode.finish();
 					return true;
 				} else if (it == R.id.item_play) {
+					if (isContinuousReading) {
+						pauseContinuousReading();
+					}
 					if (selected_listview == 1) {
 						applyAutoVoice(Locale.CHINESE);
 						String ssmlText = formatBiblicalSSML(selectedText());
@@ -650,7 +653,11 @@ public class DisplayPageFragment extends Fragment {
 					}
 					return true;
 				} else if (it == R.id.item_pause) {
-					CEBible_MainActivity.ttsobj.stop();
+					if (isContinuousReading) {
+						pauseContinuousReading();
+					} else if (CEBible_MainActivity.ttsobj != null) {
+						CEBible_MainActivity.ttsobj.stop();
+					}
 					return true;
 				} else if (it == R.id.item_share) {
 					Intent i=new Intent(android.content.Intent.ACTION_SEND);
@@ -706,7 +713,9 @@ public class DisplayPageFragment extends Fragment {
 
 			@Override
 			public void onDestroyActionMode(ActionMode mode) {
-				CEBible_MainActivity.ttsobj.stop();
+				if (!isContinuousReading && CEBible_MainActivity.ttsobj != null) {
+					CEBible_MainActivity.ttsobj.stop();
+				}
 				if (selectionSpan != null && selectedVerseSpan != null) {
 					selectedVerseSpan.removeSpan(selectionSpan);
 					selectionSpan = null;
@@ -811,7 +820,20 @@ public class DisplayPageFragment extends Fragment {
 
 		isContinuousReading = true;
 		isReadingPaused = false;
-		activeReadingVerseIndex = 0;
+
+		boolean startFromSelectedVerse = false;
+
+		if (selectedVerseSpan != null && longclickedVerse > 0) {
+			activeReadingVerseIndex = longclickedVerse - 1;
+			startFromSelectedVerse = true;
+		} else {
+			activeReadingVerseIndex = 0;
+		}
+
+		if (amode != null) {
+			amode.finish();
+			amode = null;
+		}
 
 		if (getActivity() != null) {
 			try {
@@ -906,7 +928,11 @@ public class DisplayPageFragment extends Fragment {
 			});
 		}
 
-		speakChapterHeaderThenVerse();
+		if (startFromSelectedVerse) {
+			speakCurrentReadingVerse();
+		} else {
+			speakChapterHeaderThenVerse();
+		}
 	}
 
 	private void speakChapterHeaderThenVerse() {
