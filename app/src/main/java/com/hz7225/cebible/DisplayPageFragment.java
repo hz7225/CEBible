@@ -105,7 +105,7 @@ public class DisplayPageFragment extends Fragment {
 	private boolean isReadingPaused = false;
 	public boolean isContinuousReading() { return isContinuousReading; }
 	private int activeReadingVerseIndex = 0;
-	private BackgroundColorSpan readingHighlightSpan = new BackgroundColorSpan(0x6076FF03);
+	private BackgroundColorSpan readingHighlightSpan = new BackgroundColorSpan(0x3000FFFF);
 	private SpannableString activeReadingSpan = null;
 	private PowerManager.WakeLock wakeLock = null;
 	
