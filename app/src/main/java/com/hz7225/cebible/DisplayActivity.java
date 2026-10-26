@@ -27,6 +27,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -554,17 +555,23 @@ public class DisplayActivity extends FragmentActivity {
 	private void startPopupWindow() {
 		//Log.d(TAG, "startPopupWindow()");
 		try {
-			//Get screen density because PopupWindow uses pixel in width and height parameters
-			DisplayMetrics dm = getResources().getDisplayMetrics();
-			int densityDpi = dm.densityDpi;
-			//Log.d(TAG, "screen density = " + String.valueOf(densityDpi));
-
 			// We need to get the instance of the LayoutInflater
 			LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.tip_popup, (ViewGroup)findViewById(R.id.popup));
-			pwindo = new PopupWindow(layout, (int)(1.75*densityDpi), (int)(2.65*densityDpi), true); //true = PopupWindow has focus
+			pwindo = new PopupWindow(layout, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true); //true = PopupWindow has focus
 			pwindo.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
-			pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
+
+			View rootOverlay = layout.findViewById(R.id.tip_popup_root);
+			if (rootOverlay != null) {
+				rootOverlay.setOnTouchListener(new View.OnTouchListener() {
+					@Override
+					public boolean onTouch(View v, MotionEvent event) {
+						return true; // Consumes touch completely so outside taps NEVER dismiss Usage Tip!
+					}
+				});
+			}
+
+			pwindo.showAtLocation(getWindow().getDecorView(), Gravity.CENTER, 0, 0);
 
 			//Button OK
 			btnClosePopup = (Button) layout.findViewById(R.id.btn_close_popup);

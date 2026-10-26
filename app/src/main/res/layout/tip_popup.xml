@@ -1,74 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/popup"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tip_popup_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/popup_rounded_background"
-    android:padding="10sp"
-    android:orientation="vertical" >
-    
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="0dip"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        android:text="@string/usagetip"
-        />
+    android:background="#80000000"
+    android:clickable="true"
+    android:focusable="true">
 
-    <View
-        android:id="@+id/horizontal_line"
-        android:layout_width="fill_parent"
-        android:layout_marginTop="10dp"
-        android:layout_height="1dp"
-        android:background="#50101010"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dip"
-        android:textSize="20dp"
-        android:text="@string/usagetiptext"
-        />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="300dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="10dp"
-        android:src="@drawable/cab_usage"
-        android:layout_gravity="center_horizontal" />
-
-    <View
-        android:id="@+id/horizontal_space"
-        android:layout_width="fill_parent"
-        android:layout_marginTop="10dp"
-        android:layout_height="10dp"
-        android:background="#FFFFFF"/>
-    
     <LinearLayout
-    	android:layout_width="match_parent"
-    	android:layout_height="match_parent"
-    	android:layout_marginTop="15dip"
-    	android:orientation="horizontal" >
+        android:id="@+id/popup"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/popup_rounded_background"
+        android:padding="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical">
 
-    <CheckBox
-        android:id="@+id/checkBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"        
-        android:text="@string/donotshow"
-        />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#212121"
+            android:text="@string/usagetip" />
 
-    <Button
-        android:id="@+id/btn_close_popup"
-        android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-        android:minHeight="30dp"
-        android:layout_marginLeft="40dp"
-        android:background="#007FFF"
-        android:text="OK"        
-        />
-    
-	</LinearLayout>
-</LinearLayout>
+        <View
+            android:id="@+id/horizontal_line"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="#E0E0E0" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#424242"
+            android:text="@string/usagetiptext" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="280dp"
+            android:layout_height="180dp"
+            android:layout_marginTop="12dp"
+            android:src="@drawable/cab_usage"
+            android:layout_gravity="center_horizontal" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/checkBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/donotshow" />
+
+            <Button
+                android:id="@+id/btn_close_popup"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
+                android:background="@drawable/button_rounded_blue"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:text="OK" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>
