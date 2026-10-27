@@ -8,7 +8,11 @@
     <string name="usagetip">使用提示</string>
     <string name="showusagetips">"  显示使用提示"</string>
     <string name="usagetiptext">长按一节经文，既可加入喜爱，或分享，朗读及复制</string>
-    <string name="donotshow">不必再提示</string>  
+    <string name="update_available_title">发现新版本</string>
+    <string name="update_available_msg">Google Play 商店有新版本汉英圣经 (%1$s) 可供更新。</string>
+    <string name="update_btn_update">更新</string>
+    <string name="update_btn_remind_later">稍后提醒</string>
+    <string name="donotshow">不必再提示</string>
     <string name="lang">Eng</string>
     <string name="ch">中文</string> 
     <string name="en">Eng</string>

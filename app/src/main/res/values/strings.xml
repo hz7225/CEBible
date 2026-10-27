@@ -8,7 +8,11 @@
     <string name="usagetip">Usage Tip</string> 
     <string name="showusagetips">"  Show Usage Tips"</string>  
     <string name="usagetiptext">Long press on a verse, then you can add it to Favorite, Share, Read, or Copy</string>
-    <string name="donotshow">Do not show again</string>    
+    <string name="update_available_title">App Update Available</string>
+    <string name="update_available_msg">A new version of CEBible (%1$s) is available on Google Play Store.</string>
+    <string name="update_btn_update">Update</string>
+    <string name="update_btn_remind_later">Remind Me Later</string>
+    <string name="donotshow">Do not show again</string>
     <string name="lang">Eng</string>
     <string name="ch">中文</string> 
     <string name="en">Eng</string>

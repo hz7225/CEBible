@@ -8,6 +8,10 @@
     <string name="usagetip">使用提示</string> 
     <string name="showusagetips">"  顯示使用提示"</string> 
     <string name="usagetiptext">長按一節經文，即可加入喜愛，或分享，朗讀及複製</string>
+    <string name="update_available_title">發現新版本</string>
+    <string name="update_available_msg">Google Play 商店有新版本漢英聖經 (%1$s) 可供更新。</string>
+    <string name="update_btn_update">更新</string>
+    <string name="update_btn_remind_later">稍後提醒</string>
     <string name="donotshow">不必再提示</string>
     <string name="lang">Eng</string>
     <string name="ch">中文</string> 

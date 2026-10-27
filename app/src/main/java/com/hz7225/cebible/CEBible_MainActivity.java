@@ -210,6 +210,10 @@ public class CEBible_MainActivity extends Activity implements OnItemClickListene
 		
 		//Show titles (OT, NT, Chapter, Verse) in preferred language
 		displayTitles();
+
+		// Check for Google Play Store app updates in background
+		UpdateCheckManager updateCheckManager = new UpdateCheckManager(this);
+		updateCheckManager.checkVersionOnLaunch();
     }
     
 	protected void onResume() {
