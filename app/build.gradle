@@ -9,8 +9,8 @@ android {
         applicationId = "com.hz7225.cebible"
         minSdk = 21
         targetSdk = 37
-        versionCode = 28
-        versionName = "4.3.4"
+        versionCode = 29
+        versionName = "4.4.0"
     }
 
     compileOptions {
